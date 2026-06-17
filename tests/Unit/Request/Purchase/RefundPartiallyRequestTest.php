@@ -23,14 +23,14 @@ final class RefundPartiallyRequestTest extends TestCase
         $this->assertSame('/refundPartially', $request->getEndpoint());
     }
 
-    public function test_to_array_includes_purchase_id_amount_and_reason(): void
+    public function test_to_array_includes_purchase_id_and_amount(): void
     {
-        $request = new RefundPartiallyRequest(purchaseId: 'P12345', amount: 15.50, reason: 'Partial refund');
+        $request = new RefundPartiallyRequest(purchaseId: 'P12345', amount: 15.50);
 
         $array = $request->toArray();
         $this->assertSame('P12345', $array['purchase_id']);
         $this->assertSame(15.50, $array['amount']);
-        $this->assertSame('Partial refund', $array['reason']);
+        $this->assertArrayNotHasKey('reason', $array);
     }
 
     public function test_validate_returns_empty_array(): void

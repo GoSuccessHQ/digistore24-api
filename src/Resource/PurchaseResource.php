@@ -15,6 +15,7 @@ use GoSuccess\Digistore24\Api\Request\Purchase\GetPurchaseRequest;
 use GoSuccess\Digistore24\Api\Request\Purchase\GetPurchaseTrackingRequest;
 use GoSuccess\Digistore24\Api\Request\Purchase\ListPurchasesOfEmailRequest;
 use GoSuccess\Digistore24\Api\Request\Purchase\ListPurchasesRequest;
+use GoSuccess\Digistore24\Api\Request\Purchase\RefundPartiallyRequest;
 use GoSuccess\Digistore24\Api\Request\Purchase\RefundPurchaseRequest;
 use GoSuccess\Digistore24\Api\Request\Purchase\ResendPurchaseConfirmationMailRequest;
 use GoSuccess\Digistore24\Api\Request\Purchase\UpdatePurchaseRequest;
@@ -27,6 +28,7 @@ use GoSuccess\Digistore24\Api\Response\Purchase\GetPurchaseResponse;
 use GoSuccess\Digistore24\Api\Response\Purchase\GetPurchaseTrackingResponse;
 use GoSuccess\Digistore24\Api\Response\Purchase\ListPurchasesOfEmailResponse;
 use GoSuccess\Digistore24\Api\Response\Purchase\ListPurchasesResponse;
+use GoSuccess\Digistore24\Api\Response\Purchase\RefundPartiallyResponse;
 use GoSuccess\Digistore24\Api\Response\Purchase\RefundPurchaseResponse;
 use GoSuccess\Digistore24\Api\Response\Purchase\ResendPurchaseConfirmationMailResponse;
 use GoSuccess\Digistore24\Api\Response\Purchase\UpdatePurchaseResponse;
@@ -180,6 +182,23 @@ final class PurchaseResource extends AbstractResource
     public function refund(RefundPurchaseRequest $request): RefundPurchaseResponse
     {
         return $this->executeTyped($request, RefundPurchaseResponse::class);
+    }
+
+    /**
+     * Partially refund a purchase
+     *
+     * Refunds a partial amount of a payment (not the complete payment). The refund
+     * amount is treated as a discount and the order status does not change. Use
+     * refund() for full refunds.
+     *
+     * @param RefundPartiallyRequest $request The partial refund request
+     * @throws ApiException
+     * @return RefundPartiallyResponse The response with the refund result
+     * @link https://digistore24.com/api/docs/paths/refundPartially.yaml
+     */
+    public function refundPartially(RefundPartiallyRequest $request): RefundPartiallyResponse
+    {
+        return $this->executeTyped($request, RefundPartiallyResponse::class);
     }
 
     /**

@@ -14,12 +14,13 @@ use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 final class RefundPartiallyRequest extends AbstractRequest
 {
     /**
-     * @param string $purchaseId The unique identifier of the purchase
-     * @param float $amount The refund amount
-     * @param string $reason Optional reason for the partial refund
+     * @param string $purchaseId The purchase ID to refund
+     * @param float $amount The amount to refund (must not exceed the payment amount)
      */
-    public function __construct(private string $purchaseId, private float $amount, private string $reason = '')
-    {
+    public function __construct(
+        private string $purchaseId,
+        private float $amount,
+    ) {
     }
 
     public function getEndpoint(): string
@@ -29,11 +30,9 @@ final class RefundPartiallyRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        $params = ['purchase_id' => $this->purchaseId, 'amount' => $this->amount];
-        if ($this->reason !== '') {
-            $params['reason'] = $this->reason;
-        }
-
-        return $params;
+        return [
+            'purchase_id' => $this->purchaseId,
+            'amount' => $this->amount,
+        ];
     }
 }

@@ -8,9 +8,7 @@ use GoSuccess\Digistore24\Api\Base\AbstractResource;
 use GoSuccess\Digistore24\Api\Exception\ApiException;
 use GoSuccess\Digistore24\Api\Exception\ForbiddenException;
 use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
-use GoSuccess\Digistore24\Api\Request\Billing\RefundPartiallyRequest;
 use GoSuccess\Digistore24\Api\Response\Billing\CreateBillingOnDemandResponse;
-use GoSuccess\Digistore24\Api\Response\Billing\RefundPartiallyResponse;
 
 /**
  * Billing Resource
@@ -39,27 +37,5 @@ final class BillingResource extends AbstractResource
     public function createOnDemand(CreateBillingOnDemandRequest $request): CreateBillingOnDemandResponse
     {
         return $this->executeTyped($request, CreateBillingOnDemandResponse::class);
-    }
-
-    /**
-     * Partially refund a purchase
-     *
-     * Refunds a partial amount of a payment (not the complete payment).
-     * The refund amount is treated as a discount. The order status does not change.
-     *
-     * Important:
-     * - Only refunds a portion of the payment
-     * - Amount must not exceed the payment amount
-     * - Order status remains unchanged (use PurchaseResource::refund() for full refunds)
-     *
-     * @link https://digistore24.com/api/docs/paths/refundPartially.yaml OpenAPI Specification
-     *
-     * @param RefundPartiallyRequest $request The partial refund request
-     * @throws ApiException
-     * @return RefundPartiallyResponse The response with refund result
-     */
-    public function refundPartially(RefundPartiallyRequest $request): RefundPartiallyResponse
-    {
-        return $this->executeTyped($request, RefundPartiallyResponse::class);
     }
 }

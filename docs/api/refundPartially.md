@@ -33,7 +33,7 @@ This is useful when you want to:
 
 ```php
 use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\RefundPartiallyRequest;
+use GoSuccess\Digistore24\Request\Purchase\RefundPartiallyRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -44,7 +44,7 @@ $request = new RefundPartiallyRequest(
     amount: 15.00  // Refund €15.00
 );
 
-$response = $client->billing()->refundPartially($request);
+$response = $client->purchases()->refundPartially($request);
 
 if ($response->wasSuccessful()) {
     echo "Partial refund successful!";
@@ -97,7 +97,7 @@ Compensate customer for service issues:
 
 ```php
 use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\RefundPartiallyRequest;
+use GoSuccess\Digistore24\Request\Purchase\RefundPartiallyRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -114,7 +114,7 @@ $request = new RefundPartiallyRequest(
 );
 
 try {
-    $response = $client->billing()->refundPartially($request);
+    $response = $client->purchases()->refundPartially($request);
     
     if ($response->wasSuccessful()) {
         echo "Refunded €{$refundAmount} for service downtime\n";
@@ -131,7 +131,7 @@ Apply a discount after purchase (e.g., price match):
 
 ```php
 use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\RefundPartiallyRequest;
+use GoSuccess\Digistore24\Request\Purchase\RefundPartiallyRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -147,7 +147,7 @@ $request = new RefundPartiallyRequest(
     amount: $difference
 );
 
-$response = $client->billing()->refundPartially($request);
+$response = $client->purchases()->refundPartially($request);
 
 if ($response->wasSuccessful()) {
     echo "Price matched! Refunded €{$difference}";
@@ -160,7 +160,7 @@ Reward loyal customers with partial refund:
 
 ```php
 use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\RefundPartiallyRequest;
+use GoSuccess\Digistore24\Request\Purchase\RefundPartiallyRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -176,7 +176,7 @@ $request = new RefundPartiallyRequest(
     amount: $cashbackAmount
 );
 
-$response = $client->billing()->refundPartially($request);
+$response = $client->purchases()->refundPartially($request);
 
 if ($response->wasSuccessful()) {
     echo "Loyalty reward: €{$cashbackAmount} cashback applied!";
@@ -189,7 +189,7 @@ Refund for features removed mid-billing cycle:
 
 ```php
 use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\RefundPartiallyRequest;
+use GoSuccess\Digistore24\Request\Purchase\RefundPartiallyRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -208,7 +208,7 @@ $request = new RefundPartiallyRequest(
     amount: round($proratedDifference, 2)
 );
 
-$response = $client->billing()->refundPartially($request);
+$response = $client->purchases()->refundPartially($request);
 ```
 
 ### 5. Bulk Partial Refunds
@@ -217,7 +217,7 @@ Process multiple partial refunds:
 
 ```php
 use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\RefundPartiallyRequest;
+use GoSuccess\Digistore24\Request\Purchase\RefundPartiallyRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -239,7 +239,7 @@ foreach ($refunds as $refund) {
             amount: $refund['amount']
         );
         
-        $response = $client->billing()->refundPartially($request);
+        $response = $client->purchases()->refundPartially($request);
         
         if ($response->wasSuccessful()) {
             $successful++;
@@ -267,7 +267,7 @@ Handle customer complaints with partial refunds:
 
 ```php
 use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\RefundPartiallyRequest;
+use GoSuccess\Digistore24\Request\Purchase\RefundPartiallyRequest;
 use GoSuccess\Digistore24\Request\Purchase\GetPurchaseRequest;
 
 // Initialize API client
@@ -299,7 +299,7 @@ function resolveComplaint(
             amount: round($refundAmount, 2)
         );
         
-        $response = $client->billing()->refundPartially($request);
+        $response = $client->purchases()->refundPartially($request);
         
         if ($response->wasSuccessful()) {
             echo "Partial refund of {$refundPercent}% (€{$refundAmount}) processed\n";
@@ -316,7 +316,7 @@ resolveComplaint($client, 'COMPLAINT999', 70); // 30% refund
 
 ```php
 use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\RefundPartiallyRequest;
+use GoSuccess\Digistore24\Request\Purchase\RefundPartiallyRequest;
 use GoSuccess\Digistore24\Exception\ApiException;
 use GoSuccess\Digistore24\Exception\ValidationException;
 
@@ -330,7 +330,7 @@ try {
         amount: 25.00
     );
     
-    $response = $client->billing()->refundPartially($request);
+    $response = $client->purchases()->refundPartially($request);
     
     if ($response->wasSuccessful()) {
         echo "✓ Partial refund successful\n";
