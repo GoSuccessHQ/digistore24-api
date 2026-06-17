@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Request\Product;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
-use GoSuccess\Digistore24\Api\Enum\AffiliateApprovalStatus;
-use GoSuccess\Digistore24\Api\Enum\BuyerType;
+use GoSuccess\Digistore24\Api\Enum\ProductApprovalStatus;
+use GoSuccess\Digistore24\Api\Enum\ProductBuyerType;
 use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
@@ -29,9 +29,9 @@ final class CreateProductRequest extends AbstractRequest
      * @param string|null $thankyouUrl Thank you page URL (max 255 chars)
      * @param string|null $imageUrl Product image URL (max 255 chars)
      * @param int|null $productTypeId Product type ID (from getGlobalSettings)
-     * @param AffiliateApprovalStatus|null $approvalStatus Product approval status
+     * @param ProductApprovalStatus|null $approvalStatus Product approval status
      * @param float|null $affiliateCommission Affiliate commission amount
-     * @param BuyerType|null $buyerType Buyer type (business, consumer, common, vendor)
+     * @param ProductBuyerType|null $buyerType Buyer type (consumer or business)
      * @param bool|null $isAddressInputMandatory Must buyer enter address
      * @param bool|null $addOrderDataToThankyouPageUrl Add order data to thankyou URL
      */
@@ -48,9 +48,9 @@ final class CreateProductRequest extends AbstractRequest
         public ?string $thankyouUrl = null,
         public ?string $imageUrl = null,
         public ?int $productTypeId = null,
-        public ?AffiliateApprovalStatus $approvalStatus = null,
+        public ?ProductApprovalStatus $approvalStatus = null,
         public ?float $affiliateCommission = null,
-        public ?BuyerType $buyerType = null,
+        public ?ProductBuyerType $buyerType = null,
         public ?bool $isAddressInputMandatory = null,
         public ?bool $addOrderDataToThankyouPageUrl = null,
     ) {

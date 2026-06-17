@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Request\Product;
 
+use GoSuccess\Digistore24\Api\Enum\ProductApprovalStatus;
+use GoSuccess\Digistore24\Api\Enum\ProductBuyerType;
 use GoSuccess\Digistore24\Api\Request\Product\CreateProductRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -41,6 +43,20 @@ final class CreateProductRequestTest extends TestCase
         $this->assertSame('Test Product', $validatedData['name_intern']);
         $this->assertSame('Testprodukt', $validatedData['name_de']);
         $this->assertSame(1, $validatedData['product_type_id']);
+    }
+
+    public function test_to_array_emits_enum_values(): void
+    {
+        $request = new CreateProductRequest(
+            nameIntern: 'Test Product',
+            approvalStatus: ProductApprovalStatus::NEW,
+            buyerType: ProductBuyerType::CONSUMER,
+        );
+
+        $data = $request->toArray()['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('new', $data['approval_status']);
+        $this->assertSame('consumer', $data['buyer_type']);
     }
 
     public function test_validate_returns_empty_array(): void
