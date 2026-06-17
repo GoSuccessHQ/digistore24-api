@@ -35,26 +35,31 @@ final class GetPurchaseResponse extends AbstractResponse
 
     public \DateTimeInterface $createdAt;
 
-    /** @var array<string, mixed> */
-    public array $additionalData = [];
+    /**
+     * The complete purchase payload as returned by the API, so every field is
+     * accessible even when not surfaced as a typed property above.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
-        $purchaseId = $data['purchase_id'] ?? '';
-        $productId = $data['product_id'] ?? '';
-        $productName = $data['product_name'] ?? '';
-        $buyerEmail = $data['buyer_email'] ?? '';
-        $paymentStatus = $data['payment_status'] ?? '';
+        // Real getPurchase keys: the purchase id is `id` (not `purchase_id`), the
+        // buyer is a nested object, and product info lives on the first `items` entry.
+        $buyer = is_array($data['buyer'] ?? null) ? $data['buyer'] : [];
+        $items = is_array($data['items'] ?? null) ? $data['items'] : [];
+        $firstItem = is_array($items[0] ?? null) ? $items[0] : [];
+
+        $purchaseId = $data['id'] ?? $data['purchase_id'] ?? '';
+        $productId = $firstItem['product_id'] ?? $data['product_id'] ?? '';
+        $productName = $firstItem['product_name'] ?? $data['product_name'] ?? '';
+        $buyerEmail = $buyer['email'] ?? $data['buyer_email'] ?? '';
+        $paymentStatus = $data['pay_status'] ?? $data['payment_status'] ?? '';
         $billingStatus = $data['billing_status'] ?? '';
         $amount = $data['amount'] ?? 0;
         $currency = $data['currency'] ?? 'EUR';
         $createdAt = $data['created_at'] ?? 'now';
-        $additionalData = $data['additional_data'] ?? [];
-        if (! is_array($additionalData)) {
-            $additionalData = [];
-        }
-        /** @var array<string, mixed> $validatedAdditionalData */
-        $validatedAdditionalData = $additionalData;
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
@@ -67,7 +72,7 @@ final class GetPurchaseResponse extends AbstractResponse
         $response->amount = TypeConverter::toFloat($amount) ?? 0.0;
         $response->currency = TypeConverter::toString($currency) ?? 'EUR';
         $response->createdAt = TypeConverter::toDateTime($createdAt) ?? new \DateTimeImmutable();
-        $response->additionalData = $validatedAdditionalData;
+        $response->data = $data;
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;
         }
