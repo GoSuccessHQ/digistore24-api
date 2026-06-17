@@ -45,7 +45,7 @@ $request = new GetCustomerToAffiliateBuyerDetailsRequest(
     purchaseId: 'ABCD-1234-EFGH'
 );
 
-$response = $digistore24->purchases()->getCustomerToAffiliateDetails($request);
+$response = $digistore24->purchases->getCustomerToAffiliateDetails($request);
 
 foreach ($response->details as $purchaseId => $details) {
     echo "Purchase: {$purchaseId}\n";
@@ -62,7 +62,7 @@ $request = new GetCustomerToAffiliateBuyerDetailsRequest(
     purchaseId: 'ABCD-1234'
 );
 
-$response = $digistore24->purchases()->getCustomerToAffiliateDetails($request);
+$response = $digistore24->purchases->getCustomerToAffiliateDetails($request);
 $details = $response->getDetailsForPurchase('ABCD-1234');
 
 // Send email to customer with affiliate registration link
@@ -89,7 +89,7 @@ $request = new GetCustomerToAffiliateBuyerDetailsRequest(
     purchaseId: $purchaseIds
 );
 
-$response = $digistore24->purchases()->getCustomerToAffiliateDetails($request);
+$response = $digistore24->purchases->getCustomerToAffiliateDetails($request);
 
 foreach ($response->details as $purchaseId => $details) {
     echo "Customer for {$purchaseId} can register at: {$details->customerToAffiliateUrl}\n";
@@ -106,7 +106,7 @@ try {
     $request = new GetCustomerToAffiliateBuyerDetailsRequest(
         purchaseId: 'ABCD-1234'
     );
-    $response = $digistore24->purchases()->getCustomerToAffiliateDetails($request);
+    $response = $digistore24->purchases->getCustomerToAffiliateDetails($request);
     
     $details = $response->getDetailsForPurchase('ABCD-1234');
     echo "Affiliate program is set up correctly";

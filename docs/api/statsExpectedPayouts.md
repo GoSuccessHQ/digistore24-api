@@ -62,7 +62,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get current month expected payout
-$response = $api->payout()->statsExpectedPayouts();
+$response = $api->payouts->statsExpectedPayouts();
 
 echo "Expected Payout for {$response->period}\n";
 echo "Period: {$response->periodStart} to {$response->periodEnd}\n";
@@ -85,21 +85,21 @@ if (!empty($response->byProduct)) {
 }
 
 // Get next month expected payout
-$response = $api->payout()->statsExpectedPayouts(
+$response = $api->payouts->statsExpectedPayouts(
     period: 'next_month'
 );
 
 echo "Next month expected: {$response->currency} {$response->expectedNet}\n";
 
 // Get current year expected payout
-$response = $api->payout()->statsExpectedPayouts(
+$response = $api->payouts->statsExpectedPayouts(
     period: 'current_year'
 );
 
 echo "Year to date expected: {$response->currency} {$response->expectedNet}\n";
 
 // Get expected payout for specific product
-$response = $api->payout()->statsExpectedPayouts(
+$response = $api->payouts->statsExpectedPayouts(
     productId: 123
 );
 

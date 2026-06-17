@@ -38,7 +38,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Delete order form
-$response = $api->orderForm()->deleteOrderform(
+$response = $api->orderForms->deleteOrderform(
     orderformId: 456
 );
 
@@ -50,10 +50,10 @@ if ($response->deleted) {
 // Example: Delete order form after checking it exists
 try {
     // First verify it exists
-    $orderform = $api->orderForm()->getOrderform(orderformId: 456);
+    $orderform = $api->orderForms->getOrderform(orderformId: 456);
     
     // Then delete it
-    $response = $api->orderForm()->deleteOrderform(
+    $response = $api->orderForms->deleteOrderform(
         orderformId: 456
     );
     

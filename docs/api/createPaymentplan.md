@@ -56,7 +56,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Create unlimited monthly subscription
-$response = $api->paymentPlan()->createPaymentplan(
+$response = $api->paymentPlans->createPaymentplan(
     productId: 123,
     name: 'Monthly Subscription',
     firstAmount: 49.00,
@@ -71,7 +71,7 @@ echo "First Payment: € {$response->firstAmount}\n";
 echo "Recurring: € {$response->rebillAmount} every {$response->rebillInterval} days\n";
 
 // Create 12-month payment plan
-$response = $api->paymentPlan()->createPaymentplan(
+$response = $api->paymentPlans->createPaymentplan(
     productId: 123,
     name: 'Annual Payment Plan (12 months)',
     firstAmount: 0.00,  // No initial payment
@@ -82,7 +82,7 @@ $response = $api->paymentPlan()->createPaymentplan(
 );
 
 // Create weekly payment plan
-$response = $api->paymentPlan()->createPaymentplan(
+$response = $api->paymentPlans->createPaymentplan(
     productId: 123,
     name: 'Weekly Coaching',
     firstAmount: 99.00,
@@ -92,7 +92,7 @@ $response = $api->paymentPlan()->createPaymentplan(
 );
 
 // Create with net amounts (for VAT calculation)
-$response = $api->paymentPlan()->createPaymentplan(
+$response = $api->paymentPlans->createPaymentplan(
     productId: 123,
     name: 'B2B Subscription',
     firstAmount: 119.00,

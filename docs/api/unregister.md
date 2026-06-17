@@ -39,7 +39,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Revoke API key
-$response = $api->apiKey()->unregister(
+$response = $api->apiKeys->unregister(
     apiKey: 'KEY-TO-REVOKE',
     confirm: true
 );

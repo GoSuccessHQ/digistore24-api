@@ -78,7 +78,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get current month summary
-$response = $api->statistics()->statsSalesSummary(
+$response = $api->statistics->statsSalesSummary(
     period: 'this_month'
 );
 
@@ -101,28 +101,28 @@ if (!empty($response->byProduct)) {
 }
 
 // Get today's summary
-$response = $api->statistics()->statsSalesSummary(
+$response = $api->statistics->statsSalesSummary(
     period: 'today'
 );
 
 // Get this year's summary
-$response = $api->statistics()->statsSalesSummary(
+$response = $api->statistics->statsSalesSummary(
     period: 'this_year'
 );
 
 // Get all-time summary
-$response = $api->statistics()->statsSalesSummary(
+$response = $api->statistics->statsSalesSummary(
     period: 'all_time'
 );
 
 // Custom date range
-$response = $api->statistics()->statsSalesSummary(
+$response = $api->statistics->statsSalesSummary(
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );
 
 // Filter by product
-$response = $api->statistics()->statsSalesSummary(
+$response = $api->statistics->statsSalesSummary(
     productId: 123,
     period: 'this_month'
 );

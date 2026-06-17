@@ -53,7 +53,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Create percentage discount voucher
-$response = $api->voucher()->createVoucher(
+$response = $api->vouchers->createVoucher(
     code: 'SUMMER2025',
     discountType: 'percentage',
     discountValue: 20.0,
@@ -65,7 +65,7 @@ $response = $api->voucher()->createVoucher(
 echo "Voucher created: {$response->code}";
 
 // Create fixed amount discount
-$response = $api->voucher()->createVoucher(
+$response = $api->vouchers->createVoucher(
     code: 'WELCOME10',
     discountType: 'fixed',
     discountValue: 10.00,
@@ -75,7 +75,7 @@ $response = $api->voucher()->createVoucher(
 );
 
 // Create voucher with minimum order value
-$response = $api->voucher()->createVoucher(
+$response = $api->vouchers->createVoucher(
     code: 'BIGORDER',
     discountType: 'percentage',
     discountValue: 15.0,

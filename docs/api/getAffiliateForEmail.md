@@ -44,7 +44,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get affiliate by email
-$response = $api->affiliate()->getAffiliateForEmail(
+$response = $api->affiliates->getAffiliateForEmail(
     email: 'affiliate@example.com'
 );
 

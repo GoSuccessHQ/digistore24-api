@@ -38,7 +38,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Delete product group
-$response = $api->productGroup()->deleteProductGroup(
+$response = $api->productGroups->deleteProductGroup(
     productGroupId: 567
 );
 
@@ -50,13 +50,13 @@ if ($response->deleted) {
 // Example: Delete after confirmation
 try {
     // Get group details first
-    $group = $api->productGroup()->getProductGroup(productGroupId: 567);
+    $group = $api->productGroups->getProductGroup(productGroupId: 567);
     
     echo "About to delete: {$group->name}\n";
     echo "Contains {$group->productCount} products\n";
     
     // Proceed with deletion
-    $response = $api->productGroup()->deleteProductGroup(
+    $response = $api->productGroups->deleteProductGroup(
         productGroupId: 567
     );
     

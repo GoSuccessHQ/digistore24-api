@@ -55,7 +55,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all deliveries
-$response = $api->delivery()->listDeliveries(
+$response = $api->deliveries->listDeliveries(
     limit: 50
 );
 
@@ -64,13 +64,13 @@ foreach ($response->deliveries as $delivery) {
 }
 
 // Filter by status
-$response = $api->delivery()->listDeliveries(
+$response = $api->deliveries->listDeliveries(
     status: 'shipped',
     limit: 100
 );
 
 // Get deliveries for specific purchase
-$response = $api->delivery()->listDeliveries(
+$response = $api->deliveries->listDeliveries(
     purchaseId: 'ABC123'
 );
 ```

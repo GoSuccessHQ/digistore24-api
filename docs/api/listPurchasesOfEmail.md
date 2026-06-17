@@ -59,7 +59,7 @@ $request = new ListPurchasesOfEmailRequest(
 );
 
 try {
-    $response = $digistore24->purchases()->listByEmail($request);
+    $response = $digistore24->purchases->listByEmail($request);
     
     foreach ($response->purchases as $purchase) {
         echo "Purchase ID: {$purchase->id}\n";
@@ -82,7 +82,7 @@ $request = new ListPurchasesOfEmailRequest(
     limit: 10 // Only return 10 most recent purchases
 );
 
-$response = $digistore24->purchases()->listByEmail($request);
+$response = $digistore24->purchases->listByEmail($request);
 echo "Found " . count($response->purchases) . " purchases";
 ```
 
@@ -93,7 +93,7 @@ $request = new ListPurchasesOfEmailRequest(
     email: 'potential-customer@example.com'
 );
 
-$response = $digistore24->purchases()->listByEmail($request);
+$response = $digistore24->purchases->listByEmail($request);
 
 if (empty($response->purchases)) {
     echo "New customer - no previous purchases";
@@ -118,7 +118,7 @@ $request = new ListPurchasesOfEmailRequest(
     email: 'subscriber@example.com'
 );
 
-$response = $digistore24->purchases()->listByEmail($request);
+$response = $digistore24->purchases->listByEmail($request);
 
 $activeSubscriptions = array_filter(
     $response->purchases,
@@ -136,7 +136,7 @@ function getCustomerPurchases(string $email): array
     global $digistore24;
     
     $request = new ListPurchasesOfEmailRequest(email: $email);
-    $response = $digistore24->purchases()->listByEmail($request);
+    $response = $digistore24->purchases->listByEmail($request);
     
     $purchases = [];
     foreach ($response->purchases as $purchase) {
@@ -173,7 +173,7 @@ try {
     $request = new ListPurchasesOfEmailRequest(
         email: 'invalid-email' // Will throw validation error
     );
-    $response = $digistore24->purchases()->listByEmail($request);
+    $response = $digistore24->purchases->listByEmail($request);
 } catch (ValidationException $e) {
     echo "Invalid email format: " . $e->getMessage();
 }
@@ -193,7 +193,7 @@ $results = [];
 foreach ($customerEmails as $email) {
     try {
         $request = new ListPurchasesOfEmailRequest(email: $email);
-        $response = $digistore24->purchases()->listByEmail($request);
+        $response = $digistore24->purchases->listByEmail($request);
         
         $results[$email] = [
             'count' => count($response->purchases),
@@ -227,7 +227,7 @@ try {
         email: 'customer@example.com',
         limit: 50
     );
-    $response = $digistore24->purchases()->listByEmail($request);
+    $response = $digistore24->purchases->listByEmail($request);
     
     echo "Found " . count($response->purchases) . " purchases";
 } catch (ValidationException $e) {

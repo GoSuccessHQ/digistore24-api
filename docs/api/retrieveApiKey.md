@@ -43,7 +43,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get API key information
-$response = $api->apiKey()->retrieveApiKey(
+$response = $api->apiKeys->retrieveApiKey(
     apiKeyId: 'KEY123'
 );
 

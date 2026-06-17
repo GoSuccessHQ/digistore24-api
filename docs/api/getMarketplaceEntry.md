@@ -48,7 +48,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get marketplace entry
-$response = $api->marketplace()->getMarketplaceEntry(
+$response = $api->marketplace->getMarketplaceEntry(
     entryId: 123
 );
 

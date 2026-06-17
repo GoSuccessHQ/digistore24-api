@@ -38,7 +38,7 @@ $request = new DeleteProductRequest(
 );
 
 try {
-    $response = $digistore24->products()->delete($request);
+    $response = $digistore24->products->delete($request);
     
     if ($response->success) {
         echo "Product deleted successfully";
@@ -56,14 +56,14 @@ use Digistore24\Request\Product\DeleteProductRequest;
 
 // First, verify product exists and get details
 $getRequest = new GetProductRequest(productId: 12345);
-$product = $digistore24->products()->get($getRequest);
+$product = $digistore24->products->get($getRequest);
 
 echo "About to delete: " . $product->name . "\n";
 $confirmation = readline("Are you sure? (yes/no): ");
 
 if (strtolower($confirmation) === 'yes') {
     $deleteRequest = new DeleteProductRequest(productId: 12345);
-    $response = $digistore24->products()->delete($deleteRequest);
+    $response = $digistore24->products->delete($deleteRequest);
     echo "Product deleted";
 } else {
     echo "Deletion cancelled";
@@ -80,7 +80,7 @@ $failed = [];
 foreach ($productIdsToDelete as $productId) {
     try {
         $request = new DeleteProductRequest(productId: $productId);
-        $response = $digistore24->products()->delete($request);
+        $response = $digistore24->products->delete($request);
         
         if ($response->success) {
             $deleted[] = $productId;
@@ -102,7 +102,7 @@ use Digistore24\Request\Product\DeleteProductRequest;
 
 // Get product details before deleting
 $getRequest = new GetProductRequest(productId: 12345);
-$product = $digistore24->products()->get($getRequest);
+$product = $digistore24->products->get($getRequest);
 
 // Save product data for backup
 $backup = json_encode([
@@ -116,7 +116,7 @@ file_put_contents("product_backup_{$product->id}.json", $backup);
 
 // Now delete
 $deleteRequest = new DeleteProductRequest(productId: 12345);
-$response = $digistore24->products()->delete($deleteRequest);
+$response = $digistore24->products->delete($deleteRequest);
 
 echo "Product deleted and backed up";
 ```
@@ -129,14 +129,14 @@ use Digistore24\Request\Product\DeleteProductRequest;
 
 // List all products
 $listRequest = new ListProductsRequest();
-$productList = $digistore24->products()->list($listRequest);
+$productList = $digistore24->products->list($listRequest);
 
 foreach ($productList->products as $product) {
     // Delete products with 'test' in the name
     if (str_contains(strtolower($product->name), 'test')) {
         try {
             $deleteRequest = new DeleteProductRequest(productId: $product->id);
-            $response = $digistore24->products()->delete($deleteRequest);
+            $response = $digistore24->products->delete($deleteRequest);
             echo "Deleted test product: {$product->name}\n";
         } catch (\Digistore24\Exception\ApiException $e) {
             echo "Failed to delete {$product->id}: {$e->getMessage()}\n";
@@ -155,7 +155,7 @@ use Digistore24\Exception\ApiException;
 
 try {
     $request = new DeleteProductRequest(productId: 12345);
-    $response = $digistore24->products()->delete($request);
+    $response = $digistore24->products->delete($request);
     echo "Product deleted successfully";
 } catch (NotFoundException $e) {
     // Product doesn't exist or already deleted

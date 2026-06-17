@@ -48,7 +48,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get shipping policy details
-$response = $api->shipping()->getShippingCostPolicy(
+$response = $api->shipping->getShippingCostPolicy(
     policyId: 789
 );
 

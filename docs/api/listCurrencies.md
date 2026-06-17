@@ -55,7 +55,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get all currencies
-$response = $api->country()->listCurrencies();
+$response = $api->countries->listCurrencies();
 
 foreach ($response->currencies as $currency) {
     echo "{$currency->code} ({$currency->symbol}): {$currency->name}\n";

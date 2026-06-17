@@ -55,20 +55,20 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all entries
-$response = $api->marketplace()->listMarketplaceEntries();
+$response = $api->marketplace->listMarketplaceEntries();
 
 foreach ($response->entries as $entry) {
     echo "{$entry->title}: {$entry->sales} sales\n";
 }
 
 // Filter by category
-$response = $api->marketplace()->listMarketplaceEntries(
+$response = $api->marketplace->listMarketplaceEntries(
     category: 'Software',
     limit: 50
 );
 
 // List only active entries
-$response = $api->marketplace()->listMarketplaceEntries(
+$response = $api->marketplace->listMarketplaceEntries(
     isActive: true
 );
 ```

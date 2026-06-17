@@ -44,7 +44,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get referring affiliate for a purchase
-$response = $api->affiliate()->getReferringAffiliate(
+$response = $api->affiliates->getReferringAffiliate(
     purchaseId: 'ABC123XYZ'
 );
 
@@ -54,7 +54,7 @@ if ($response->affiliateId) {
 }
 
 // Get referring affiliate for a customer
-$response = $api->affiliate()->getReferringAffiliate(
+$response = $api->affiliates->getReferringAffiliate(
     email: 'customer@example.com'
 );
 ```

@@ -34,7 +34,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Delete IPN by domain ID
-$response = $api->ipn()->delete('my-platform');
+$response = $api->ipn->delete('my-platform');
 
 echo $response->message; // "IPN deleted successfully"
 ```
@@ -53,7 +53,7 @@ try {
     $domainId = 'my-platform';
 
     // Delete the IPN
-    $response = $api->ipn()->delete($domainId);
+    $response = $api->ipn->delete($domainId);
 
     echo "✓ IPN with domain_id '{$domainId}' deleted successfully\n";
 

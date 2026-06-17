@@ -55,7 +55,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update payment plan name
-$response = $api->paymentPlan()->updatePaymentplan(
+$response = $api->paymentPlans->updatePaymentplan(
     paymentplanId: 789,
     name: 'Updated Monthly Plan'
 );
@@ -63,7 +63,7 @@ $response = $api->paymentPlan()->updatePaymentplan(
 echo "Payment plan updated: {$response->name}\n";
 
 // Update pricing
-$response = $api->paymentPlan()->updatePaymentplan(
+$response = $api->paymentPlans->updatePaymentplan(
     paymentplanId: 789,
     firstAmount: 59.00,
     rebillAmount: 39.00
@@ -73,14 +73,14 @@ echo "First payment: € {$response->firstAmount}\n";
 echo "Recurring: € {$response->rebillAmount}\n";
 
 // Change rebill settings
-$response = $api->paymentPlan()->updatePaymentplan(
+$response = $api->paymentPlans->updatePaymentplan(
     paymentplanId: 789,
     rebillTimes: 12,  // Change from unlimited to 12 payments
     rebillInterval: 30
 );
 
 // Deactivate payment plan
-$response = $api->paymentPlan()->updatePaymentplan(
+$response = $api->paymentPlans->updatePaymentplan(
     paymentplanId: 789,
     isActive: false
 );
@@ -90,7 +90,7 @@ if (!$response->isActive) {
 }
 
 // Update with net amounts for VAT
-$response = $api->paymentPlan()->updatePaymentplan(
+$response = $api->paymentPlans->updatePaymentplan(
     paymentplanId: 789,
     firstAmount: 119.00,
     firstAmountNet: 100.00,
@@ -99,7 +99,7 @@ $response = $api->paymentPlan()->updatePaymentplan(
 );
 
 // Update multiple settings
-$response = $api->paymentPlan()->updatePaymentplan(
+$response = $api->paymentPlans->updatePaymentplan(
     paymentplanId: 789,
     name: 'Premium Monthly',
     firstAmount: 99.00,

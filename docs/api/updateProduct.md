@@ -64,7 +64,7 @@ $request = new UpdateProductRequest(
 );
 
 try {
-    $response = $digistore24->products()->update($request);
+    $response = $digistore24->products->update($request);
     
     if ($response->wasModified()) {
         echo "Product updated successfully";
@@ -86,7 +86,7 @@ $request = new UpdateProductRequest(
     nameEs: 'Curso Profesional 2024'
 );
 
-$response = $digistore24->products()->update($request);
+$response = $digistore24->products->update($request);
 echo $response->wasModified() ? "Names updated" : "No changes";
 ```
 
@@ -100,7 +100,7 @@ $request = new UpdateProductRequest(
     upsellSalespageUrl: 'https://example.com/upsell'
 );
 
-$response = $digistore24->products()->update($request);
+$response = $digistore24->products->update($request);
 ```
 
 ## Update Product Description
@@ -113,7 +113,7 @@ $request = new UpdateProductRequest(
     imageUrl: 'https://example.com/new-product-image.jpg'
 );
 
-$response = $digistore24->products()->update($request);
+$response = $digistore24->products->update($request);
 ```
 
 ## Update Commission Settings
@@ -126,7 +126,7 @@ $request = new UpdateProductRequest(
     currency: 'USD,EUR,GBP' // Accept multiple currencies
 );
 
-$response = $digistore24->products()->update($request);
+$response = $digistore24->products->update($request);
 ```
 
 ## Change Product Type
@@ -139,7 +139,7 @@ $request = new UpdateProductRequest(
     approvalStatus: 'pending' // Submit for approval
 );
 
-$response = $digistore24->products()->update($request);
+$response = $digistore24->products->update($request);
 ```
 
 ## Batch Update Multiple Fields
@@ -157,7 +157,7 @@ $request = new UpdateProductRequest(
     addOrderDataToThankyouPageUrl: true
 );
 
-$response = $digistore24->products()->update($request);
+$response = $digistore24->products->update($request);
 ```
 
 ## Error Handling
@@ -168,7 +168,7 @@ use Digistore24\Exception\NotFoundException;
 use Digistore24\Exception\ApiException;
 
 try {
-    $response = $digistore24->products()->update($request);
+    $response = $digistore24->products->update($request);
     
     if ($response->wasModified()) {
         echo "Product updated successfully";

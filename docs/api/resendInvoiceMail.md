@@ -39,14 +39,14 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Resend to original email
-$response = $api->invoice()->resendInvoiceMail(
+$response = $api->invoices->resendInvoiceMail(
     invoiceId: 'INV-2025-12345'
 );
 
 echo "Invoice resent to: {$response->sentTo}\n";
 
 // Send to alternative email
-$response = $api->invoice()->resendInvoiceMail(
+$response = $api->invoices->resendInvoiceMail(
     invoiceId: 'INV-2025-12345',
     email: 'accounting@example.com'
 );

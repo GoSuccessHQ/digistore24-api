@@ -45,7 +45,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update commission rates
-$response = $api->affiliate()->updateAffiliateCommission(
+$response = $api->affiliates->updateAffiliateCommission(
     productId: 12345,
     commissionRate: 60.0,
     firstLevelCommission: 60.0,
@@ -55,7 +55,7 @@ $response = $api->affiliate()->updateAffiliateCommission(
 echo "Commission updated to {$response->commissionRate}%\n";
 
 // Disable affiliate program
-$response = $api->affiliate()->updateAffiliateCommission(
+$response = $api->affiliates->updateAffiliateCommission(
     productId: 12345,
     isAffiliateEnabled: false
 );

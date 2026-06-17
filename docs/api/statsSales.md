@@ -66,7 +66,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get daily sales statistics
-$response = $api->statistics()->statsSales(
+$response = $api->statistics->statsSales(
     startDate: '2025-03-01',
     endDate: '2025-03-31',
     groupBy: 'day'
@@ -84,35 +84,35 @@ foreach ($response->sales as $sale) {
 }
 
 // Group by week
-$response = $api->statistics()->statsSales(
+$response = $api->statistics->statsSales(
     startDate: '2025-01-01',
     endDate: '2025-12-31',
     groupBy: 'week'
 );
 
 // Group by month
-$response = $api->statistics()->statsSales(
+$response = $api->statistics->statsSales(
     startDate: '2025-01-01',
     endDate: '2025-12-31',
     groupBy: 'month'
 );
 
 // Group by product
-$response = $api->statistics()->statsSales(
+$response = $api->statistics->statsSales(
     startDate: '2025-03-01',
     endDate: '2025-03-31',
     groupBy: 'product'
 );
 
 // Group by country
-$response = $api->statistics()->statsSales(
+$response = $api->statistics->statsSales(
     startDate: '2025-03-01',
     endDate: '2025-03-31',
     groupBy: 'country'
 );
 
 // Filter by product
-$response = $api->statistics()->statsSales(
+$response = $api->statistics->statsSales(
     productId: 123,
     startDate: '2025-01-01',
     endDate: '2025-12-31'

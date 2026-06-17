@@ -78,7 +78,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all commissions
-$response = $api->commission()->listCommissions(
+$response = $api->commissions->listCommissions(
     limit: 50
 );
 
@@ -94,28 +94,28 @@ foreach ($response->commissions as $commission) {
 }
 
 // Filter by affiliate
-$response = $api->commission()->listCommissions(
+$response = $api->commissions->listCommissions(
     affiliateId: 'AFF12345'
 );
 
 // Filter by product
-$response = $api->commission()->listCommissions(
+$response = $api->commissions->listCommissions(
     productId: 123
 );
 
 // Filter by status
-$response = $api->commission()->listCommissions(
+$response = $api->commissions->listCommissions(
     status: 'approved'
 );
 
 // Filter by date range
-$response = $api->commission()->listCommissions(
+$response = $api->commissions->listCommissions(
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );
 
 // Combined filters
-$response = $api->commission()->listCommissions(
+$response = $api->commissions->listCommissions(
     affiliateId: 'AFF12345',
     status: 'paid',
     startDate: '2025-03-01',

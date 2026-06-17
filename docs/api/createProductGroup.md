@@ -45,7 +45,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Create product group
-$response = $api->productGroup()->createProductGroup(
+$response = $api->productGroups->createProductGroup(
     name: 'Premium Bundle'
 );
 
@@ -53,7 +53,7 @@ echo "Product Group ID: {$response->productGroupId}\n";
 echo "Name: {$response->name}\n";
 
 // Create with products
-$response = $api->productGroup()->createProductGroup(
+$response = $api->productGroups->createProductGroup(
     name: 'Complete Course Bundle',
     description: 'All courses in one package',
     productIds: [123, 124, 125]
@@ -62,7 +62,7 @@ $response = $api->productGroup()->createProductGroup(
 echo "Created group with {$response->productCount} products\n";
 
 // Create detailed group
-$response = $api->productGroup()->createProductGroup(
+$response = $api->productGroups->createProductGroup(
     name: 'Starter Package',
     description: 'Perfect for beginners',
     productIds: [101, 102],

@@ -50,7 +50,7 @@ $api = new Digistore24($config);
 
 // Get all configured IPNs
 $request = new IpnInfoRequest();
-$response = $api->ipn()->info($request);
+$response = $api->ipn->info($request);
 
 foreach ($response->data as $ipn) {
     echo "IPN: {$ipn['name']} - {$ipn['ipn_url']}\n";
@@ -58,7 +58,7 @@ foreach ($response->data as $ipn) {
 
 // Get specific IPN by domain ID
 $request = new IpnInfoRequest(domainId: 'my-platform');
-$response = $api->ipn()->info($request);
+$response = $api->ipn->info($request);
 
 if (!empty($response->data)) {
     $ipn = $response->data[0];

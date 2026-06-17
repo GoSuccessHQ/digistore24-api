@@ -93,7 +93,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all records for a form
-$response = $api->customForm()->listCustomFormRecords(
+$response = $api->customForms->listCustomFormRecords(
     formId: 123,
     limit: 50
 );
@@ -115,21 +115,21 @@ foreach ($response->records as $record) {
 }
 
 // Filter by date range
-$response = $api->customForm()->listCustomFormRecords(
+$response = $api->customForms->listCustomFormRecords(
     formId: 123,
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );
 
 // Pagination
-$response = $api->customForm()->listCustomFormRecords(
+$response = $api->customForms->listCustomFormRecords(
     formId: 123,
     limit: 20,
     offset: 0
 );
 
 // Export to CSV
-$response = $api->customForm()->listCustomFormRecords(
+$response = $api->customForms->listCustomFormRecords(
     formId: 123
 );
 

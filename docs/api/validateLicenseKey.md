@@ -47,7 +47,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Validate a license key
-$response = $api->license()->validateLicenseKey(
+$response = $api->licenses->validateLicenseKey(
     licenseKey: 'XXXX-XXXX-XXXX-XXXX',
     productId: 12345
 );

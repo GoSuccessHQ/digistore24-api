@@ -36,7 +36,7 @@ $request = new ResendPurchaseConfirmationMailRequest(
     purchaseId: 'ABCD-1234-EFGH'
 );
 
-$response = $digistore24->purchases()->resendConfirmationMail($request);
+$response = $digistore24->purchases->resendConfirmationMail($request);
 
 if ($response->wasSuccessful()) {
     echo "Confirmation email sent";
@@ -57,7 +57,7 @@ $request = new ResendPurchaseConfirmationMailRequest(
 );
 
 try {
-    $response = $digistore24->purchases()->resendConfirmationMail($request);
+    $response = $digistore24->purchases->resendConfirmationMail($request);
     echo "Email resent to customer";
 } catch (\Digistore24\Exception\ApiException $e) {
     echo "Error: " . $e->getMessage();

@@ -77,7 +77,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all payment plans
-$response = $api->paymentPlan()->listPaymentPlans(
+$response = $api->paymentPlans->listPaymentPlans(
     limit: 50
 );
 
@@ -99,28 +99,28 @@ foreach ($response->paymentplans as $plan) {
 }
 
 // Filter by product
-$response = $api->paymentPlan()->listPaymentPlans(
+$response = $api->paymentPlans->listPaymentPlans(
     productId: 123
 );
 
 // Filter active plans only
-$response = $api->paymentPlan()->listPaymentPlans(
+$response = $api->paymentPlans->listPaymentPlans(
     isActive: true
 );
 
 // Filter by currency
-$response = $api->paymentPlan()->listPaymentPlans(
+$response = $api->paymentPlans->listPaymentPlans(
     currency: 'USD'
 );
 
 // Pagination
-$response = $api->paymentPlan()->listPaymentPlans(
+$response = $api->paymentPlans->listPaymentPlans(
     limit: 20,
     offset: 0
 );
 
 // Combined filters
-$response = $api->paymentPlan()->listPaymentPlans(
+$response = $api->paymentPlans->listPaymentPlans(
     productId: 123,
     isActive: true,
     currency: 'EUR'

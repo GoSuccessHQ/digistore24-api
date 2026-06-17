@@ -54,7 +54,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update buyer by email
-$response = $api->buyer()->updateBuyer(
+$response = $api->buyers->updateBuyer(
     email: 'buyer@example.com',
     firstName: 'John',
     lastName: 'Smith',
@@ -67,7 +67,7 @@ if ($response->result === 'success') {
 }
 
 // Update buyer by ID
-$response = $api->buyer()->updateBuyer(
+$response = $api->buyers->updateBuyer(
     buyerId: 12345,
     street: '456 New Street',
     city: 'Munich',

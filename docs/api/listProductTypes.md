@@ -50,7 +50,7 @@ The response contains an array of product type objects, each with:
 
 ```php
 // Get all product types
-$allTypes = $response->getProductTypes();
+$allTypes = $response->productTypes;
 
 // Get a specific product type by ID
 $productType = $response->getProductTypeById(1);
@@ -62,7 +62,7 @@ if ($productType !== null) {
 $digitalTypes = $response->getProductTypesByCategory('Digital');
 
 // Get all unique categories
-$categories = $response->getCategories();
+$categories = array_values(array_unique(array_map(fn ($type) => $type->category, $response->productTypes)));
 ```
 
 ### Example Response
@@ -104,18 +104,19 @@ $categories = $response->getCategories();
 Show available product types when creating a new product:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Product\ListProductTypesRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
 $client = new Digistore24($config);
 
 $request = new ListProductTypesRequest();
-$response = $client->products()->listProductTypes($request);
+$response = $client->products->listProductTypes($request);
 
 // Group by category for better UI organization
-$categories = $response->getCategories();
+$categories = array_values(array_unique(array_map(fn ($type) => $type->category, $response->productTypes)));
 
 echo "<h2>Select Product Type</h2>";
 foreach ($categories as $category) {
@@ -135,9 +136,10 @@ foreach ($categories as $category) {
 Ensure a product type ID is valid before creating a product:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Product\ListProductTypesRequest;
-use GoSuccess\Digistore24\Request\Product\CreateProductRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
+use GoSuccess\Digistore24\Api\Request\Product\CreateProductRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -145,7 +147,7 @@ $client = new Digistore24($config);
 
 // Get available product types
 $request = new ListProductTypesRequest();
-$response = $client->products()->listProductTypes($request);
+$response = $client->products->listProductTypes($request);
 
 // Validate user's selected product type
 $selectedTypeId = 5; // From user input
@@ -161,7 +163,7 @@ $createRequest = new CreateProductRequest(
     productTypeId: $selectedTypeId
 );
 
-$product = $client->products()->create($createRequest);
+$product = $client->products->create($createRequest);
 ```
 
 ### 3. Cache Product Types
@@ -169,8 +171,9 @@ $product = $client->products()->create($createRequest);
 Cache product types to reduce API calls:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Product\ListProductTypesRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
 
 function getProductTypes(Digistore24 $client, bool $forceRefresh = false): array
 {
@@ -190,9 +193,9 @@ function getProductTypes(Digistore24 $client, bool $forceRefresh = false): array
 
     // Fetch fresh data
     $request = new ListProductTypesRequest();
-    $response = $client->products()->listProductTypes($request);
+    $response = $client->products->listProductTypes($request);
 
-    $types = $response->getProductTypes();
+    $types = $response->productTypes;
 
     // Save to cache
     file_put_contents($cacheFile, json_encode($types));
@@ -212,15 +215,16 @@ $productTypes = getProductTypes($client);
 Get only digital product types:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Product\ListProductTypesRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
 $client = new Digistore24($config);
 
 $request = new ListProductTypesRequest();
-$response = $client->products()->listProductTypes($request);
+$response = $client->products->listProductTypes($request);
 
 // Get only digital products
 $digitalTypes = $response->getProductTypesByCategory('Digital');
@@ -236,17 +240,18 @@ foreach ($digitalTypes as $type) {
 Generate a reference document of all product types:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Product\ListProductTypesRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
 $client = new Digistore24($config);
 
 $request = new ListProductTypesRequest();
-$response = $client->products()->listProductTypes($request);
+$response = $client->products->listProductTypes($request);
 
-$categories = $response->getCategories();
+$categories = array_values(array_unique(array_map(fn ($type) => $type->category, $response->productTypes)));
 
 echo "# Digistore24 Product Types Reference\n\n";
 echo "Generated: " . date('Y-m-d H:i:s') . "\n\n";
@@ -267,15 +272,16 @@ foreach ($categories as $category) {
 Build a dynamic form based on available product types:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Product\ListProductTypesRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
 $client = new Digistore24($config);
 
 $request = new ListProductTypesRequest();
-$response = $client->products()->listProductTypes($request);
+$response = $client->products->listProductTypes($request);
 
 ?>
 <!DOCTYPE html>
@@ -296,7 +302,7 @@ $response = $client->products()->listProductTypes($request);
             <select id="product_type" name="product_type_id" required>
                 <option value="">-- Select Product Type --</option>
                 <?php
-                $categories = $response->getCategories();
+                $categories = array_values(array_unique(array_map(fn ($type) => $type->category, $response->productTypes)));
                 foreach ($categories as $category) {
                     echo "<optgroup label='{$category}'>";
                     $types = $response->getProductTypesByCategory($category);
@@ -318,10 +324,11 @@ $response = $client->products()->listProductTypes($request);
 ## Error Handling
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Product\ListProductTypesRequest;
-use GoSuccess\Digistore24\Exception\ApiException;
-use GoSuccess\Digistore24\Exception\AuthenticationException;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
+use GoSuccess\Digistore24\Api\Exception\ApiException;
+use GoSuccess\Digistore24\Api\Exception\AuthenticationException;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -329,9 +336,9 @@ $client = new Digistore24($config);
 
 try {
     $request = new ListProductTypesRequest();
-    $response = $client->products()->listProductTypes($request);
+    $response = $client->products->listProductTypes($request);
 
-    $types = $response->getProductTypes();
+    $types = $response->productTypes;
 
     if (empty($types)) {
         echo "Warning: No product types returned\n";
@@ -345,7 +352,6 @@ try {
 
 } catch (ApiException $e) {
     echo "API error: " . $e->getMessage() . "\n";
-    echo "Status code: " . $e->getCode() . "\n";
 }
 ```
 

@@ -63,7 +63,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get upsells for product
-$response = $api->upsell()->getUpsells(
+$response = $api->upsells->getUpsells(
     productId: 123
 );
 

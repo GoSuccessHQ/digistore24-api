@@ -50,7 +50,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Create shipping policy
-$response = $api->shipping()->createShippingCostPolicy(
+$response = $api->shipping->createShippingCostPolicy(
     name: 'Germany Standard Shipping',
     productId: 123,
     countryCode: 'DE',
@@ -62,7 +62,7 @@ echo "Name: {$response->name}\n";
 echo "Cost: {$response->currency} {$response->cost}\n";
 
 // Create with free shipping threshold
-$response = $api->shipping()->createShippingCostPolicy(
+$response = $api->shipping->createShippingCostPolicy(
     name: 'US Shipping with Free Threshold',
     productId: 123,
     countryCode: 'US',
@@ -74,7 +74,7 @@ $response = $api->shipping()->createShippingCostPolicy(
 echo "Free shipping on orders over ${$response->freeShippingThreshold}\n";
 
 // Create express shipping
-$response = $api->shipping()->createShippingCostPolicy(
+$response = $api->shipping->createShippingCostPolicy(
     name: 'UK Express Shipping',
     productId: 123,
     countryCode: 'GB',

@@ -37,10 +37,10 @@ $request = new AddBalanceToPurchaseRequest(
     amount: 50.00
 );
 
-$response = $digistore24->purchases()->addBalance($request);
+$response = $digistore24->purchases->addBalance($request);
 echo "Old balance: {$response->oldBalance}\n";
 echo "New balance: {$response->newBalance}\n";
-echo "Change: {$response->getBalanceChange()}";
+echo "Change: " . ($response->newBalance - $response->oldBalance);
 ```
 
 ## Reduce Balance
@@ -52,7 +52,7 @@ $request = new AddBalanceToPurchaseRequest(
     amount: -25.00
 );
 
-$response = $digistore24->purchases()->addBalance($request);
+$response = $digistore24->purchases->addBalance($request);
 ```
 
 ## Important Notes

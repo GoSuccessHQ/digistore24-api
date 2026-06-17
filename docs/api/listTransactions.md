@@ -74,7 +74,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all transactions
-$response = $api->transaction()->listTransactions(
+$response = $api->transactions->listTransactions(
     limit: 50
 );
 
@@ -88,33 +88,33 @@ foreach ($response->transactions as $txn) {
 }
 
 // Filter by purchase
-$response = $api->transaction()->listTransactions(
+$response = $api->transactions->listTransactions(
     purchaseId: 'ABCD1234'
 );
 
 // Filter by product
-$response = $api->transaction()->listTransactions(
+$response = $api->transactions->listTransactions(
     productId: 123
 );
 
 // Filter by type
-$response = $api->transaction()->listTransactions(
+$response = $api->transactions->listTransactions(
     transactionType: 'refund'
 );
 
 // Filter by status
-$response = $api->transaction()->listTransactions(
+$response = $api->transactions->listTransactions(
     status: 'failed'
 );
 
 // Filter by date range
-$response = $api->transaction()->listTransactions(
+$response = $api->transactions->listTransactions(
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );
 
 // Combined filters
-$response = $api->transaction()->listTransactions(
+$response = $api->transactions->listTransactions(
     productId: 123,
     transactionType: 'sale',
     status: 'completed',

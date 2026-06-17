@@ -51,7 +51,7 @@ $request = new GetPurchaseDownloadsRequest(
     purchaseId: 'ABCD-1234-EFGH'
 );
 
-$response = $digistore24->purchases()->getDownloads($request);
+$response = $digistore24->purchases->getDownloads($request);
 
 foreach ($response->downloads as $purchaseId => $products) {
     echo "Purchase: {$purchaseId}\n";
@@ -60,10 +60,12 @@ foreach ($response->downloads as $purchaseId => $products) {
         echo "  Product: {$productId}\n";
         
         foreach ($files as $file) {
-            echo "    File: {$file->fileName}\n";
-            echo "    URL: {$file->url}\n";
-            echo "    Remaining: {$file->getRemainingDownloads()} downloads\n";
-            echo "    Access: " . ($file->hasAccess() ? 'Yes' : 'No') . "\n";
+            $remaining = $file['downloads_total'] - $file['downloads_tries'];
+            $hasAccess = $file['is_access_granted'] === 'Y';
+            echo "    File: {$file['file_name']}\n";
+            echo "    URL: {$file['url']}\n";
+            echo "    Remaining: {$remaining} downloads\n";
+            echo "    Access: " . ($hasAccess ? 'Yes' : 'No') . "\n";
         }
     }
 }
@@ -73,18 +75,19 @@ foreach ($response->downloads as $purchaseId => $products) {
 
 ```php
 $request = new GetPurchaseDownloadsRequest(purchaseId: 'ABCD-1234');
-$response = $digistore24->purchases()->getDownloads($request);
+$response = $digistore24->purchases->getDownloads($request);
 
-$downloads = $response->getDownloadsForPurchase('ABCD-1234');
+$downloads = $response->downloads['ABCD-1234'] ?? [];
 
 foreach ($downloads as $productId => $files) {
     foreach ($files as $file) {
-        if (!$file->hasAccess()) {
-            echo "Access denied for {$file->fileName}";
-        } elseif (!$file->isPaid()) {
-            echo "Payment pending for {$file->fileName}";
-        } elseif ($file->getRemainingDownloads() === 0) {
-            echo "Download limit reached for {$file->fileName}";
+        $remaining = $file['downloads_total'] - $file['downloads_tries'];
+        if ($file['is_access_granted'] !== 'Y') {
+            echo "Access denied for {$file['file_name']}";
+        } elseif ($file['is_purchase_paid'] !== 'Y') {
+            echo "Payment pending for {$file['file_name']}";
+        } elseif ($remaining === 0) {
+            echo "Download limit reached for {$file['file_name']}";
         }
     }
 }

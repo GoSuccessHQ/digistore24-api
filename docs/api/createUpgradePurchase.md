@@ -57,7 +57,7 @@ $request = new CreateUpgradePurchaseRequest(
     quantities: ['1' => 1, '2' => 3]
 );
 
-$response = $digistore24->purchases()->createUpgrade($request);
+$response = $digistore24->purchases->createUpgrade($request);
 echo "New purchase ID: {$response->newPurchase->id}";
 echo "Upgrade amount remaining: {$response->upgradeInfo->upgradeAmountLeft}";
 ```

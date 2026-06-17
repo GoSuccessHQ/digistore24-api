@@ -56,7 +56,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all vouchers
-$response = $api->voucher()->listVouchers(
+$response = $api->vouchers->listVouchers(
     limit: 50
 );
 
@@ -65,18 +65,18 @@ foreach ($response->vouchers as $voucher) {
 }
 
 // List only active vouchers
-$response = $api->voucher()->listVouchers(
+$response = $api->vouchers->listVouchers(
     activeOnly: true,
     limit: 100
 );
 
 // Search for specific voucher
-$response = $api->voucher()->listVouchers(
+$response = $api->vouchers->listVouchers(
     search: 'SUMMER'
 );
 
 // Filter by product
-$response = $api->voucher()->listVouchers(
+$response = $api->vouchers->listVouchers(
     productId: 123
 );
 ```

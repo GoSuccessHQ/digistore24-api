@@ -45,7 +45,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Create manual rebilling payment with default amount
-$response = $api->rebilling()->createRebillingPayment(
+$response = $api->rebilling->createRebillingPayment(
     purchaseId: 'ABCD1234'
 );
 
@@ -54,14 +54,14 @@ echo "Amount: {$response->currency} {$response->amount}\n";
 echo "Status: {$response->status}\n";
 
 // Create with custom amount
-$response = $api->rebilling()->createRebillingPayment(
+$response = $api->rebilling->createRebillingPayment(
     purchaseId: 'ABCD1234',
     amount: 49.00,
     reason: 'Upgrade to premium tier'
 );
 
 // Create with custom currency
-$response = $api->rebilling()->createRebillingPayment(
+$response = $api->rebilling->createRebillingPayment(
     purchaseId: 'ABCD1234',
     amount: 35.00,
     currency: 'USD',

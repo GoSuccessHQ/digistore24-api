@@ -72,7 +72,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all order forms
-$response = $api->orderForm()->listOrderforms(
+$response = $api->orderForms->listOrderforms(
     limit: 50
 );
 
@@ -87,27 +87,27 @@ foreach ($response->orderforms as $orderform) {
 }
 
 // Filter by product
-$response = $api->orderForm()->listOrderforms(
+$response = $api->orderForms->listOrderforms(
     productId: 123
 );
 
 // Filter active order forms only
-$response = $api->orderForm()->listOrderforms(
+$response = $api->orderForms->listOrderforms(
     isActive: true
 );
 
 // Filter by design template
-$response = $api->orderForm()->listOrderforms(
+$response = $api->orderForms->listOrderforms(
     design: 'modern'
 );
 
 // Filter by language
-$response = $api->orderForm()->listOrderforms(
+$response = $api->orderForms->listOrderforms(
     language: 'en'
 );
 
 // Pagination
-$response = $api->orderForm()->listOrderforms(
+$response = $api->orderForms->listOrderforms(
     limit: 20,
     offset: 0
 );

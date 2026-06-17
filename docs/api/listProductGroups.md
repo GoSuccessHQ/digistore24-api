@@ -64,7 +64,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all product groups
-$response = $api->productGroup()->listProductGroups(
+$response = $api->productGroups->listProductGroups(
     limit: 50
 );
 
@@ -79,19 +79,19 @@ foreach ($response->productGroups as $group) {
 }
 
 // Filter active groups only
-$response = $api->productGroup()->listProductGroups(
+$response = $api->productGroups->listProductGroups(
     isActive: true
 );
 
 // Find groups containing specific product
-$response = $api->productGroup()->listProductGroups(
+$response = $api->productGroups->listProductGroups(
     productId: 123
 );
 
 echo "Product 123 is in {$response->total} groups\n";
 
 // Pagination
-$response = $api->productGroup()->listProductGroups(
+$response = $api->productGroups->listProductGroups(
     limit: 20,
     offset: 0
 );

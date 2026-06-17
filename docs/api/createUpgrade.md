@@ -52,7 +52,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Create upgrade
-$response = $api->upgrade()->createUpgrade(
+$response = $api->upgrades->createUpgrade(
     name: 'Basic to Premium Upgrade',
     fromProductId: 123,
     toProductId: 124,
@@ -66,7 +66,7 @@ echo "To: {$response->toProductName}\n";
 echo "Price: {$response->currency} {$response->upgradePrice}\n";
 
 // Create with description
-$response = $api->upgrade()->createUpgrade(
+$response = $api->upgrades->createUpgrade(
     name: 'Premium to VIP Upgrade',
     fromProductId: 124,
     toProductId: 125,
@@ -75,7 +75,7 @@ $response = $api->upgrade()->createUpgrade(
 );
 
 // Create with custom currency
-$response = $api->upgrade()->createUpgrade(
+$response = $api->upgrades->createUpgrade(
     name: 'Standard to Pro',
     fromProductId: 101,
     toProductId: 102,

@@ -40,7 +40,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Report a fraudulent purchase
-$response = $api->fraud()->reportFraud(
+$response = $api->fraud->reportFraud(
     purchaseId: 'ABC123',
     reason: 'Chargeback fraud',
     details: 'Customer initiated chargeback immediately after delivery'

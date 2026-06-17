@@ -38,7 +38,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Delete payment plan
-$response = $api->paymentPlan()->deletePaymentplan(
+$response = $api->paymentPlans->deletePaymentplan(
     paymentplanId: 789
 );
 
@@ -50,12 +50,12 @@ if ($response->deleted) {
 // Example: Check before deletion
 try {
     // Get plan details first
-    $plans = $api->paymentPlan()->listPaymentPlans(productId: 123);
+    $plans = $api->paymentPlans->listPaymentPlans(productId: 123);
     
     foreach ($plans->paymentplans as $plan) {
         if ($plan->activeSubscriptions == 0 && !$plan->isActive) {
             // Safe to delete - no active subscriptions
-            $response = $api->paymentPlan()->deletePaymentplan(
+            $response = $api->paymentPlans->deletePaymentplan(
                 paymentplanId: $plan->paymentplanId
             );
             echo "Deleted inactive plan: {$plan->name}\n";

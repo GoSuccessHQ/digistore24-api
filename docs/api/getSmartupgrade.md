@@ -47,7 +47,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get smart upgrade details
-$response = $api->smartUpgrade()->getSmartupgrade(
+$response = $api->smartUpgrades->getSmartupgrade(
     smartupgradeId: 567
 );
 

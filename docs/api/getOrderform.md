@@ -59,7 +59,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get order form details
-$response = $api->orderForm()->getOrderform(
+$response = $api->orderForms->getOrderform(
     orderformId: 456
 );
 

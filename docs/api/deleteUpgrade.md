@@ -38,7 +38,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Delete upgrade
-$response = $api->upgrade()->deleteUpgrade(
+$response = $api->upgrades->deleteUpgrade(
     upgradeId: 789
 );
 
@@ -50,14 +50,14 @@ if ($response->deleted) {
 // Example: Delete after confirmation
 try {
     // Get upgrade details first
-    $upgrade = $api->upgrade()->getUpgrade(upgradeId: 789);
+    $upgrade = $api->upgrades->getUpgrade(upgradeId: 789);
     
     echo "About to delete: {$upgrade->name}\n";
     echo "Path: {$upgrade->fromProductName} → {$upgrade->toProductName}\n";
     echo "Conversions: {$upgrade->conversionsCount}\n";
     
     // Proceed with deletion
-    $response = $api->upgrade()->deleteUpgrade(
+    $response = $api->upgrades->deleteUpgrade(
         upgradeId: 789
     );
     

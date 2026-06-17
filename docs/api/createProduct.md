@@ -65,7 +65,7 @@ $request = new CreateProductRequest(
 );
 
 try {
-    $response = $digistore24->products()->create($request);
+    $response = $digistore24->products->create($request);
     echo "Product created with ID: " . $response->productId;
 } catch (\Digistore24\Exception\ApiException $e) {
     echo "Error: " . $e->getMessage();
@@ -90,7 +90,7 @@ $request = new CreateProductRequest(
     affiliateCommission: 50.00
 );
 
-$response = $digistore24->products()->create($request);
+$response = $digistore24->products->create($request);
 echo "Digital product created: " . $response->productId;
 ```
 
@@ -108,7 +108,7 @@ $request = new CreateProductRequest(
     approvalStatus: 'new'
 );
 
-$response = $digistore24->products()->create($request);
+$response = $digistore24->products->create($request);
 echo "Physical product created: " . $response->productId;
 ```
 
@@ -120,7 +120,7 @@ use Digistore24\Exception\ForbiddenException;
 use Digistore24\Exception\ApiException;
 
 try {
-    $response = $digistore24->products()->create($request);
+    $response = $digistore24->products->create($request);
     echo "Success! Product ID: " . $response->productId;
 } catch (ValidationException $e) {
     // Invalid parameters (e.g., name too long, invalid enum value)

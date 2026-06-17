@@ -51,25 +51,25 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update discount value
-$response = $api->voucher()->updateVoucher(
+$response = $api->vouchers->updateVoucher(
     voucherId: 789,
     discountValue: 25.0
 );
 
 // Change voucher code
-$response = $api->voucher()->updateVoucher(
+$response = $api->vouchers->updateVoucher(
     code: 'SUMMER2025',
     newCode: 'AUTUMN2025'
 );
 
 // Extend validity period
-$response = $api->voucher()->updateVoucher(
+$response = $api->vouchers->updateVoucher(
     voucherId: 789,
     validUntil: '2025-12-31 23:59:59'
 );
 
 // Deactivate voucher
-$response = $api->voucher()->updateVoucher(
+$response = $api->vouchers->updateVoucher(
     voucherId: 789,
     isActive: false
 );

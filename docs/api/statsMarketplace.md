@@ -60,7 +60,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get overall marketplace statistics
-$response = $api->marketplace()->statsMarketplace();
+$response = $api->marketplace->statsMarketplace();
 
 echo "Total Views: {$response->totalViews}\n";
 echo "Total Sales: {$response->totalSales}\n";
@@ -68,14 +68,14 @@ echo "Revenue: € {$response->totalRevenue}\n";
 echo "Conversion Rate: {$response->conversionRate}%\n";
 
 // Get statistics for specific entry
-$response = $api->marketplace()->statsMarketplace(
+$response = $api->marketplace->statsMarketplace(
     entryId: 123,
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );
 
 // Get statistics for date range
-$response = $api->marketplace()->statsMarketplace(
+$response = $api->marketplace->statsMarketplace(
     startDate: '2025-10-01',
     endDate: '2025-10-31'
 );

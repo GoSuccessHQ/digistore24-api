@@ -55,7 +55,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get all conversion tools for a product
-$response = $api->conversionTool()->listConversionTools(
+$response = $api->conversionTools->listConversionTools(
     productId: 12345
 );
 

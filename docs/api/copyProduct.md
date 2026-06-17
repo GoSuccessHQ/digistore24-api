@@ -52,7 +52,7 @@ $request = new CopyProductRequest(
 );
 
 try {
-    $response = $digistore24->products()->copy($request);
+    $response = $digistore24->products->copy($request);
     echo "Product copied with new ID: " . $response->productId;
 } catch (\Digistore24\Exception\ApiException $e) {
     echo "Error: " . $e->getMessage();
@@ -69,7 +69,7 @@ $request = new CopyProductRequest(
     nameDe: 'Aktualisierter Produktname 2024'
 );
 
-$response = $digistore24->products()->copy($request);
+$response = $digistore24->products->copy($request);
 echo "New product ID: " . $response->productId;
 ```
 
@@ -82,7 +82,7 @@ $request = new CopyProductRequest(
     nameIntern: 'product-different-type'
 );
 
-$response = $digistore24->products()->copy($request);
+$response = $digistore24->products->copy($request);
 echo "Product copied with new type: " . $response->productId;
 ```
 
@@ -98,7 +98,7 @@ $request = new CopyProductRequest(
     nameEs: 'Producto Internacional'
 );
 
-$response = $digistore24->products()->copy($request);
+$response = $digistore24->products->copy($request);
 echo "Multilingual product created: " . $response->productId;
 ```
 
@@ -113,7 +113,7 @@ $request = new CopyProductRequest(
     nameEn: 'Template Product'
 );
 
-$response = $digistore24->products()->copy($request);
+$response = $digistore24->products->copy($request);
 echo "Template created: " . $response->productId;
 ```
 
@@ -126,7 +126,7 @@ use Digistore24\Exception\ForbiddenException;
 use Digistore24\Exception\ApiException;
 
 try {
-    $response = $digistore24->products()->copy($request);
+    $response = $digistore24->products->copy($request);
     echo "Product copied successfully: " . $response->productId;
 } catch (NotFoundException $e) {
     // Source product not found

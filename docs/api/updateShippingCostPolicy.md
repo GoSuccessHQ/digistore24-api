@@ -48,7 +48,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update policy name
-$response = $api->shipping()->updateShippingCostPolicy(
+$response = $api->shipping->updateShippingCostPolicy(
     policyId: 789,
     name: 'Updated EU Standard Shipping'
 );
@@ -56,7 +56,7 @@ $response = $api->shipping()->updateShippingCostPolicy(
 echo "Policy updated: {$response->name}\n";
 
 // Update shipping cost
-$response = $api->shipping()->updateShippingCostPolicy(
+$response = $api->shipping->updateShippingCostPolicy(
     policyId: 789,
     cost: 6.99
 );
@@ -64,25 +64,25 @@ $response = $api->shipping()->updateShippingCostPolicy(
 echo "New cost: {$response->currency} {$response->cost}\n";
 
 // Update free shipping threshold
-$response = $api->shipping()->updateShippingCostPolicy(
+$response = $api->shipping->updateShippingCostPolicy(
     policyId: 789,
     freeShippingThreshold: 45.00
 );
 
 // Remove free shipping threshold
-$response = $api->shipping()->updateShippingCostPolicy(
+$response = $api->shipping->updateShippingCostPolicy(
     policyId: 789,
     freeShippingThreshold: 0
 );
 
 // Deactivate policy
-$response = $api->shipping()->updateShippingCostPolicy(
+$response = $api->shipping->updateShippingCostPolicy(
     policyId: 789,
     isActive: false
 );
 
 // Update multiple settings
-$response = $api->shipping()->updateShippingCostPolicy(
+$response = $api->shipping->updateShippingCostPolicy(
     policyId: 789,
     name: 'Premium EU Shipping',
     cost: 7.99,

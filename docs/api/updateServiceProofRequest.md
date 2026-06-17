@@ -43,7 +43,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update status to submitted
-$response = $api->serviceProof()->updateServiceProofRequest(
+$response = $api->serviceProofs->updateServiceProofRequest(
     requestId: 456,
     status: 'submitted'
 );
@@ -51,27 +51,27 @@ $response = $api->serviceProof()->updateServiceProofRequest(
 echo "Request {$response->requestId} updated to: {$response->status}\n";
 
 // Add notes
-$response = $api->serviceProof()->updateServiceProofRequest(
+$response = $api->serviceProofs->updateServiceProofRequest(
     requestId: 456,
     notes: 'Service proof documents uploaded and verified'
 );
 
 // Approve request
-$response = $api->serviceProof()->updateServiceProofRequest(
+$response = $api->serviceProofs->updateServiceProofRequest(
     requestId: 456,
     status: 'approved',
     notes: 'All documents verified and approved'
 );
 
 // Reject request
-$response = $api->serviceProof()->updateServiceProofRequest(
+$response = $api->serviceProofs->updateServiceProofRequest(
     requestId: 456,
     status: 'rejected',
     notes: 'Incomplete documentation, please resubmit'
 );
 
 // Update with document URL
-$response = $api->serviceProof()->updateServiceProofRequest(
+$response = $api->serviceProofs->updateServiceProofRequest(
     requestId: 456,
     status: 'submitted',
     documentUrl: 'https://example.com/docs/proof.pdf',

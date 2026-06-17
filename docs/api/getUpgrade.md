@@ -50,7 +50,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get upgrade details
-$response = $api->upgrade()->getUpgrade(
+$response = $api->upgrades->getUpgrade(
     upgradeId: 789
 );
 

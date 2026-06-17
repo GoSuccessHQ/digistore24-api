@@ -42,7 +42,7 @@ $config = new Configuration('TEMP-API-KEY');
 $api = new Digistore24($config);
 
 // Request new API key
-$response = $api->apiKey()->requestApiKey(
+$response = $api->apiKeys->requestApiKey(
     email: 'your-email@example.com',
     password: 'your-password',
     description: 'Production Server'

@@ -57,7 +57,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all invoices
-$response = $api->invoice()->listInvoices(
+$response = $api->invoices->listInvoices(
     limit: 50
 );
 
@@ -67,14 +67,14 @@ foreach ($response->invoices as $invoice) {
 }
 
 // Filter by date range
-$response = $api->invoice()->listInvoices(
+$response = $api->invoices->listInvoices(
     startDate: '2025-01-01',
     endDate: '2025-12-31',
     limit: 100
 );
 
 // Get invoices for specific buyer
-$response = $api->invoice()->listInvoices(
+$response = $api->invoices->listInvoices(
     buyerEmail: 'buyer@example.com'
 );
 ```

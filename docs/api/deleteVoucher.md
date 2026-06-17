@@ -41,7 +41,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Delete voucher by ID
-$response = $api->voucher()->deleteVoucher(
+$response = $api->vouchers->deleteVoucher(
     voucherId: 789
 );
 
@@ -50,7 +50,7 @@ if ($response->result === 'success') {
 }
 
 // Delete voucher by code
-$response = $api->voucher()->deleteVoucher(
+$response = $api->vouchers->deleteVoucher(
     code: 'EXPIRED2024'
 );
 ```

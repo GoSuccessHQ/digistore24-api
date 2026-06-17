@@ -46,7 +46,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Create new affiliate
-$response = $api->affiliate()->setAffiliateForEmail(
+$response = $api->affiliates->setAffiliateForEmail(
     email: 'newaffiliate@example.com',
     firstName: 'Jane',
     lastName: 'Smith',
@@ -57,7 +57,7 @@ echo "Affiliate created: {$response->affiliateId}\n";
 echo "Affiliate code: {$response->affiliateCode}\n";
 
 // Update existing affiliate
-$response = $api->affiliate()->setAffiliateForEmail(
+$response = $api->affiliates->setAffiliateForEmail(
     email: 'existing@example.com',
     isActive: false
 );

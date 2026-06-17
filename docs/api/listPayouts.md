@@ -73,7 +73,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all payouts
-$response = $api->payout()->listPayouts(
+$response = $api->payouts->listPayouts(
     limit: 50
 );
 
@@ -95,23 +95,23 @@ foreach ($response->payouts as $payout) {
 }
 
 // Filter by date range
-$response = $api->payout()->listPayouts(
+$response = $api->payouts->listPayouts(
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );
 
 // Filter by status
-$response = $api->payout()->listPayouts(
+$response = $api->payouts->listPayouts(
     status: 'paid'
 );
 
 // Get pending payouts
-$response = $api->payout()->listPayouts(
+$response = $api->payouts->listPayouts(
     status: 'pending'
 );
 
 // Pagination for large result sets
-$response = $api->payout()->listPayouts(
+$response = $api->payouts->listPayouts(
     limit: 20,
     offset: 0
 );

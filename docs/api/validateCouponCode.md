@@ -47,7 +47,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Validate coupon code
-$response = $api->conversionTool()->validateCouponCode(
+$response = $api->conversionTools->validateCouponCode(
     code: 'SUMMER2025',
     productId: 12345,
     cartAmount: 150.00

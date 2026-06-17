@@ -45,7 +45,7 @@ $request = new UpdatePurchaseRequest(
     unlockInvoices: true
 );
 
-$response = $digistore24->purchases()->update($request);
+$response = $digistore24->purchases->update($request);
 
 if ($response->wasModified()) {
     echo "Purchase updated successfully";
@@ -62,7 +62,7 @@ $request = new UpdatePurchaseRequest(
     nextPaymentAt: '2024-06-01 00:00:00' // Grant payment pause
 );
 
-$response = $digistore24->purchases()->update($request);
+$response = $digistore24->purchases->update($request);
 ```
 
 ## Important Notes

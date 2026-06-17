@@ -66,7 +66,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all service proof requests
-$response = $api->serviceProof()->listServiceProofRequests(
+$response = $api->serviceProofs->listServiceProofRequests(
     limit: 50
 );
 
@@ -81,19 +81,19 @@ foreach ($response->requests as $request) {
 }
 
 // Filter by pending status
-$response = $api->serviceProof()->listServiceProofRequests(
+$response = $api->serviceProofs->listServiceProofRequests(
     status: 'pending'
 );
 
 echo "Pending requests: {$response->total}\n";
 
 // Filter by product
-$response = $api->serviceProof()->listServiceProofRequests(
+$response = $api->serviceProofs->listServiceProofRequests(
     productId: 123
 );
 
 // Filter by date range
-$response = $api->serviceProof()->listServiceProofRequests(
+$response = $api->serviceProofs->listServiceProofRequests(
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );

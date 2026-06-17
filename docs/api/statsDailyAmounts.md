@@ -65,7 +65,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get daily amounts for current month
-$response = $api->statistics()->statsDailyAmounts(
+$response = $api->statistics->statsDailyAmounts(
     startDate: '2025-03-01',
     endDate: '2025-03-31'
 );
@@ -84,14 +84,14 @@ foreach ($response->dailyAmounts as $day) {
 }
 
 // Filter by product
-$response = $api->statistics()->statsDailyAmounts(
+$response = $api->statistics->statsDailyAmounts(
     productId: 123,
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );
 
 // Get USD statistics
-$response = $api->statistics()->statsDailyAmounts(
+$response = $api->statistics->statsDailyAmounts(
     startDate: '2025-03-01',
     endDate: '2025-03-31',
     currency: 'USD'

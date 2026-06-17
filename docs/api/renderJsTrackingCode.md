@@ -61,7 +61,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get tracking code for product
-$response = $api->tracking()->renderJsTrackingCode(
+$response = $api->tracking->renderJsTrackingCode(
     productId: 123
 );
 
@@ -69,7 +69,7 @@ echo "Tracking Code:\n";
 echo $response->trackingCode;
 
 // Get tracking code with purchase details
-$response = $api->tracking()->renderJsTrackingCode(
+$response = $api->tracking->renderJsTrackingCode(
     productId: 123,
     purchaseId: 'ABCD1234',
     amount: 99.00,

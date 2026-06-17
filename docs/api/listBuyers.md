@@ -57,7 +57,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all buyers
-$response = $api->buyer()->listBuyers(
+$response = $api->buyers->listBuyers(
     limit: 50,
     offset: 0
 );
@@ -67,13 +67,13 @@ foreach ($response->buyers as $buyer) {
 }
 
 // Search for specific buyers
-$response = $api->buyer()->listBuyers(
+$response = $api->buyers->listBuyers(
     search: 'john@example.com',
     limit: 10
 );
 
 // Filter by country and date
-$response = $api->buyer()->listBuyers(
+$response = $api->buyers->listBuyers(
     country: 'DE',
     createdAfter: '2025-01-01 00:00:00',
     limit: 100

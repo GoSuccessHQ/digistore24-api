@@ -43,7 +43,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Set affiliate by code
-$response = $api->affiliate()->setReferringAffiliate(
+$response = $api->affiliates->setReferringAffiliate(
     email: 'customer@example.com',
     affiliateCode: 'AFFILIATE123'
 );
@@ -51,7 +51,7 @@ $response = $api->affiliate()->setReferringAffiliate(
 echo "Affiliate set for {$response->email}\n";
 
 // Set affiliate by ID
-$response = $api->affiliate()->setReferringAffiliate(
+$response = $api->affiliates->setReferringAffiliate(
     email: 'customer@example.com',
     affiliateId: 789
 );

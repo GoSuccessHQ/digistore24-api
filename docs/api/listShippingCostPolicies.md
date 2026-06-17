@@ -71,7 +71,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all shipping policies
-$response = $api->shipping()->listShippingCostPolicies(
+$response = $api->shipping->listShippingCostPolicies(
     limit: 50
 );
 
@@ -85,22 +85,22 @@ foreach ($response->policies as $policy) {
 }
 
 // Filter by product
-$response = $api->shipping()->listShippingCostPolicies(
+$response = $api->shipping->listShippingCostPolicies(
     productId: 123
 );
 
 // Filter by country
-$response = $api->shipping()->listShippingCostPolicies(
+$response = $api->shipping->listShippingCostPolicies(
     countryCode: 'DE'
 );
 
 // Filter active policies only
-$response = $api->shipping()->listShippingCostPolicies(
+$response = $api->shipping->listShippingCostPolicies(
     isActive: true
 );
 
 // Combined filters
-$response = $api->shipping()->listShippingCostPolicies(
+$response = $api->shipping->listShippingCostPolicies(
     productId: 123,
     countryCode: 'US',
     isActive: true

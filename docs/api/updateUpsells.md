@@ -60,7 +60,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update upsells for product
-$response = $api->upsell()->updateUpsells(
+$response = $api->upsells->updateUpsells(
     productId: 123,
     upsells: [
         [
@@ -80,7 +80,7 @@ echo "Upsells updated for: {$response->productName}\n";
 echo "Total upsells: " . count($response->upsells) . "\n";
 
 // Add single upsell
-$response = $api->upsell()->updateUpsells(
+$response = $api->upsells->updateUpsells(
     productId: 123,
     upsells: [
         [
@@ -92,7 +92,7 @@ $response = $api->upsell()->updateUpsells(
 );
 
 // Deactivate specific upsell
-$response = $api->upsell()->updateUpsells(
+$response = $api->upsells->updateUpsells(
     productId: 123,
     upsells: [
         [
@@ -109,7 +109,7 @@ $response = $api->upsell()->updateUpsells(
 );
 
 // Reorder upsells
-$response = $api->upsell()->updateUpsells(
+$response = $api->upsells->updateUpsells(
     productId: 123,
     upsells: [
         [

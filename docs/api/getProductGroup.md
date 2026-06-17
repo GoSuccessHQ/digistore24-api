@@ -62,7 +62,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get product group details
-$response = $api->productGroup()->getProductGroup(
+$response = $api->productGroups->getProductGroup(
     productGroupId: 567
 );
 

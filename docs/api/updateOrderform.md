@@ -64,7 +64,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update order form name
-$response = $api->orderForm()->updateOrderform(
+$response = $api->orderForms->updateOrderform(
     orderformId: 456,
     name: 'Updated Order Form'
 );
@@ -73,26 +73,26 @@ echo "Order form updated successfully\n";
 echo "Name: {$response->name}\n";
 
 // Change design and language
-$response = $api->orderForm()->updateOrderform(
+$response = $api->orderForms->updateOrderform(
     orderformId: 456,
     design: 'minimal',
     language: 'de'
 );
 
 // Update payment methods
-$response = $api->orderForm()->updateOrderform(
+$response = $api->orderForms->updateOrderform(
     orderformId: 456,
     paymentMethods: ['paypal', 'sepa']
 );
 
 // Update redirect URL
-$response = $api->orderForm()->updateOrderform(
+$response = $api->orderForms->updateOrderform(
     orderformId: 456,
     redirectUrl: 'https://example.com/new-thank-you'
 );
 
 // Add custom fields
-$response = $api->orderForm()->updateOrderform(
+$response = $api->orderForms->updateOrderform(
     orderformId: 456,
     customFields: [
         [
@@ -109,13 +109,13 @@ $response = $api->orderForm()->updateOrderform(
 );
 
 // Deactivate order form
-$response = $api->orderForm()->updateOrderform(
+$response = $api->orderForms->updateOrderform(
     orderformId: 456,
     isActive: false
 );
 
 // Update multiple settings
-$response = $api->orderForm()->updateOrderform(
+$response = $api->orderForms->updateOrderform(
     orderformId: 456,
     name: 'Complete Update',
     design: 'modern',

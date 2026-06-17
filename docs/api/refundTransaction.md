@@ -45,7 +45,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Full refund
-$response = $api->transaction()->refundTransaction(
+$response = $api->transactions->refundTransaction(
     transactionId: 'TXN-12345'
 );
 
@@ -54,13 +54,13 @@ echo "Amount: {$response->currency} {$response->refundedAmount}\n";
 echo "Status: {$response->status}\n";
 
 // Full refund with reason
-$response = $api->transaction()->refundTransaction(
+$response = $api->transactions->refundTransaction(
     transactionId: 'TXN-12345',
     reason: 'Customer not satisfied'
 );
 
 // Partial refund
-$response = $api->transaction()->refundTransaction(
+$response = $api->transactions->refundTransaction(
     transactionId: 'TXN-12345',
     amount: 49.50,
     reason: 'Partial service provided'
@@ -70,7 +70,7 @@ echo "Partial refund of {$response->currency} {$response->refundedAmount}\n";
 
 // Example: Refund with error handling
 try {
-    $response = $api->transaction()->refundTransaction(
+    $response = $api->transactions->refundTransaction(
         transactionId: 'TXN-12345',
         reason: 'Duplicate payment'
     );

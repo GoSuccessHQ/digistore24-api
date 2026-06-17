@@ -42,7 +42,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Start rebilling with default next date
-$response = $api->rebilling()->startRebilling(
+$response = $api->rebilling->startRebilling(
     purchaseId: 'ABCD1234'
 );
 
@@ -51,7 +51,7 @@ echo "Next Rebill Date: {$response->nextRebillDate}\n";
 echo "Rebill Amount: {$response->currency} {$response->rebillAmount}\n";
 
 // Start with custom next rebill date
-$response = $api->rebilling()->startRebilling(
+$response = $api->rebilling->startRebilling(
     purchaseId: 'ABCD1234',
     nextRebillDate: '2025-04-15'
 );

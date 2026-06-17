@@ -46,7 +46,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update tracking information
-$response = $api->delivery()->updateDelivery(
+$response = $api->deliveries->updateDelivery(
     deliveryId: 123,
     trackingNumber: 'TRACK123456',
     carrier: 'DHL',
@@ -55,7 +55,7 @@ $response = $api->delivery()->updateDelivery(
 );
 
 // Mark as delivered
-$response = $api->delivery()->updateDelivery(
+$response = $api->deliveries->updateDelivery(
     deliveryId: 123,
     status: 'delivered',
     deliveredAt: '2025-10-17 14:30:00'

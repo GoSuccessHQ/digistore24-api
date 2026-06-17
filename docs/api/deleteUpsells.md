@@ -38,7 +38,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Delete all upsells for product
-$response = $api->upsell()->deleteUpsells(
+$response = $api->upsells->deleteUpsells(
     productId: 123
 );
 
@@ -50,7 +50,7 @@ if ($response->deleted) {
 // Example: Delete after confirmation
 try {
     // Get current upsells first
-    $current = $api->upsell()->getUpsells(productId: 123);
+    $current = $api->upsells->getUpsells(productId: 123);
     
     echo "About to delete {$current->totalUpsells} upsells\n";
     foreach ($current->upsells as $upsell) {
@@ -58,7 +58,7 @@ try {
     }
     
     // Proceed with deletion
-    $response = $api->upsell()->deleteUpsells(
+    $response = $api->upsells->deleteUpsells(
         productId: 123
     );
     

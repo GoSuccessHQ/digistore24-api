@@ -57,7 +57,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get top 10 affiliates by revenue
-$response = $api->statistics()->statsAffiliateToplist(
+$response = $api->statistics->statsAffiliateToplist(
     limit: 10,
     orderBy: 'revenue'
 );
@@ -69,7 +69,7 @@ foreach ($response->affiliates as $affiliate) {
 }
 
 // Get top performers for specific product
-$response = $api->statistics()->statsAffiliateToplist(
+$response = $api->statistics->statsAffiliateToplist(
     productId: 12345,
     startDate: '2025-01-01',
     endDate: '2025-12-31',
@@ -77,7 +77,7 @@ $response = $api->statistics()->statsAffiliateToplist(
 );
 
 // Get top sellers by number of sales
-$response = $api->statistics()->statsAffiliateToplist(
+$response = $api->statistics->statsAffiliateToplist(
     orderBy: 'sales',
     limit: 50
 );

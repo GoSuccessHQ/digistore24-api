@@ -57,7 +57,7 @@ $request = new IpnSetupRequest(
     name: 'My Platform',
     productIds: 'all'
 );
-$response = $api->ipn()->setup($request);
+$response = $api->ipn->setup($request);
 
 // Setup IPN with custom configuration
 $request = new IpnSetupRequest(
@@ -78,7 +78,7 @@ $request = new IpnSetupRequest(
     shaPassphrase: 'random',
     newsletterSendPolicy: IpnNewsletterSendPolicy::SEND_IF_OPTIN
 );
-$response = $api->ipn()->setup($request);
+$response = $api->ipn->setup($request);
 
 echo "IPN configured for: {$response->name}";
 ```

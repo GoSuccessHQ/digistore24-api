@@ -44,7 +44,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Validate by affiliate code
-$response = $api->affiliate()->validateAffiliate(
+$response = $api->affiliates->validateAffiliate(
     affiliateCode: 'AFFILIATE123'
 );
 
@@ -55,7 +55,7 @@ if ($response->valid && $response->isActive) {
 }
 
 // Validate by affiliate ID
-$response = $api->affiliate()->validateAffiliate(
+$response = $api->affiliates->validateAffiliate(
     affiliateId: 789
 );
 ```

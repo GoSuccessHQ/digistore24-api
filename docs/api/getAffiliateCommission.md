@@ -78,7 +78,7 @@ $request = new GetAffiliateCommissionRequest(
     affiliateId: 'GoSuccess',
     productIds: 'all'
 );
-$response = $api->affiliate()->getCommission($request);
+$response = $api->affiliates->getCommission($request);
 
 // Access response data
 echo "Affiliate: {$response->affiliateName} (ID: {$response->affiliateId})\n";
@@ -96,7 +96,7 @@ $request = new GetAffiliateCommissionRequest(
     affiliateId: 'GoSuccess',
     productIds: '406040,406042,406043'
 );
-$response = $api->affiliate()->getCommission($request);
+$response = $api->affiliates->getCommission($request);
 ```
 
 ## Error Responses

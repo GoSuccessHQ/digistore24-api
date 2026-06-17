@@ -70,8 +70,9 @@ The customer's stored payment method is automatically charged for the new order.
 ### Example Request
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\CreateBillingOnDemandRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -83,17 +84,18 @@ $request = new CreateBillingOnDemandRequest(
     productId: '12345'
 );
 
-$response = $client->billing()->createOnDemand($request);
+$response = $client->billing->createOnDemand($request);
 
-echo "Created purchase: " . $response->getCreatedPurchaseId() . "\n";
-echo "Payment status: " . $response->getPaymentStatusMsg() . "\n";
+echo "Created purchase: " . $response->createdPurchaseId . "\n";
+echo "Payment status: " . $response->paymentStatusMsg . "\n";
 ```
 
 ### Advanced Example with Payment Plan
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\CreateBillingOnDemandRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -120,7 +122,7 @@ $request = new CreateBillingOnDemandRequest(
     ]
 );
 
-$response = $client->billing()->createOnDemand($request);
+$response = $client->billing->createOnDemand($request);
 ```
 
 ## Response
@@ -139,15 +141,15 @@ The response contains information about the created order:
 
 ```php
 // Get created purchase ID
-$purchaseId = $response->getCreatedPurchaseId();
+$purchaseId = $response->createdPurchaseId;
 
 // Get payment status
-$status = $response->getPaymentStatus();
-$statusMsg = $response->getPaymentStatusMsg();
+$status = $response->paymentStatus;
+$statusMsg = $response->paymentStatusMsg;
 
 // Get billing status
-$billingStatus = $response->getBillingStatus();
-$billingMsg = $response->getBillingStatusMsg();
+$billingStatus = $response->billingStatus;
+$billingMsg = $response->billingStatusMsg;
 
 // Check if successful
 if ($response->wasSuccessful()) {
@@ -174,8 +176,9 @@ if ($response->wasSuccessful()) {
 Offer additional products to customers who already purchased:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\CreateBillingOnDemandRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -191,13 +194,13 @@ $request = new CreateBillingOnDemandRequest(
 );
 
 try {
-    $response = $client->billing()->createOnDemand($request);
+    $response = $client->billing->createOnDemand($request);
     
     if ($response->wasSuccessful()) {
-        echo "Upsell successful! New purchase: " . $response->getCreatedPurchaseId();
+        echo "Upsell successful! New purchase: " . $response->createdPurchaseId;
         // Send confirmation email, grant access, etc.
     } else {
-        echo "Billing status: " . $response->getBillingStatusMsg();
+        echo "Billing status: " . $response->billingStatusMsg;
     }
 } catch (\Exception $e) {
     echo "Upsell failed: " . $e->getMessage();
@@ -209,8 +212,9 @@ try {
 Create recurring billing for a one-time purchase:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\CreateBillingOnDemandRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -233,7 +237,7 @@ $request = new CreateBillingOnDemandRequest(
     ]
 );
 
-$response = $client->billing()->createOnDemand($request);
+$response = $client->billing->createOnDemand($request);
 ```
 
 ### 3. Add-on Products
@@ -241,8 +245,9 @@ $response = $client->billing()->createOnDemand($request);
 Bill for additional products with main product:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\CreateBillingOnDemandRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -267,8 +272,8 @@ $request = new CreateBillingOnDemandRequest(
     ]
 );
 
-$response = $client->billing()->createOnDemand($request);
-echo "Total order created: " . $response->getCreatedPurchaseId();
+$response = $client->billing->createOnDemand($request);
+echo "Total order created: " . $response->createdPurchaseId;
 ```
 
 ### 4. Automated Service Billing
@@ -276,8 +281,9 @@ echo "Total order created: " . $response->getCreatedPurchaseId();
 Automatically bill for usage-based services:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\CreateBillingOnDemandRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -304,7 +310,7 @@ $request = new CreateBillingOnDemandRequest(
     ]
 );
 
-$response = $client->billing()->createOnDemand($request);
+$response = $client->billing->createOnDemand($request);
 ```
 
 ### 5. Voucher/Discount Application
@@ -312,8 +318,9 @@ $response = $client->billing()->createOnDemand($request);
 Apply vouchers to on-demand billing:
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\CreateBillingOnDemandRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -330,16 +337,17 @@ $request = new CreateBillingOnDemandRequest(
     ]
 );
 
-$response = $client->billing()->createOnDemand($request);
+$response = $client->billing->createOnDemand($request);
 ```
 
 ## Error Handling
 
 ```php
-use GoSuccess\Digistore24\Digistore24;
-use GoSuccess\Digistore24\Request\Billing\CreateBillingOnDemandRequest;
-use GoSuccess\Digistore24\Exception\ForbiddenException;
-use GoSuccess\Digistore24\Exception\ApiException;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Billing\CreateBillingOnDemandRequest;
+use GoSuccess\Digistore24\Api\Exception\ForbiddenException;
+use GoSuccess\Digistore24\Api\Exception\ApiException;
 
 // Initialize API client
 $config = new Configuration('YOUR-API-KEY');
@@ -351,14 +359,14 @@ try {
         productId: '55555'
     );
     
-    $response = $client->billing()->createOnDemand($request);
+    $response = $client->billing->createOnDemand($request);
     
     if ($response->wasSuccessful()) {
         echo "✓ Billing successful!\n";
-        echo "Purchase ID: " . $response->getCreatedPurchaseId() . "\n";
+        echo "Purchase ID: " . $response->createdPurchaseId . "\n";
     } else {
         echo "⚠ Billing incomplete\n";
-        echo "Status: " . $response->getBillingStatusMsg() . "\n";
+        echo "Status: " . $response->billingStatusMsg . "\n";
     }
     
 } catch (ForbiddenException $e) {

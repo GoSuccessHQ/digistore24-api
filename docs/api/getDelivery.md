@@ -83,7 +83,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get delivery details
-$response = $api->delivery()->getDelivery(
+$response = $api->deliveries->getDelivery(
     deliveryId: 3634
 );
 
@@ -106,7 +106,7 @@ foreach ($delivery->tracking as $track) {
 }
 
 // Optionally set delivery status to "in progress"
-$response = $api->delivery()->getDelivery(
+$response = $api->deliveries->getDelivery(
     deliveryId: 3634,
     setInProgress: true
 );

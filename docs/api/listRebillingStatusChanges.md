@@ -70,7 +70,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all status changes for purchase
-$response = $api->rebilling()->listRebillingStatusChanges(
+$response = $api->rebilling->listRebillingStatusChanges(
     purchaseId: 'ABCD1234'
 );
 
@@ -85,14 +85,14 @@ foreach ($response->changes as $change) {
 }
 
 // Filter by date range
-$response = $api->rebilling()->listRebillingStatusChanges(
+$response = $api->rebilling->listRebillingStatusChanges(
     purchaseId: 'ABCD1234',
     startDate: '2025-01-01',
     endDate: '2025-12-31'
 );
 
 // Pagination
-$response = $api->rebilling()->listRebillingStatusChanges(
+$response = $api->rebilling->listRebillingStatusChanges(
     purchaseId: 'ABCD1234',
     limit: 20,
     offset: 0

@@ -62,7 +62,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get all global settings
-$response = $api->system()->getGlobalSettings();
+$response = $api->system->getGlobalSettings();
 
 // List available product types
 foreach ($response->productTypes as $type) {

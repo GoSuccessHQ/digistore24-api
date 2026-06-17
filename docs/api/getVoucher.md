@@ -52,7 +52,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get voucher by code
-$response = $api->voucher()->getVoucher(
+$response = $api->vouchers->getVoucher(
     code: 'SUMMER2025'
 );
 
@@ -61,7 +61,7 @@ echo "Discount: {$response->discountValue}%";
 echo "Uses: {$response->uses}/{$response->maxUses}";
 
 // Get voucher by ID
-$response = $api->voucher()->getVoucher(
+$response = $api->vouchers->getVoucher(
     voucherId: 789
 );
 

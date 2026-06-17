@@ -38,7 +38,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Delete shipping policy
-$response = $api->shipping()->deleteShippingCostPolicy(
+$response = $api->shipping->deleteShippingCostPolicy(
     policyId: 789
 );
 
@@ -50,14 +50,14 @@ if ($response->deleted) {
 // Example: Delete after confirmation
 try {
     // Get policy details first
-    $policy = $api->shipping()->getShippingCostPolicy(policyId: 789);
+    $policy = $api->shipping->getShippingCostPolicy(policyId: 789);
     
     echo "About to delete: {$policy->name}\n";
     echo "Country: {$policy->countryName}\n";
     echo "Orders using this policy: {$policy->ordersCount}\n";
     
     // Proceed with deletion
-    $response = $api->shipping()->deleteShippingCostPolicy(
+    $response = $api->shipping->deleteShippingCostPolicy(
         policyId: 789
     );
     

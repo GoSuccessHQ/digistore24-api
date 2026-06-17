@@ -41,7 +41,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Stop rebilling without reason
-$response = $api->rebilling()->stopRebilling(
+$response = $api->rebilling->stopRebilling(
     purchaseId: 'ABCD1234'
 );
 
@@ -50,7 +50,7 @@ echo "Stopped at: {$response->stoppedAt}\n";
 echo "Access until: {$response->accessUntil}\n";
 
 // Stop with reason
-$response = $api->rebilling()->stopRebilling(
+$response = $api->rebilling->stopRebilling(
     purchaseId: 'ABCD1234',
     reason: 'Customer cancellation'
 );
@@ -58,7 +58,7 @@ $response = $api->rebilling()->stopRebilling(
 echo "Subscription cancelled: {$response->reason}\n";
 
 // Stop due to payment failure
-$response = $api->rebilling()->stopRebilling(
+$response = $api->rebilling->stopRebilling(
     purchaseId: 'ABCD1234',
     reason: 'payment_failed'
 );

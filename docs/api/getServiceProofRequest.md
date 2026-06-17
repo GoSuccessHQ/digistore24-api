@@ -51,7 +51,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Get service proof request details
-$response = $api->serviceProof()->getServiceProofRequest(
+$response = $api->serviceProofs->getServiceProofRequest(
     requestId: 456
 );
 

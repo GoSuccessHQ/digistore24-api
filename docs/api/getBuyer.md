@@ -86,7 +86,7 @@ $api = new Digistore24($config);
 
 // Get buyer by ID
 $request = new GetBuyerRequest(buyerId: '18141656');
-$response = $api->buyer()->get($request);
+$response = $api->buyers->get($request);
 
 // Access buyer data
 $buyer = $response->buyer;
@@ -98,7 +98,7 @@ echo "Created: {$buyer->createdAt?->format('Y-m-d H:i:s')}\n";
 
 // Get buyer by email
 $request = new GetBuyerRequest(buyerId: 'paul@gosuccess.io');
-$response = $api->buyer()->get($request);
+$response = $api->buyers->get($request);
 ```
 
 ## Error Responses

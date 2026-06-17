@@ -63,7 +63,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Create basic order form
-$response = $api->orderForm()->createOrderform(
+$response = $api->orderForms->createOrderform(
     productId: 123,
     name: 'Standard Order Form'
 );
@@ -72,7 +72,7 @@ echo "Order Form ID: {$response->orderformId}\n";
 echo "URL: {$response->url}\n";
 
 // Create advanced order form with custom settings
-$response = $api->orderForm()->createOrderform(
+$response = $api->orderForms->createOrderform(
     productId: 123,
     name: 'Premium Order Form',
     design: 'modern',
@@ -97,7 +97,7 @@ $response = $api->orderForm()->createOrderform(
 );
 
 // Create order form with specific payment methods
-$response = $api->orderForm()->createOrderform(
+$response = $api->orderForms->createOrderform(
     productId: 123,
     name: 'PayPal Only Form',
     paymentMethods: ['paypal']

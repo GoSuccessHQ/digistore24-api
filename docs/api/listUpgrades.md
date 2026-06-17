@@ -73,7 +73,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all upgrades
-$response = $api->upgrade()->listUpgrades(
+$response = $api->upgrades->listUpgrades(
     limit: 50
 );
 
@@ -88,22 +88,22 @@ foreach ($response->upgrades as $upgrade) {
 }
 
 // Filter by source product
-$response = $api->upgrade()->listUpgrades(
+$response = $api->upgrades->listUpgrades(
     fromProductId: 123
 );
 
 // Filter by target product
-$response = $api->upgrade()->listUpgrades(
+$response = $api->upgrades->listUpgrades(
     toProductId: 124
 );
 
 // Filter active upgrades only
-$response = $api->upgrade()->listUpgrades(
+$response = $api->upgrades->listUpgrades(
     isActive: true
 );
 
 // Pagination
-$response = $api->upgrade()->listUpgrades(
+$response = $api->upgrades->listUpgrades(
     limit: 20,
     offset: 0
 );

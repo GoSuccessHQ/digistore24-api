@@ -46,7 +46,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // Update group name
-$response = $api->productGroup()->updateProductGroup(
+$response = $api->productGroups->updateProductGroup(
     productGroupId: 567,
     name: 'Updated Premium Bundle'
 );
@@ -54,13 +54,13 @@ $response = $api->productGroup()->updateProductGroup(
 echo "Group updated: {$response->name}\n";
 
 // Update description
-$response = $api->productGroup()->updateProductGroup(
+$response = $api->productGroups->updateProductGroup(
     productGroupId: 567,
     description: 'Complete collection of all premium courses'
 );
 
 // Add/update products (replaces existing list)
-$response = $api->productGroup()->updateProductGroup(
+$response = $api->productGroups->updateProductGroup(
     productGroupId: 567,
     productIds: [123, 124, 125, 126]
 );
@@ -68,7 +68,7 @@ $response = $api->productGroup()->updateProductGroup(
 echo "Group now has {$response->productCount} products\n";
 
 // Deactivate group
-$response = $api->productGroup()->updateProductGroup(
+$response = $api->productGroups->updateProductGroup(
     productGroupId: 567,
     isActive: false
 );
@@ -78,7 +78,7 @@ if (!$response->isActive) {
 }
 
 // Update multiple settings
-$response = $api->productGroup()->updateProductGroup(
+$response = $api->productGroups->updateProductGroup(
     productGroupId: 567,
     name: 'Complete Premium Bundle',
     description: 'Everything you need to succeed',

@@ -39,7 +39,7 @@ $request = new RefundPurchaseRequest(
     purchaseId: 'ABCD-1234-EFGH'
 );
 
-$response = $digistore24->purchases()->refund($request);
+$response = $digistore24->purchases->refund($request);
 
 if ($response->wasSuccessful()) {
     echo "Refund processed successfully";
@@ -57,7 +57,7 @@ $request = new RefundPurchaseRequest(
     force: true
 );
 
-$response = $digistore24->purchases()->refund($request);
+$response = $digistore24->purchases->refund($request);
 ```
 
 ## Backdated Refund
@@ -69,7 +69,7 @@ $request = new RefundPurchaseRequest(
     requestDate: '2024-01-15'
 );
 
-$response = $digistore24->purchases()->refund($request);
+$response = $digistore24->purchases->refund($request);
 ```
 
 ## Important Notes

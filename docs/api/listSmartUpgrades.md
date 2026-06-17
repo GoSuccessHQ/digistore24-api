@@ -71,7 +71,7 @@ $config = new Configuration('YOUR-API-KEY');
 $api = new Digistore24($config);
 
 // List all smart upgrades
-$response = $api->smartUpgrade()->listSmartUpgrades(
+$response = $api->smartUpgrades->listSmartUpgrades(
     limit: 50
 );
 
@@ -85,17 +85,17 @@ foreach ($response->smartupgrades as $upgrade) {
 }
 
 // Filter by source product
-$response = $api->smartUpgrade()->listSmartUpgrades(
+$response = $api->smartUpgrades->listSmartUpgrades(
     fromProductId: 123
 );
 
 // Filter by target product
-$response = $api->smartUpgrade()->listSmartUpgrades(
+$response = $api->smartUpgrades->listSmartUpgrades(
     toProductId: 124
 );
 
 // Filter active upgrades only
-$response = $api->smartUpgrade()->listSmartUpgrades(
+$response = $api->smartUpgrades->listSmartUpgrades(
     isActive: true
 );
 ```

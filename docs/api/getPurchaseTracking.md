@@ -47,7 +47,7 @@ $request = new GetPurchaseTrackingRequest(
     purchaseId: 'ABCD-1234-EFGH'
 );
 
-$response = $digistore24->purchases()->getTracking($request);
+$response = $digistore24->purchases->getTracking($request);
 
 foreach ($response->tracking as $purchaseId => $tracking) {
     echo "Purchase: {$purchaseId}\n";
@@ -64,7 +64,7 @@ $request = new GetPurchaseTrackingRequest(
     purchaseId: 'ABCD-1234,WXYZ-5678,IJKL-9012'
 );
 
-$response = $digistore24->purchases()->getTracking($request);
+$response = $digistore24->purchases->getTracking($request);
 echo "Retrieved tracking for " . count($response->tracking) . " purchases";
 ```
 
