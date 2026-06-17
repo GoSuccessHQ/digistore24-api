@@ -21,10 +21,7 @@ final class GetPurchaseTrackingResponse extends AbstractResponse
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
-        $tracking = $data['data'] ?? [];
-        if (! is_array($tracking)) {
-            $tracking = [];
-        }
+        $tracking = self::extractInnerData($data);
         /** @var array<string, mixed> $validatedTracking */
         $validatedTracking = $tracking;
 

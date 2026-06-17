@@ -21,10 +21,7 @@ final class GetOrderformResponse extends AbstractResponse
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
-        $responseData = $data['data'] ?? [];
-        if (! is_array($responseData)) {
-            $responseData = [];
-        }
+        $responseData = self::extractInnerData($data);
         /** @var array<string, mixed> $validatedData */
         $validatedData = $responseData;
 

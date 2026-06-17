@@ -26,10 +26,7 @@ final class RefundPurchaseResponse extends AbstractResponse
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
-        $refundData = $data['data'] ?? [];
-        if (! is_array($refundData)) {
-            $refundData = [];
-        }
+        $refundData = self::extractInnerData($data);
         /** @var array<string, mixed> $validatedData */
         $validatedData = $refundData;
 
