@@ -33,7 +33,7 @@ final class GetPurchaseResponse extends AbstractResponse
 
     public string $currency = 'EUR';
 
-    public \DateTimeInterface $createdAt = new \DateTimeImmutable();
+    public \DateTimeInterface $createdAt;
 
     /** @var array<string, mixed> */
     public array $additionalData = [];

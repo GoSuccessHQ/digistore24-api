@@ -26,7 +26,7 @@ final class ValidateEticketResponse extends AbstractResponse
 
     public string $buyerName = '';
 
-    public \DateTimeInterface $validatedAt = new \DateTimeImmutable();
+    public \DateTimeInterface $validatedAt;
 
     public bool $wasAlreadyValidated = false;
 
