@@ -25,22 +25,21 @@ $request = new GetImageRequest(imageId: 'IMG12345');
 
 $response = $ds24->images->get($request);
 
-echo $response->name;      // e.g. "Product Main Image"
-echo $response->imageUrl;  // e.g. "https://www.digistore24.com/images/IMG12345.jpg"
-echo $response->usageType; // e.g. "product"
+echo $response->id;    // e.g. "IMG12345"
+echo $response->url;   // CDN URL to access the image
+echo $response->type;  // e.g. "product"
 ```
 
 ## Response
 
-`GetImageResponse` exposes typed public properties:
+`GetImageResponse` exposes typed public properties (the image details are returned under the `image` wrapper):
 
 - `result` (string) — Result status returned by the API.
-- `imageId` (string) — Image ID.
-- `imageUrl` (string) — URL to access the image.
-- `name` (string) — Image name.
-- `usageType` (?string) — Purpose of the image, or `null`.
-- `altTag` (?string) — Alternative text, or `null`.
-- `createdAt` (?\DateTimeInterface) — Creation timestamp, or `null`.
+- `id` (?string) — Image ID.
+- `url` (?string) — URL to access the image.
+- `type` (?string) — Type of image.
+- `properties` (array<string, mixed>) — Additional image properties (free-form map).
+- `data` (array) — The complete image payload, accessible by key.
 
 ## Error Handling
 

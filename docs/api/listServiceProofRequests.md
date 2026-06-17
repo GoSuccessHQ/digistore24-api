@@ -1,6 +1,6 @@
 # listServiceProofRequests
 
-Retrieves a paginated list of service proof requests.
+Retrieves a list of service proof requests, optionally filtered by a search object.
 
 ## Endpoint
 
@@ -10,10 +10,14 @@ Retrieves a paginated list of service proof requests.
 
 ## Parameters
 
-All constructor arguments are optional:
+The constructor argument is optional:
 
-- `limit` (int, optional) — Maximum number of results to return.
-- `offset` (int, optional) — Number of results to skip for pagination.
+- `search` (`ServiceProofRequestSearchData`, optional) — Search criteria. Settable properties:
+  - `purchaseId` (?string) — Filter by purchase ID.
+  - `productId` (?int) — Filter by product ID.
+  - `deliveryType` (?`DeliveryType`) — Filter by delivery type.
+  - `approvalStatus` (?`ServiceProofApprovalStatus`) — Filter by approval status (`new`, `pending`, `approved`, `rejected`).
+  - `requestStatus` (?`ServiceProofRequestStatus`) — Filter by request status (`pending`, `proof_provided`, `exec_refund`).
 
 When called without a request, the resource builds an empty `ListServiceProofRequestsRequest` for you.
 
@@ -22,21 +26,29 @@ When called without a request, the resource builds an empty `ListServiceProofReq
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\DTO\ServiceProofRequestSearchData;
+use GoSuccess\Digistore24\Api\Enum\ServiceProofRequestStatus;
 use GoSuccess\Digistore24\Api\Request\ServiceProof\ListServiceProofRequestsRequest;
 
 $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List with default paging
+// List all
 $response = $ds24->serviceProofs->list();
 
-// Or with explicit pagination
-$request = new ListServiceProofRequestsRequest(limit: 50, offset: 0);
+// Or filtered
+$request = new ListServiceProofRequestsRequest(
+    new ServiceProofRequestSearchData(
+        purchaseId: 'ABC123',
+        requestStatus: ServiceProofRequestStatus::PENDING,
+    ),
+);
 $response = $ds24->serviceProofs->list($request);
 
 echo $response->result; // e.g. "success"
 
 foreach ($response->serviceProofRequests as $proof) {
-    // each $proof is an associative array of request fields
+    // each $proof is a ServiceProofRequestData DTO
+    echo $proof->id, ' ', $proof->requestStatus, PHP_EOL;
 }
 ```
 
@@ -45,7 +57,7 @@ foreach ($response->serviceProofRequests as $proof) {
 `ListServiceProofRequestsResponse` exposes typed public properties:
 
 - `result` (string) — Result status returned by the API.
-- `serviceProofRequests` (array) — The list of service proof requests. Read as `$response->serviceProofRequests`.
+- `serviceProofRequests` (`ServiceProofRequestData[]`) — The list of service proof requests, each a typed DTO.
 
 ## Error Handling
 

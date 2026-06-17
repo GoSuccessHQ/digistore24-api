@@ -56,8 +56,8 @@ $request = new CreateShippingCostPolicyRequest(policy: $policy);
 
 $response = $ds24->shipping->create($request);
 
-echo $response->result;                     // e.g. "success"
-echo $response->getShippingCostPolicyId();  // e.g. "112233"
+echo $response->result;     // e.g. "success"
+echo $response->policyId;   // e.g. 112233
 ```
 
 ## Response
@@ -65,8 +65,8 @@ echo $response->getShippingCostPolicyId();  // e.g. "112233"
 `CreateShippingCostPolicyResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `data` (array<string, mixed>) — Raw response payload. Read individual values by key, e.g. `$response->data['shipping_cost_policy_id']`.
-- `getShippingCostPolicyId(): ?string` — Convenience accessor returning the ID of the newly created policy.
+- `policyId` (?int) — ID of the newly created shipping cost policy (spec key: `policy_id`).
+- `data` (array<string, mixed>) — Raw response payload. Read individual values by key, e.g. `$response->data['policy_id']`.
 
 ## Error Handling
 

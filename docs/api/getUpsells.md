@@ -39,7 +39,10 @@ foreach ($response->upsells as $key => $value) {
 `GetUpsellsResponse` exposes typed public properties:
 
 - `result` (string) — Result status returned by the API.
-- `upsells` (array) — The upsell configuration for the product. Read as `$response->upsells['key']`.
+- `productId` (?int) — ID of the initial product the upsell tree belongs to.
+- `upsells` (array) — The upsell tree mapping position codes (`y`, `yn`, `yy`, ...) to product IDs. Read as `$response->upsells['y']`.
+- `productOptions` (array) — Additional product options keyed by product ID.
+- `data` (array) — The complete data payload returned by the API.
 
 ## Error Handling
 

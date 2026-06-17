@@ -23,8 +23,16 @@ The `paymentPlan` argument wraps a `PaymentPlanFullData` DTO with the following 
 - `otherAmounts` (float, optional) — Amount for follow-up payments (>= 0).
 - `otherBillingIntervals` (string, optional) — Interval for follow-up payments. Examples: `1_week`, `1_month`, `3_month`, `6_month`, `12_month`.
 - `numberOfInstallments` (int, optional) — Number of installments (>= 0). `0` = subscription (indefinite), `1` = single payment, `>= 2` = installment plan.
-- `isActive` (bool, optional) — Whether the payment plan is active.
+- `testInterval` (string, optional) — Test/trial period interval (e.g. `7_day`).
+- `startPayplanAt` (string, optional) — Fixed start date for the payment plan in `YYYY-MM-DD` format.
+- `isActive` (bool, optional) — Whether the payment plan is active. Sent as `Y`/`N`.
+- `position` (int, optional) — Display position of the payment plan (>= 0).
 - `cancelPolicy` (string, optional) — Cancellation policy (minimum term) in the format `{minimum_term}m_{notice_period}m`. Allowed: `6m_0`, `6m_6m`, `6m_12m`, `12m_0`, `12m_3m`, `12m_6m`, `12m_12m`, `24m_0`, `24m_6m`, `24m_12m`.
+- `isForSale` (string, optional) — Sale type: `all`, `new`, `upgrade`, or a comma-separated combination.
+- `isSwitchingAllowed` (bool, optional) — Whether buyers may switch to/from this plan. Sent as `Y`/`N`.
+- `canBuyerTerminateInstallments` (string, optional) — Termination rules. Allowed: `Y`, `N`, `N_subscription`.
+- `isDiscountEnabled` (bool, optional) — Whether quantity discounts are enabled. Sent as `Y`/`N`.
+- `discountUnitPrices` (array<int, `PaymentPlanDiscountTierData`>, optional) — Quantity-based pricing tiers. Each `PaymentPlanDiscountTierData` exposes `fromQuantity` (int), `unitPrice1st` (float) and `unitPriceOth` (float), serialized as `from_quantity`, `unit_price_1st`, `unit_price_oth`.
 
 ## Usage Example
 
@@ -52,8 +60,9 @@ $request = new CreatePaymentplanRequest(
 
 $response = $ds24->paymentPlans->create($request);
 
-echo $response->result;              // e.g. "success"
-echo $response->getPaymentplanId();  // e.g. "789"
+echo $response->result;          // e.g. "success"
+echo $response->paymentplanId;   // e.g. 789
+echo $response->renderedTexts?->headline;
 ```
 
 ## Response
@@ -61,8 +70,11 @@ echo $response->getPaymentplanId();  // e.g. "789"
 `CreatePaymentplanResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
+- `paymentplanId` (?int) — ID of the newly created payment plan (spec key: `paymentplan_id`).
+- `renderedTexts` (?`PaymentPlanRenderedTextsData`) — Rendered order-form texts with `headline`, `description` and `footnote`.
+- `plan` (array<string, mixed>) — The full payment plan object as returned by the API.
 - `data` (array<string, mixed>) — Raw response payload. Read individual values by key, e.g. `$response->data['paymentplan_id']`.
-- `getPaymentplanId(): ?string` — Convenience accessor returning the ID of the newly created payment plan.
+- `getPaymentplanId(): ?string` — Convenience accessor returning the ID as a string for backward compatibility.
 
 ## Error Handling
 

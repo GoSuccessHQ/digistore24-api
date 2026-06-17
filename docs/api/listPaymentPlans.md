@@ -1,6 +1,6 @@
 # listPaymentPlans
 
-Retrieves a list of all configured payment plans.
+Retrieves the list of payment plans configured for a product.
 
 ## Endpoint
 
@@ -10,7 +10,9 @@ Retrieves a list of all configured payment plans.
 
 ## Parameters
 
-This endpoint takes no parameters. The request can be omitted entirely.
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `product_id` | int | Yes | The Digistore24 product ID whose payment plans to list. |
 
 ## Usage Example
 
@@ -20,12 +22,17 @@ use GoSuccess\Digistore24\Api\Client\Configuration;
 
 $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-$response = $ds24->paymentPlans->list();
+// Pass the product ID directly.
+$response = $ds24->paymentPlans->list(12345);
 
 echo $response->result; // e.g. "success"
 
 foreach ($response->paymentPlans as $plan) {
-    echo $plan['paymentplan_id'];
+    echo $plan->id;          // payment plan ID
+    echo $plan->productId;   // associated product ID
+    echo $plan->name;        // payment plan name
+    echo $plan->createdAt?->format('Y-m-d H:i:s');
+    echo $plan->modifiedAt?->format('Y-m-d H:i:s');
 }
 ```
 
@@ -34,7 +41,7 @@ You may also pass an explicit `ListPaymentPlansRequest`:
 ```php
 use GoSuccess\Digistore24\Api\Request\PaymentPlan\ListPaymentPlansRequest;
 
-$response = $ds24->paymentPlans->list(new ListPaymentPlansRequest());
+$response = $ds24->paymentPlans->list(new ListPaymentPlansRequest(productId: 12345));
 ```
 
 ## Response
@@ -42,13 +49,21 @@ $response = $ds24->paymentPlans->list(new ListPaymentPlansRequest());
 `ListPaymentPlansResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `paymentPlans` (array<string, mixed>) — List of payment plans. Iterate and read each entry by key, e.g. `$plan['paymentplan_id']`.
+- `paymentPlans` (array<int, PaymentPlanListItemData>) — List of payment plans as typed DTOs.
+
+Each `PaymentPlanListItemData` exposes:
+
+- `id` (?int) — Payment plan ID.
+- `productId` (?int) — Associated product ID.
+- `name` (?string) — Payment plan name.
+- `createdAt` (?DateTimeImmutable) — Creation timestamp.
+- `modifiedAt` (?DateTimeImmutable) — Last modification timestamp.
 
 ## Error Handling
 
 ```php
 try {
-    $response = $ds24->paymentPlans->list();
+    $response = $ds24->paymentPlans->list(12345);
 } catch (ValidationException $e) {
     // request failed local validation; $e->getErrors() lists the problems
 } catch (ApiException $e) {

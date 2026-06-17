@@ -23,7 +23,8 @@ $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 $response = $ds24->upgrades->list();
 
 foreach ($response->upgrades as $upgrade) {
-    echo $upgrade['name'] ?? '';
+    echo $upgrade->name;          // e.g. "Basic to Premium"
+    echo $upgrade->toProductId;   // e.g. 124
 }
 ```
 
@@ -32,7 +33,7 @@ foreach ($response->upgrades as $upgrade) {
 `ListUpgradesResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `upgrades` (array) — List of upgrade entries. Each entry is an associative array; read values via keys, e.g. `$upgrade['upgrade_id']`, `$upgrade['name']`.
+- `upgrades` (array of `UpgradeItemData`) — The configured upgrade paths. Each `UpgradeItemData` exposes: `id` (?int), `name` (?string), `upgradeUrl` (?string), `toProductId` (?int), `isActive` (?bool), `authkey` (?string), `fallbackProductId` (?int), `buyerReadonlyKeys` (?string), and `upgradeTypes` (array<string, string>).
 
 ## Error Handling
 

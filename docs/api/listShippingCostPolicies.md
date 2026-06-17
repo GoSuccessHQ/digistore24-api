@@ -25,7 +25,11 @@ $response = $ds24->shipping->list();
 echo $response->result; // e.g. "success"
 
 foreach ($response->shippingCostPolicies as $policy) {
-    echo $policy['name'];
+    echo $policy->id;     // shipping cost policy ID
+    echo $policy->name;   // policy name
+    echo $policy->createdAt?->format('Y-m-d H:i:s');
+    echo $policy->modifiedAt?->format('Y-m-d H:i:s');
+    // $policy->rules — array of shipping cost rules
 }
 ```
 
@@ -42,7 +46,15 @@ $response = $ds24->shipping->list(new ListShippingCostPoliciesRequest());
 `ListShippingCostPoliciesResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `shippingCostPolicies` (array<string, mixed>) — List of shipping cost policies. Iterate and read each entry by key, e.g. `$policy['name']`.
+- `shippingCostPolicies` (array<int, ShippingCostPolicyListItemData>) — List of shipping cost policies as typed DTOs.
+
+Each `ShippingCostPolicyListItemData` exposes:
+
+- `id` (?int) — Shipping cost policy ID.
+- `name` (?string) — Policy name.
+- `createdAt` (?DateTimeImmutable) — Creation timestamp.
+- `modifiedAt` (?DateTimeImmutable) — Last modification timestamp.
+- `rules` (array<int, mixed>) — Shipping cost rules.
 
 ## Error Handling
 

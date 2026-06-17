@@ -41,7 +41,7 @@ $request = new CreateUpgradeRequest(upgrade: $upgrade);
 
 $response = $ds24->upgrades->create($request);
 
-echo $response->getUpgradeId();                       // e.g. "789"
+echo $response->getUpgradeId();                       // e.g. 789 (int)
 echo $response->wasSuccessful() ? 'created' : 'failed';
 ```
 
@@ -50,8 +50,9 @@ echo $response->wasSuccessful() ? 'created' : 'failed';
 `CreateUpgradeResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
+- `upgradeId` (?int) — ID of the newly created upgrade.
 - `data` (array) — Inner response payload. Read values such as `$response->data['upgrade_id']`.
-- `getUpgradeId(): ?string` — Convenience accessor for the new upgrade ID.
+- `getUpgradeId(): ?int` — Convenience accessor for the new upgrade ID.
 - `wasSuccessful(): bool` — `true` when `result` equals `success`.
 
 ## Error Handling

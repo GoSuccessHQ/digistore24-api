@@ -40,6 +40,12 @@ echo $response->result; // e.g. "success"
 `CreateRebillingPaymentResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
+- `purchaseId` (?string) — The order ID (same as the input parameter).
+- `paymentStatus` (`?BillingPaymentStatus`) — Status of the payment attempt: `COMPLETED`, `PENDING`, `UNCERTAIN`, `REFUSED`, `ERROR`.
+- `paymentMessage` (?string) — Error message in case of payment failure.
+- `billingStatus` (?string) — Current state of the billing cycle (`paying`, `aborted`, `unpaid`, `completed`, `payment_data_update_required`).
+- `paymentDataUpdateUrl` (?string) — URL where the buyer can update their payment information.
+- `data` (array) — The complete inner payload, accessible by key.
 
 ## Error Handling
 

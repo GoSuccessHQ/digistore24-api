@@ -25,7 +25,10 @@ $response = $ds24->productGroups->list();
 echo $response->result; // e.g. "success"
 
 foreach ($response->productGroups as $group) {
-    echo $group['name'];
+    echo $group->id;     // product group ID
+    echo $group->name;   // product group name
+    echo $group->createdAt?->format('Y-m-d H:i:s');
+    echo $group->modifiedAt?->format('Y-m-d H:i:s');
 }
 ```
 
@@ -42,7 +45,14 @@ $response = $ds24->productGroups->list(new ListProductGroupsRequest());
 `ListProductGroupsResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `productGroups` (array<string, mixed>) — List of product groups. Iterate and read each entry by key, e.g. `$group['name']`.
+- `productGroups` (array<int, ProductGroupListItemData>) — List of product groups as typed DTOs.
+
+Each `ProductGroupListItemData` exposes:
+
+- `id` (?int) — Product group ID.
+- `name` (?string) — Product group name.
+- `createdAt` (?DateTimeImmutable) — Creation timestamp.
+- `modifiedAt` (?DateTimeImmutable) — Last modification timestamp.
 
 ## Error Handling
 

@@ -1,6 +1,6 @@
 # listDeliveries
 
-Retrieves a list of deliveries, optionally filtered by purchase ID.
+Retrieves a list of deliveries, optionally filtered by a search object.
 
 ## Endpoint
 
@@ -12,13 +12,23 @@ Retrieves a list of deliveries, optionally filtered by purchase ID.
 
 The constructor argument is optional:
 
-- `purchaseId` (string, optional) — Purchase ID to filter deliveries by. When omitted, the resource builds an empty `ListDeliveriesRequest` for you and all deliveries are returned.
+- `search` (`DeliverySearchData`, optional) — Search criteria. Settable properties:
+  - `purchaseId` (?string) — Filter by order/purchase ID.
+  - `from` (?DateTimeInterface) — Start date for filtering.
+  - `to` (?DateTimeInterface) — End date for filtering.
+  - `type` (?string) — Comma-separated list of delivery types (`request`, `in_progress`, `delivery`, `partial_delivery`, `return`, `cancel`).
+  - `sameAddressAs` (?string) — Lists all deliveries shipped to the same address as the given delivery ID.
+  - `isProcessed` (?bool) — Filter by processed status.
+  - `isTestOrder` (?bool) — Filter test vs real orders.
+
+When omitted, the resource builds an empty `ListDeliveriesRequest` for you and all deliveries are returned.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\DTO\DeliverySearchData;
 use GoSuccess\Digistore24\Api\Request\Delivery\ListDeliveriesRequest;
 
 $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
@@ -26,14 +36,17 @@ $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 // All deliveries
 $response = $ds24->deliveries->list();
 
-// Or filtered by purchase
-$request = new ListDeliveriesRequest(purchaseId: 'ABCD1234');
+// Or filtered
+$request = new ListDeliveriesRequest(
+    new DeliverySearchData(purchaseId: 'ABCD1234', type: 'delivery,partial_delivery'),
+);
 $response = $ds24->deliveries->list($request);
 
 echo $response->result; // e.g. "success"
 
 foreach ($response->deliveries as $delivery) {
-    // each $delivery is an associative array of delivery fields
+    // each $delivery is a DeliveryDetailsData DTO
+    echo $delivery->id, ' ', $delivery->purchaseId, PHP_EOL;
 }
 ```
 
@@ -42,7 +55,7 @@ foreach ($response->deliveries as $delivery) {
 `ListDeliveriesResponse` exposes typed public properties:
 
 - `result` (string) — Result status returned by the API.
-- `deliveries` (array) — The list of deliveries. Read as `$response->deliveries`.
+- `deliveries` (`DeliveryDetailsData[]`) — The list of deliveries, each a typed DTO (including address and tracking).
 
 ## Error Handling
 

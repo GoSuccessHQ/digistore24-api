@@ -10,7 +10,9 @@ Stops automatic rebilling for a purchase or subscription.
 
 ## Parameters
 
-- `purchaseId` (string, required) — The unique identifier of the purchase whose rebilling should be stopped.
+- `purchaseId` (string, required) — The Digistore24 order ID whose rebilling should be stopped.
+- `force` (bool, optional) — Cancel immediately when `true`; respects the minimum duration when `false`. Defaults to `null` (the API uses `false`). Serialized as `Y`/`N`.
+- `ignoreRefundPossibility` (bool, optional) — When `false` (default), cancels immediately if a refund is available; when `true`, waits until the end of the cancellation period. Defaults to `null`. Serialized as `Y`/`N`.
 
 ## Usage Example
 
@@ -21,7 +23,7 @@ use GoSuccess\Digistore24\Api\Request\Rebilling\StopRebillingRequest;
 
 $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-$request = new StopRebillingRequest(purchaseId: 'ABCD1234');
+$request = new StopRebillingRequest(purchaseId: 'ABCD1234', force: true);
 
 $response = $ds24->rebilling->stop($request);
 

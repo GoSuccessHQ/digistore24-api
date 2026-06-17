@@ -29,8 +29,11 @@ $request = new StatsSalesSummaryRequest(
 
 $response = $ds24->statistics->salesSummary($request);
 
-echo $response->summary['revenue'] ?? '';
-echo $response->summary['sales_count'] ?? '';
+// $response->for is keyed by time bucket: all, year, quarter, month, week, day.
+$thisMonth = $response->for['month'] ?? [];
+echo $thisMonth['from'] ?? '';
+// Amounts are nested by currency inside each bucket.
+echo $thisMonth['amounts']['EUR']['total_brutto_amount'] ?? '';
 ```
 
 The request is optional. Call `$ds24->statistics->salesSummary()` with no arguments to use the API defaults.
@@ -40,7 +43,9 @@ The request is optional. Call `$ds24->statistics->salesSummary()` with no argume
 `StatsSalesSummaryResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `summary` (array) — Aggregated summary values. Read values via keys, e.g. `$response->summary['revenue']`, `$response->summary['sales_count']`.
+- `for` (array<string, mixed>) — Statistics keyed by time bucket (`all`, `year`, `quarter`, `month`, `week`, `day`). Each bucket is an associative array containing `from`, `to`, an `amounts` map keyed by currency, and the `percentages`/`references` comparison maps.
+- `callDurationMs` (array<string, mixed>) — Per-section calculation durations in milliseconds (e.g. `amount_for_all`, `total_call`).
+- `data` (array) — The complete inner payload, accessible by key.
 
 ## Error Handling
 

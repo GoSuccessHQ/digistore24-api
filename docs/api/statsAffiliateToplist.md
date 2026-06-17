@@ -10,9 +10,10 @@ Retrieves a ranked list of top-performing affiliates for a date range.
 
 ## Parameters
 
-- `from` (string, optional) — Start date for statistics. Format: `YYYY-MM-DD`. Defaults to `null`.
-- `to` (string, optional) — End date for statistics. Format: `YYYY-MM-DD`. Defaults to `null`.
-- `limit` (int, optional) — Maximum number of affiliates to return. Defaults to `null`.
+- `from` (string, required by the API) — Start month for the report. Format: `YYYY-MM` (e.g. `2026-01`). Defaults to `null`.
+- `to` (string, required by the API) — End month for the report. Format: `YYYY-MM` (e.g. `2026-12`). Defaults to `null`.
+- `affiliate` (string, optional) — Digistore identifier of a particular affiliate to filter by. Defaults to `null`.
+- `currency` (string, optional) — Currency code for revenue display (`USD`, `EUR`, `GBP`, `CHF`, `PLN`). Defaults to `null`.
 
 ## Usage Example
 
@@ -24,26 +25,25 @@ use GoSuccess\Digistore24\Api\Request\Statistics\StatsAffiliateToplistRequest;
 $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
 $request = new StatsAffiliateToplistRequest(
-    from: '2026-01-01',
-    to: '2026-01-31',
-    limit: 10,
+    from: '2026-01',
+    to: '2026-12',
+    currency: 'EUR',
 );
 
 $response = $ds24->statistics->affiliateToplist($request);
 
-foreach ($response->toplist as $affiliate) {
-    echo $affiliate['name'] ?? '';
+foreach ($response->topList as $affiliate) {
+    echo $affiliate->affiliateName;   // e.g. "john_doe"
+    echo $affiliate->bruttoAmount;    // gross revenue
 }
 ```
-
-The request is optional. Call `$ds24->statistics->affiliateToplist()` with no arguments to retrieve the default toplist.
 
 ## Response
 
 `StatsAffiliateToplistResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `toplist` (array) — Ranked affiliate entries. Each entry is an associative array; read values via keys, e.g. `$affiliate['name']`, `$affiliate['turnover']`.
+- `topList` (array of `AffiliateToplistItemData`) — Ranked affiliate entries (spec key `top_list`). Each `AffiliateToplistItemData` exposes: `affiliateId` (?int), `affiliateName` (?string), `currency` (?string), `bruttoAmount` (?float), `nettoAmount` (?float), `paymentAmount` (?float), `refundAmount` (?float), `chargebackAmount` (?float), `cancellationAmount` (?float), `affiliateAmount` (?float), `merchantAmount` (?float), `refundQuota` (?float), `chargebackQuota` (?float), `cancellationQuota` (?float).
 
 ## Error Handling
 

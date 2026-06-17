@@ -10,8 +10,10 @@ Retrieves a list of rebilling status changes within a date range.
 
 ## Parameters
 
-- `from` (string, optional) — Start date for the range. Format: `YYYY-MM-DD`. Defaults to `null`.
-- `to` (string, optional) — End date for the range. Format: `YYYY-MM-DD`. Defaults to `null`.
+- `from` (string, optional) — Start time for the query (e.g. `2014-02-28 23:11:24`, `now`, `-3d`, `start`). Defaults to `null` (the API uses `-24h`).
+- `to` (string, optional) — End time for the query. Defaults to `null` (the API uses `now`).
+- `pageNo` (int, optional) — Page number, starting at 1. Defaults to `null` (the API uses 1).
+- `pageSize` (int, optional) — Number of entries per page. Defaults to `null` (the API uses 100).
 
 ## Usage Example
 
@@ -25,13 +27,17 @@ $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 $request = new ListRebillingStatusChangesRequest(
     from: '2026-01-01',
     to: '2026-01-31',
+    pageNo: 1,
+    pageSize: 50,
 );
 
 $response = $ds24->rebilling->listStatusChanges($request);
 
-foreach ($response->statusChanges as $change) {
-    echo $change['purchase_id'] ?? '';
-    echo $change['new_status'] ?? '';
+echo $response->itemCount;  // total matching items
+
+foreach ($response->items as $change) {
+    echo $change->purchaseId;        // e.g. "ABCD1234"
+    echo $change->type?->value;      // e.g. "rebill_cancelled"
 }
 ```
 
@@ -42,7 +48,9 @@ The request is optional. Call `$ds24->rebilling->listStatusChanges()` with no ar
 `ListRebillingStatusChangesResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `statusChanges` (array) — Status change entries. Each entry is an associative array; read values via keys, e.g. `$change['purchase_id']`, `$change['new_status']`.
+- `items` (array of `RebillingStatusChangeData`) — Status change entries (spec key `items`). Each `RebillingStatusChangeData` exposes `id` (?int), `purchaseId` (?string), `createdAt` (?DateTimeImmutable), `paySequenceNo` (?int), `type` (`?RebillingStatusChangeType`: `REBILL_CANCELLED`, `LAST_PAID_DAY`, `REBILL_RESUMED`) and `typeMsg` (?string).
+- `from` (?string), `to` (?string) — The query time range echoed back.
+- `pageSize` (?int), `pageNo` (?int), `pageCount` (?int), `itemCount` (?int) — Pagination metadata.
 
 ## Error Handling
 

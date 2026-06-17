@@ -37,6 +37,7 @@ if ($response->wasSuccessful()) {
 `DeleteUpsellsResponse` exposes typed public properties:
 
 - `result` (string) — Result status returned by the API.
+- `isModified` (?bool) — `true` if the upsell tree was deleted, `false` if it was already deleted.
 
 It also provides a helper method:
 

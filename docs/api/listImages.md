@@ -10,7 +10,7 @@ Lists all images in the account, optionally filtered by usage type.
 
 ## Parameters
 
-- `usageType` (string, optional) — Filter images by their purpose (e.g. `product`). Defaults to `null` (all images).
+- `usageType` (string, required by the API) — Purpose of the images to list (e.g. `product`). See `getGlobalSettings()` `image_usage_type`. Defaults to `null`.
 
 ## Usage Example
 
@@ -28,13 +28,12 @@ $response = $ds24->images->list($request);
 echo $response->totalCount; // e.g. 2
 
 foreach ($response->images as $image) {
-    echo $image->imageId;   // e.g. "05CZEP6G"
-    echo $image->name;      // e.g. "Product Main Image"
-    echo $image->imageUrl;  // CDN URL
+    echo $image->id;             // e.g. "05CZEP6G"
+    echo $image->name;           // e.g. "Product Main Image"
+    echo $image->url;            // CDN URL
+    echo $image->fileExtension;  // e.g. "png"
 }
 ```
-
-The request is optional. Call `$ds24->images->list()` with no arguments to list every image.
 
 ## Response
 
@@ -42,12 +41,16 @@ The request is optional. Call `$ds24->images->list()` with no arguments to list 
 
 - `result` (string) — Result status returned by the API.
 - `images` (array of `ImageListItem`) — The image entries. Each `ImageListItem` exposes:
-  - `imageId` (string) — Image ID.
-  - `imageUrl` (string) — CDN URL to access the image.
-  - `name` (string) — Image name.
-  - `usageType` (?string) — Purpose of the image, or `null`.
-  - `createdAt` (\DateTimeInterface) — Creation timestamp.
-- `totalCount` (int) — Total number of images returned.
+  - `id` (string) — Unique image identifier.
+  - `url` (string) — Full CDN image URI.
+  - `fileExtension` (string) — Image format (e.g. `png`).
+  - `name` (string) — Image name/label.
+  - `approvalStatus` (?string) — Moderation state (e.g. `approved`).
+  - `usageType` (?string) — Categorized purpose (e.g. `product`).
+  - `altTag` (?string) — Accessibility text, or `null`.
+  - `width` (?int) — Image width in pixels.
+  - `height` (?int) — Image height in pixels.
+- `totalCount` (int) — Number of images returned (convenience count; not a spec field).
 
 ## Error Handling
 

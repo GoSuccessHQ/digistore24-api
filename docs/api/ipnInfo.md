@@ -36,10 +36,19 @@ echo $response->url;    // e.g. "https://example.com/webhooks/digistore24"
 
 ## Response
 
-`IpnInfoResponse` exposes typed public properties:
+`IpnInfoResponse` echoes the settings that were transferred when the connection
+was created by `ipnSetup`, exposed as typed public properties:
 
 - `result` (string) — Result status returned by the API.
 - `url` (string|null) — The configured IPN URL.
+- `name` (string|null) — The name listed on Digistore.
+- `productIds` (string|null) — `"all"` or a comma-separated list of product IDs.
+- `domainId` (string|null) — Domain ID identifying the IPN connection.
+- `categories` (string|null) — Comma-separated transaction categories.
+- `transactions` (string|null) — Comma-separated transaction types.
+- `timing` (string|null) — Notification trigger point (`before_thankyou` or `delayed`).
+- `newsletterSendPolicy` (string|null) — Newsletter send policy.
+- `data` (array) — The complete settings echo returned by the API.
 
 ## Error Handling
 

@@ -14,7 +14,7 @@ The request wraps a `ProductGroupData` DTO. Populate the following settable prop
 
 - `name` (string, required) — Product group name. Must not exceed 31 characters.
 - `position` (int, optional) — The display order. Must be positive. Defaults to `10`.
-- `isShownAsTab` (bool, optional) — If `true`, the group is displayed as a tab in the product list. Defaults to `false`.
+- `isShownAsTab` (bool, optional) — If `true`, the group is displayed as a tab in the product list. Defaults to `false`. Sent to the API as `is_shown_as_tab` (`Y`/`N`).
 
 ## Usage Example
 
@@ -35,8 +35,8 @@ $request = new CreateProductGroupRequest(productGroup: $productGroup);
 
 $response = $ds24->productGroups->create($request);
 
-echo $response->result;                // e.g. "success"
-echo $response->getProductGroupId();   // e.g. "567"
+echo $response->result;             // e.g. "success"
+echo $response->productGroupId;     // e.g. 567
 ```
 
 ## Response
@@ -44,8 +44,9 @@ echo $response->getProductGroupId();   // e.g. "567"
 `CreateProductGroupResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
+- `productGroupId` (?int) — ID of the newly created product group (spec key: `product_group_id`).
 - `data` (array<string, mixed>) — Raw response payload. Read individual values by key, e.g. `$response->data['product_group_id']`.
-- `getProductGroupId(): ?string` — Convenience accessor returning the ID of the newly created product group.
+- `getProductGroupId(): ?string` — Convenience accessor returning the ID as a string for backward compatibility.
 
 ## Error Handling
 

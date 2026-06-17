@@ -46,6 +46,7 @@ if ($response->wasSuccessful()) {
 `UpdateUpsellsResponse` exposes typed public properties:
 
 - `result` (string) — Result status returned by the API.
+- `isModified` (?bool) — Whether the upsell tree was changed.
 
 It also provides a helper method:
 

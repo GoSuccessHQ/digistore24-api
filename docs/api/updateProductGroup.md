@@ -17,7 +17,7 @@ The `productGroup` argument wraps a `ProductGroupData` DTO with the following se
 
 - `name` (string, required) — Product group name. Must not exceed 31 characters.
 - `position` (int, optional) — The display order. Must be positive. Defaults to `10`.
-- `isShownAsTab` (bool, optional) — If `true`, the group is displayed as a tab in the product list. Defaults to `false`.
+- `isShownAsTab` (bool, optional) — If `true`, the group is displayed as a tab in the product list. Defaults to `false`. Sent to the API as `is_shown_as_tab` (`Y`/`N`).
 
 ## Usage Example
 
@@ -41,7 +41,8 @@ $request = new UpdateProductGroupRequest(
 
 $response = $ds24->productGroups->update($request);
 
-echo $response->result; // e.g. "success"
+echo $response->result;          // e.g. "success"
+var_dump($response->isModified); // bool|null — whether the group was modified
 ```
 
 ## Response
@@ -49,6 +50,8 @@ echo $response->result; // e.g. "success"
 `UpdateProductGroupResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
+- `isModified` (?bool) — Whether the product group was modified (spec key: `data.is_modified`, `Y`/`N`).
+- `data` (array<string, mixed>) — Raw response payload.
 
 ## Error Handling
 

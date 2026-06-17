@@ -1,6 +1,6 @@
 # statsMarketplace
 
-Retrieves marketplace statistics for an optional date range.
+Retrieves marketplace statistics, optionally for a specific language.
 
 ## Endpoint
 
@@ -10,10 +10,9 @@ Retrieves marketplace statistics for an optional date range.
 
 ## Parameters
 
-All constructor arguments are optional:
+The constructor argument is optional:
 
-- `from` (string, optional) — Start date for statistics. Format: `YYYY-MM-DD`.
-- `to` (string, optional) — End date for statistics. Format: `YYYY-MM-DD`.
+- `language` (string, optional) — Language code (e.g. `de`). See `getGlobalSettings` for the list of languages.
 
 ## Usage Example
 
@@ -24,7 +23,7 @@ use GoSuccess\Digistore24\Api\Request\Marketplace\StatsMarketplaceRequest;
 
 $ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-$request = new StatsMarketplaceRequest(from: '2026-01-01', to: '2026-06-30');
+$request = new StatsMarketplaceRequest(language: 'de');
 
 $response = $ds24->marketplace->stats($request);
 

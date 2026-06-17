@@ -29,9 +29,9 @@ $request = new StatsDailyAmountsRequest(
 
 $response = $ds24->statistics->dailyAmounts($request);
 
-foreach ($response->dailyAmounts as $day) {
-    echo $day['date'] ?? '';
-    echo $day['amount'] ?? '';
+foreach ($response->amountList as $day) {
+    echo $day->day;                  // e.g. "2026-03-01"
+    echo $day->totalBruttoAmount;    // gross total for the day
 }
 ```
 
@@ -42,7 +42,7 @@ The request is optional. Call `$ds24->statistics->dailyAmounts()` with no argume
 `StatsDailyAmountsResponse` exposes:
 
 - `result` (string) — Result status returned by the API.
-- `dailyAmounts` (array) — Daily revenue entries. Each entry is an associative array; read values via keys, e.g. `$day['date']`, `$day['amount']`.
+- `amountList` (array of `DailyAmountData`) — Daily revenue records (spec key `amount_list`). Each `DailyAmountData` exposes `day` (?string), `currency` (?string) and the `vendor`/`affiliate`/`other`/`total` × `share`/`brutto`/`netto` amount fields (all ?float).
 
 ## Error Handling
 

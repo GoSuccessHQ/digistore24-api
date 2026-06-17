@@ -73,6 +73,7 @@ echo $response->result; // e.g. "success"
 `UpdateDeliveryResponse` exposes typed public properties:
 
 - `result` (string) — Result status returned by the API.
+- `isModified` (?bool) — Whether the delivery was modified.
 
 ## Error Handling
 

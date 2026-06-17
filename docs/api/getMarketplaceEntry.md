@@ -68,6 +68,8 @@ echo $response->statsCountOrders;// e.g. 450
 - `statsCountAffiliatesWithSales` (int|null) — Number of affiliates with sales.
 - `statsConversionRate` (float|null) — Conversion rate.
 - `statsCountOrders` (int|null) — Total number of orders.
+- `entry` (?MarketplaceEntryData) — The same entry exposed as a typed DTO.
+- `data` (array) — The complete data payload returned by the API.
 
 ## Error Handling
 

@@ -12,7 +12,7 @@ Updates an existing service proof request, either providing proof or executing a
 
 The request takes the service proof request ID plus a `ServiceProofRequestUpdateData` DTO:
 
-- `serviceProofRequestId` (string, required) — The unique identifier of the service proof request.
+- `serviceProofId` (int, required) — The numeric ID of the service proof request.
 - `proofData` (`ServiceProofRequestUpdateData`, required) — The update payload. Populate the following settable properties:
   - `requestStatus` (string, required) — Either `proof_provided` or `exec_refund`. Any other value throws an `InvalidArgumentException`.
   - `message` (string, optional) — Additional explanation about the proof or refund decision.
@@ -44,13 +44,14 @@ $proofData->message = 'Coaching session delivered on 2026-06-10.';
 $proofData->files = [$file];
 
 $request = new UpdateServiceProofRequestRequest(
-    serviceProofRequestId: 'SPR-12345',
+    serviceProofId: 12345,
     proofData: $proofData,
 );
 
 $response = $ds24->serviceProofs->update($request);
 
 echo $response->result; // e.g. "success"
+var_dump($response->isModified); // true when the request was modified
 ```
 
 ## Response
@@ -58,6 +59,7 @@ echo $response->result; // e.g. "success"
 `UpdateServiceProofRequestResponse` exposes typed public properties:
 
 - `result` (string) — Result status returned by the API.
+- `isModified` (?bool) — Whether the service proof request was modified.
 
 ## Error Handling
 
