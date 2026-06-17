@@ -92,6 +92,25 @@ fixed inside the request classes -- existing calling code keeps working -- for
 `updateShippingCostPolicy`. The shipping-policy and service-proof endpoints now also
 send the API's real parameter names (`policy_id`, `service_proof_id`).
 
+### Fully-typed responses and request parameters
+
+3.0 makes the SDK a complete binding: every response exposes all API fields as typed
+properties (with nested DTOs) plus a `$response->data` array with the full payload, and
+every request accepts every spec parameter. A few endpoints whose SDK signatures or
+response fields were previously wrong have changed:
+
+- **Responses** — where the SDK previously read a wrong key, the typed property may have
+  moved. The clearest case is `getPurchase`: `$response->productId` and `$response->buyerEmail`
+  are gone; use `$response->items[0]->productId` and `$response->buyer->email` (a typed
+  `BuyerData`), or read `$response->data` for the complete payload. If a typed property you
+  relied on is missing, it is almost always available under `$response->data[...]`.
+- **Request constructors** changed to the real parameter names. Notable ones:
+  `UpdateAffiliateCommissionRequest(productIds: 'all', ...)` (was `productId: int`);
+  `GetEticketRequest(eticketId: ...)`, `ValidateEticketRequest(eticketId, templateId, locationId)`;
+  `GetServiceProofRequestRequest`/`UpdateServiceProofRequestRequest` take `serviceProofId` (int);
+  `ListAccountAccessRequest()` is parameterless; `ListPaymentPlansRequest(productId: ...)` is now
+  required; the eticket/service-proof/delivery list endpoints take a search DTO.
+
 ---
 
 ## From `gosuccess/php-ds24-api-wrapper` to `gosuccess/digistore24-api`

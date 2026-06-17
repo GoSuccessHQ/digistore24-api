@@ -7,12 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2026-06-17
 
-Major release that aligns the SDK with the Digistore24 OpenAPI spec and removes
-long-standing inconsistencies. The public surface is largely unchanged; see
-`MIGRATION.md` for upgrade steps. Note that most "breaking" changes touch code
-paths that were previously broken.
+Major release that turns the SDK into a complete, fully-typed binding to the
+Digistore24 API and removes long-standing inconsistencies. See `MIGRATION.md`
+for upgrade steps. Many "breaking" changes touch response fields and request
+parameters that were previously wrong, missing, or entirely broken.
 
 ### Added
+- **Complete, fully-typed binding to the whole API.** Every response now exposes
+  every API field as a typed property -- with nested DTOs for objects such as the
+  buyer, line items, and transactions -- plus a `data` array holding the full
+  payload so no field is ever lost. Every request exposes a settable property for
+  every OpenAPI spec parameter. Derived from the per-endpoint specs and verified
+  live against a real order. Adds 41 DTOs and 14 enums.
 - `SpecConformanceTest` that freezes the spec's endpoint -> HTTP method mapping
   (122 endpoints) and guards against future drift.
 - `DeliveryTrackingUpdateData` DTO and `DeliveryTrackingOperation` enum for sending
@@ -62,6 +68,11 @@ paths that were previously broken.
   `refundPurchase`, `getPurchaseTracking`, `listPurchasesOfEmail`, and others) no longer unwrap
   the `data` envelope a second time, which had made them expose an empty result. They now use
   the inherited `extractInnerData()` helper.
+- Many response classes mapped wrong or invented field names and surfaced only a
+  fraction of the API's fields: `getPurchase` read `purchase_id` where the API returns
+  `id` and flattened the buyer/items; `getImage`, `getProduct`, `statsSales`,
+  `statsDailyAmounts`, `statsAffiliateToplist`, and `getGlobalSettings` used keys that
+  do not exist. All are now mapped to the real keys and expose the complete field set.
 
 ### Removed
 - `BillingResource::refundPartially()` and the duplicate
@@ -93,6 +104,15 @@ paths that were previously broken.
 - The spec-aligned HTTP methods may change wire behavior for code that relied on the old all-POST behavior.
 - `CreatePaymentplanRequest` now takes a `$productId` argument before `$paymentPlan`; the
   `createPaymentplan` endpoint requires a flat `product_id` in addition to the `data` object.
+- The fully-typed binding changed several request constructors to the real API parameters:
+  e.g. `UpdateAffiliateCommissionRequest` takes `productIds` (string) not `productId` (int);
+  `GetEticketRequest`/`ValidateEticketRequest` use `eticketId`; the service-proof requests use
+  `serviceProofId` (int); `ListAccountAccessRequest` is parameterless; `ListPaymentPlansRequest`
+  requires a `productId`; several list endpoints (eticket, service-proof, delivery) now take a
+  search DTO. See MIGRATION.md.
+- Some response property names changed where the SDK previously used wrong keys -- e.g.
+  `GetPurchaseResponse` no longer exposes `productId`/`buyerEmail`; read `$response->buyer->email`
+  and `$response->items[0]->productId`, or the full `$response->data` payload.
 
 ## [2.0.5] - 2025-11-12
 
