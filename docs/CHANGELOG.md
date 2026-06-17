@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Removed
+- Generated `openapi.yaml` specification file. The canonical OpenAPI spec is hosted by
+  Digistore24 at https://digistore24.com/api/docs/openapi.yaml (per-endpoint files at
+  `https://digistore24.com/api/docs/paths/<operationId>.yaml`) and is already referenced from
+  the `@link` PHPDoc annotations and the `docs/api/` files.
+- `scripts/` directory (`fetch-openapi.php`, `analyze-dtos.php`, `dto-analysis.json`).
+  These were development-only helpers, excluded from the dist package via `export-ignore`, and
+  partly outdated — `analyze-dtos.php` targeted the removed `src/DataTransferObject` directory
+  and a non-existent `generate-dtos.php`.
+- Obsolete `export-ignore` rules for `scripts`, `openapi.yaml`, and `.openapi-cache` in
+  `.gitattributes`, the `.openapi-cache/` entry in `.gitignore`, and the `scripts/**` path
+  filter in the Code Style GitHub Actions workflow.
+
 ## [2.0.5] - 2025-11-12
 
 ### Fixed

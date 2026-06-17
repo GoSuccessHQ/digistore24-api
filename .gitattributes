@@ -29,7 +29,6 @@ LICENSE text eol=lf
 /tests export-ignore
 /docs export-ignore
 /examples export-ignore
-/scripts export-ignore
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /.php-cs-fixer.php export-ignore
@@ -39,5 +38,3 @@ LICENSE text eol=lf
 /CONTRIBUTING.md export-ignore
 /MIGRATION.md export-ignore
 /SECURITY.md export-ignore
-/.openapi-cache export-ignore
-/openapi.yaml export-ignore

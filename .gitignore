@@ -14,9 +14,6 @@ vendor/
 !.idea/codeStyles/
 !.idea/php.xml
 
-# OpenAPI cache (temporary downloads)
-.openapi-cache/
-
 # PHPUnit generated files
 junit.xml
 tests-list.xml
