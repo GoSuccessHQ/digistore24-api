@@ -66,7 +66,8 @@ final class CreateEticketRequest extends AbstractRequest
             $data['buyer']['title'] = $this->buyer->title;
         }
         if ($this->buyer->salutation !== null) {
-            $data['buyer']['salutation'] = $this->buyer->salutation;
+            // createEticket expects a lowercase m/f, unlike the uppercase M/F used elsewhere.
+            $data['buyer']['salutation'] = strtolower($this->buyer->salutation->value);
         }
         if ($this->buyer->firstName !== null) {
             $data['buyer']['first_name'] = $this->buyer->firstName;
