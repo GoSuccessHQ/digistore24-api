@@ -47,8 +47,10 @@ final class UpdateShippingCostPolicyRequestTest extends TestCase
         );
 
         $array = $request->toArray();
-        $this->assertSame('SCP123', $array['shipping_cost_policy_id']);
-        $this->assertSame('Updated Shipping', $array['name']);
+        $this->assertSame('SCP123', $array['policy_id']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('Updated Shipping', $data['name']);
     }
 
     public function test_validate_returns_empty_array(): void

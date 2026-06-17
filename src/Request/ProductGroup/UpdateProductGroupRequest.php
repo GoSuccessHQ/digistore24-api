@@ -35,6 +35,6 @@ final class UpdateProductGroupRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return array_merge(['product_group_id' => $this->productGroupId], $this->productGroup->toArray());
+        return ['product_group_id' => $this->productGroupId, 'data' => $this->productGroup->toArray()];
     }
 }

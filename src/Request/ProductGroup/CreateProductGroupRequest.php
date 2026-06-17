@@ -28,6 +28,6 @@ final class CreateProductGroupRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return $this->productGroup->toArray();
+        return ['data' => $this->productGroup->toArray()];
     }
 }

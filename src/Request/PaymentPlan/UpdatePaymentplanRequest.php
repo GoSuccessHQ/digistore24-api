@@ -35,6 +35,6 @@ final class UpdatePaymentplanRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return array_merge(['paymentplan_id' => $this->paymentplanId], $this->paymentPlan->toArray());
+        return ['paymentplan_id' => $this->paymentplanId, 'data' => $this->paymentPlan->toArray()];
     }
 }

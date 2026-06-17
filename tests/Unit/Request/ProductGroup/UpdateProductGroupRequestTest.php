@@ -48,7 +48,9 @@ final class UpdateProductGroupRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame('PG123', $array['product_group_id']);
-        $this->assertSame('Updated Group', $array['name']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('Updated Group', $data['name']);
     }
 
     public function test_validate_returns_empty_array(): void

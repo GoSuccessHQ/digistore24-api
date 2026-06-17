@@ -39,8 +39,10 @@ final class CreateShippingCostPolicyRequestTest extends TestCase
         $request = new CreateShippingCostPolicyRequest(policy: $policy);
 
         $array = $request->toArray();
-        $this->assertSame('Standard Shipping', $array['name']);
-        $this->assertSame(50, $array['position']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('Standard Shipping', $data['name']);
+        $this->assertSame(50, $data['position']);
     }
 
     public function test_validate_returns_empty_array(): void

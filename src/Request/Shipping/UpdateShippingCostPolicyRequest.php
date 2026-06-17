@@ -35,6 +35,6 @@ final class UpdateShippingCostPolicyRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return array_merge(['shipping_cost_policy_id' => $this->shippingCostPolicyId], $this->policy->toArray());
+        return ['policy_id' => $this->shippingCostPolicyId, 'data' => $this->policy->toArray()];
     }
 }

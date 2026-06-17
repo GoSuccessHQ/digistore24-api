@@ -41,8 +41,10 @@ final class CreateVoucherRequestTest extends TestCase
         $request = new CreateVoucherRequest(voucher: $voucher);
 
         $array = $request->toArray();
-        $this->assertSame('SAVE20', $array['code']);
-        $this->assertSame(20.0, $array['first_rate']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('SAVE20', $data['code']);
+        $this->assertSame(20.0, $data['first_rate']);
     }
 
     public function test_validate_returns_empty_array(): void

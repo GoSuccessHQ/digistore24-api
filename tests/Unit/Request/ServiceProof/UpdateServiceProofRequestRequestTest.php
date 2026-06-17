@@ -49,7 +49,7 @@ final class UpdateServiceProofRequestRequestTest extends TestCase
 
         $array = $request->toArray();
 
-        $this->assertSame('SPR123', $array['service_proof_request_id']);
+        $this->assertSame('SPR123', $array['service_proof_id']);
         $data = $array['data'] ?? null;
         $this->assertIsArray($data);
         /** @var array<string, mixed> $validatedData */

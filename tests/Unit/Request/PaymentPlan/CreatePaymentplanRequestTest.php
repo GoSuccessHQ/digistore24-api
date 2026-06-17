@@ -16,7 +16,7 @@ final class CreatePaymentplanRequestTest extends TestCase
         $plan->firstAmount = 49.99;
         $plan->currency = 'USD';
 
-        $request = new CreatePaymentplanRequest(paymentPlan: $plan);
+        $request = new CreatePaymentplanRequest(productId: 12345, paymentPlan: $plan);
 
         $this->assertInstanceOf(CreatePaymentplanRequest::class, $request);
     }
@@ -27,7 +27,7 @@ final class CreatePaymentplanRequestTest extends TestCase
         $plan->firstAmount = 49.99;
         $plan->currency = 'USD';
 
-        $request = new CreatePaymentplanRequest(paymentPlan: $plan);
+        $request = new CreatePaymentplanRequest(productId: 12345, paymentPlan: $plan);
 
         $this->assertSame('/createPaymentplan', $request->getEndpoint());
     }
@@ -38,7 +38,7 @@ final class CreatePaymentplanRequestTest extends TestCase
         $plan->firstAmount = 49.99;
         $plan->currency = 'USD';
 
-        $request = new CreatePaymentplanRequest(paymentPlan: $plan);
+        $request = new CreatePaymentplanRequest(productId: 12345, paymentPlan: $plan);
 
         $errors = $request->validate();
         $this->assertEmpty($errors);

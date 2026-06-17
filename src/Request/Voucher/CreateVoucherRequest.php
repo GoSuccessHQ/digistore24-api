@@ -29,6 +29,6 @@ final class CreateVoucherRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return $this->voucher->toArray();
+        return ['data' => $this->voucher->toArray()];
     }
 }

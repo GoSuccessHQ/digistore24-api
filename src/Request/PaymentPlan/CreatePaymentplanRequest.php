@@ -15,9 +15,10 @@ use GoSuccess\Digistore24\Api\DTO\PaymentPlanFullData;
 final class CreatePaymentplanRequest extends AbstractRequest
 {
     /**
+     * @param int $productId The product the payment plan belongs to
      * @param PaymentPlanFullData $paymentPlan The payment plan configuration
      */
-    public function __construct(private PaymentPlanFullData $paymentPlan)
+    public function __construct(private int $productId, private PaymentPlanFullData $paymentPlan)
     {
     }
 
@@ -28,6 +29,6 @@ final class CreatePaymentplanRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return $this->paymentPlan->toArray();
+        return ['product_id' => $this->productId, 'data' => $this->paymentPlan->toArray()];
     }
 }

@@ -35,6 +35,6 @@ final class UpdateServiceProofRequestRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return array_merge(['service_proof_request_id' => $this->serviceProofRequestId], $this->proofData->toArray());
+        return array_merge(['service_proof_id' => $this->serviceProofRequestId], $this->proofData->toArray());
     }
 }

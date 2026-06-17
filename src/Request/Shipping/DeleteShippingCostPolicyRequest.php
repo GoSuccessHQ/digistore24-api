@@ -33,6 +33,6 @@ final class DeleteShippingCostPolicyRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return ['shipping_cost_policy_id' => $this->shippingCostPolicyId];
+        return ['policy_id' => $this->shippingCostPolicyId];
     }
 }

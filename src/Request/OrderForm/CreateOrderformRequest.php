@@ -28,6 +28,6 @@ final class CreateOrderformRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return $this->orderForm->toArray();
+        return ['data' => $this->orderForm->toArray()];
     }
 }

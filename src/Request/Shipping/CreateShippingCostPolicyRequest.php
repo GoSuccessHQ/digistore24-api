@@ -28,6 +28,6 @@ final class CreateShippingCostPolicyRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return $this->policy->toArray();
+        return ['data' => $this->policy->toArray()];
     }
 }

@@ -48,7 +48,9 @@ final class UpdatePaymentplanRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame('PP123', $array['paymentplan_id']);
-        $this->assertSame(29.99, $array['first_amount']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame(29.99, $data['first_amount']);
     }
 
     public function test_validate_returns_empty_array(): void

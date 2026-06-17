@@ -35,6 +35,6 @@ final class UpdateOrderformRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return array_merge(['orderform_id' => $this->orderformId], $this->orderForm->toArray());
+        return ['orderform_id' => $this->orderformId, 'data' => $this->orderForm->toArray()];
     }
 }
