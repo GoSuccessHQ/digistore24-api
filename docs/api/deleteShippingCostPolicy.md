@@ -1,85 +1,54 @@
 # deleteShippingCostPolicy
 
-Delete a shipping cost policy.
+Deletes an existing shipping cost policy by its unique identifier.
 
 ## Endpoint
 
-```
-POST /json/deleteShippingCostPolicy
-```
+**DELETE** `https://www.digistore24.com/api/call/deleteShippingCostPolicy`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/deleteShippingCostPolicy.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `policy_id` | int | Yes | Shipping cost policy ID to delete |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'policy_id' => 789,
-        'deleted' => true,
-        'deleted_at' => '2025-03-21T00:00:00Z'
-    ]
-]
-```
+- `shippingCostPolicyId` (string, required) — The unique identifier of the shipping cost policy to delete.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Shipping\DeleteShippingCostPolicyRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Delete shipping policy
-$response = $api->shipping->deleteShippingCostPolicy(
-    policyId: 789
-);
+$request = new DeleteShippingCostPolicyRequest(shippingCostPolicyId: '112233');
 
-if ($response->deleted) {
-    echo "Shipping policy {$response->policyId} deleted successfully\n";
-    echo "Deleted at: {$response->deletedAt}\n";
-}
+$response = $ds24->shipping->delete($request);
 
-// Example: Delete after confirmation
+echo $response->result; // e.g. "success"
+```
+
+## Response
+
+`DeleteShippingCostPolicyResponse` exposes:
+
+- `result` (string) — Result status returned by the API.
+
+## Error Handling
+
+```php
 try {
-    // Get policy details first
-    $policy = $api->shipping->getShippingCostPolicy(policyId: 789);
-    
-    echo "About to delete: {$policy->name}\n";
-    echo "Country: {$policy->countryName}\n";
-    echo "Orders using this policy: {$policy->ordersCount}\n";
-    
-    // Proceed with deletion
-    $response = $api->shipping->deleteShippingCostPolicy(
-        policyId: 789
-    );
-    
-    echo "Policy deleted successfully\n";
-} catch (\Exception $e) {
-    echo "Error: {$e->getMessage()}\n";
+    $response = $ds24->shipping->delete($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Error Responses
+## Related Endpoints
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid policy ID |
-| 404 | Policy not found | Specified shipping cost policy does not exist |
-| 403 | Access denied | No permission to delete this policy |
-| 409 | Policy in use | Cannot delete policy with active orders |
-
-## Notes
-
-- Deletion is permanent and cannot be undone
-- Cannot delete policy with pending/active orders
-- Deactivate policy first to prevent new usage
-- Wait for pending orders to complete before deletion
-- Consider keeping inactive policy for historical reference
+- [createShippingCostPolicy](createShippingCostPolicy.md)
+- [getShippingCostPolicy](getShippingCostPolicy.md)
+- [updateShippingCostPolicy](updateShippingCostPolicy.md)
+- [listShippingCostPolicies](listShippingCostPolicies.md)

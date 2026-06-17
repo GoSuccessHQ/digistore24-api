@@ -1,72 +1,54 @@
 # deleteVoucher
 
-Delete a voucher permanently.
+Deletes a voucher identified by its code.
 
 ## Endpoint
 
-```
-POST /json/deleteVoucher
-```
+**DELETE** `https://www.digistore24.com/api/call/deleteVoucher`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/deleteVoucher.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `voucher_id` | int | Yes* | Voucher ID |
-| `code` | string | Yes* | Voucher code |
+## Parameters
 
-*One of `voucher_id` or `code` is required.
-
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'voucher_id' => 789,
-        'code' => 'SUMMER2025',
-        'deleted_at' => '2025-10-15 14:30:00'
-    ]
-]
-```
+- `code` (string, required) — The voucher code to delete.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Voucher\DeleteVoucherRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Delete voucher by ID
-$response = $api->vouchers->deleteVoucher(
-    voucherId: 789
-);
+$request = new DeleteVoucherRequest(code: 'SAVE20');
 
-if ($response->result === 'success') {
-    echo "Voucher {$response->code} deleted";
-}
+$response = $ds24->vouchers->delete($request);
 
-// Delete voucher by code
-$response = $api->vouchers->deleteVoucher(
-    code: 'EXPIRED2024'
-);
+echo $response->result; // e.g. "success"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Missing parameter | Neither voucher_id nor code provided |
-| 404 | Voucher not found | Voucher does not exist |
-| 403 | Access denied | Not authorized to delete voucher |
-| 409 | Voucher in use | Cannot delete voucher with active uses |
+`DeleteVoucherResponse` exposes a typed public property:
 
-## Notes
+- `result` (string) — Result of the delete operation.
 
-- Deletion is permanent and cannot be undone
-- Vouchers with usage history cannot be deleted (deactivate instead)
-- Consider deactivating vouchers instead of deleting to preserve history
-- Deleted voucher codes can be reused
+## Error Handling
+
+```php
+try {
+    $response = $ds24->vouchers->delete($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createVoucher](createVoucher.md)
+- [getVoucher](getVoucher.md)
+- [updateVoucher](updateVoucher.md)
+- [listVouchers](listVouchers.md)

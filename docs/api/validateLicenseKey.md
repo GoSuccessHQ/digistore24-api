@@ -1,77 +1,79 @@
 # validateLicenseKey
 
-Validate a software license key.
+Validates a license key against a purchase and returns detailed information about the license status.
 
 ## Endpoint
 
-```
-POST /json/validateLicenseKey
-```
+**GET** `https://www.digistore24.com/api/call/validateLicenseKey`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/validateLicenseKey.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `license_key` | string | Yes | License key to validate |
-| `product_id` | int | No | Product ID for validation scope |
-| `email` | string | No | Customer email for additional validation |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'valid' => true,
-        'license_key' => 'XXXX-XXXX-XXXX-XXXX',
-        'product_id' => 12345,
-        'product_name' => 'My Software',
-        'customer_email' => 'customer@example.com',
-        'purchase_date' => '2025-10-15 10:30:00',
-        'expires_at' => '2026-10-15 10:30:00',
-        'is_active' => true,
-        'activations_used' => 2,
-        'activations_max' => 5
-    ]
-]
-```
+- `purchaseId` (string, required) — The purchase ID to validate against.
+- `licenseKey` (string, required) — The license key to validate.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\License\ValidateLicenseKeyRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Validate a license key
-$response = $api->licenses->validateLicenseKey(
-    licenseKey: 'XXXX-XXXX-XXXX-XXXX',
-    productId: 12345
+$request = new ValidateLicenseKeyRequest(
+    purchaseId: 'ABCDEF12',
+    licenseKey: 'XXXX-YYYY-ZZZZ',
 );
 
-if ($response->valid) {
-    echo "License is valid for: " . $response->productName;
-    echo "Activations: {$response->activationsUsed}/{$response->activationsMax}";
-} else {
-    echo "Invalid or expired license";
+$response = $ds24->licenses->validate($request);
+
+if ($response->isValid()) {
+    echo $response->productName;   // e.g. "Premium Plan"
+    echo $response->billingStatus; // e.g. "paying"
+    echo $response->paidUntil;     // e.g. "2026-12-31"
+} elseif (! $response->isFound()) {
+    echo 'License key not found.';
 }
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid license key format | License key format is incorrect |
-| 404 | License not found | License key does not exist |
-| 410 | License expired | License key has expired |
-| 429 | Too many activation attempts | Rate limit exceeded |
+`ValidateLicenseKeyResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `isLicenseValid` (string) — `Y` if the license is valid, otherwise `N`.
+- `isLicenseKeyFound` (string) — `Y` if the license key was found, otherwise `N`.
+- `purchaseId` (string) — The purchase ID.
+- `licenseKey` (string) — The license key.
+- `productId` (int) — The product ID.
+- `productName` (string) — The product name.
+- `billingStatus` (string) — The billing status.
+- `billingStatusMsg` (string) — Human-readable billing status message.
+- `lastPaymentAt` (string|null) — Date of the last payment.
+- `lastPaymentAtMsg` (string|null) — Human-readable last payment date.
+- `nextPaymentAt` (string|null) — Date of the next scheduled payment.
+- `nextPaymentAtMsg` (string|null) — Human-readable next payment date.
+- `lastTransactionType` (string|null) — Type of the last transaction.
+- `lastTransactionTypeMsg` (string|null) — Human-readable last transaction type.
+- `paidUntil` (string|null) — Date until which the product is paid.
+- `paidUntilMsg` (string|null) — Human-readable paid-until date.
 
-- Use this endpoint to implement license validation in your software
-- Supports activation limits and expiration dates
-- Returns detailed license information for valid keys
-- Can be used for both one-time and subscription licenses
+The convenience methods `isValid()` (returns `true` when `isLicenseValid` is `Y`) and `isFound()` (returns `true` when `isLicenseKeyFound` is `Y`) are available.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->licenses->validate($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [validateCouponCode](validateCouponCode.md)

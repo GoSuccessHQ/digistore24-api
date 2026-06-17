@@ -1,83 +1,55 @@
 # getUpgrade
 
-Get upgrade details.
+Retrieves detailed information about a specific upgrade path.
 
 ## Endpoint
 
-```
-POST /json/getUpgrade
-```
+**GET** `https://www.digistore24.com/api/call/getUpgrade`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getUpgrade.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `upgrade_id` | int | Yes | Upgrade ID |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'upgrade_id' => 789,
-        'name' => 'Basic to Premium Upgrade',
-        'from_product_id' => 123,
-        'from_product_name' => 'Basic Course',
-        'to_product_id' => 124,
-        'to_product_name' => 'Premium Course',
-        'upgrade_price' => 49.00,
-        'currency' => 'EUR',
-        'description' => 'Upgrade to premium features',
-        'is_active' => true,
-        'conversions_count' => 87,
-        'conversion_rate' => 12.5,
-        'total_revenue' => 4263.00,
-        'created_at' => '2025-01-15T10:00:00Z',
-        'updated_at' => '2025-03-20T14:30:00Z'
-    ]
-]
-```
+- `upgradeId` (string, required) — The unique identifier of the upgrade to retrieve.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Upgrade\GetUpgradeRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get upgrade details
-$response = $api->upgrades->getUpgrade(
-    upgradeId: 789
-);
+$request = new GetUpgradeRequest(upgradeId: '789');
 
-echo "Upgrade: {$response->name}\n";
-echo "From: {$response->fromProductName}\n";
-echo "To: {$response->toProductName}\n";
-echo "Price: {$response->currency} {$response->upgradePrice}\n";
-echo "Description: {$response->description}\n\n";
+$response = $ds24->upgrades->get($request);
 
-echo "Performance:\n";
-echo "Conversions: {$response->conversionsCount}\n";
-echo "Conversion Rate: {$response->conversionRate}%\n";
-echo "Total Revenue: {$response->currency} {$response->totalRevenue}\n";
-echo "Status: " . ($response->isActive ? 'Active' : 'Inactive') . "\n";
+echo $response->result;        // e.g. "success"
+echo $response->data['name'];  // e.g. "Basic to Premium"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid upgrade ID |
-| 404 | Upgrade not found | Specified upgrade does not exist |
-| 403 | Access denied | No permission to view this upgrade |
+`GetUpgradeResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (array) — The upgrade details. Read values via keys, e.g. `$response->data['upgrade_id']`, `$response->data['name']`, `$response->data['to_product_id']`.
 
-- Includes conversion statistics
-- Conversion rate = (conversions / offers shown) * 100
-- Total revenue = conversions * upgrade price
-- Use for upgrade performance analysis
+## Error Handling
+
+```php
+try {
+    $response = $ds24->upgrades->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createUpgrade](createUpgrade.md)
+- [deleteUpgrade](deleteUpgrade.md)
+- [listUpgrades](listUpgrades.md)

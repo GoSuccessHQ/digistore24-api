@@ -1,130 +1,76 @@
 # updatePaymentplan
 
-Update an existing payment plan.
+Updates an existing payment plan's configuration.
 
 ## Endpoint
 
-```
-POST /json/updatePaymentplan
-```
+**PUT** `https://www.digistore24.com/api/call/updatePaymentplan`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updatePaymentplan.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `paymentplan_id` | int | Yes | Payment plan ID |
-| `name` | string | No | Payment plan name |
-| `first_amount` | float | No | First payment amount |
-| `first_amount_net` | float | No | First amount net (without VAT) |
-| `rebill_amount` | float | No | Recurring payment amount |
-| `rebill_amount_net` | float | No | Rebill amount net (without VAT) |
-| `rebill_times` | int | No | Number of rebills (0 = unlimited) |
-| `rebill_interval` | int | No | Interval in days |
-| `is_active` | bool | No | Active status |
+## Parameters
 
-## Response
+- `paymentplanId` (string, required) — The unique identifier of the payment plan to update.
+- `paymentPlan` (`PaymentPlanFullData`, required) — The updated payment plan configuration.
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'paymentplan_id' => 789,
-        'product_id' => 123,
-        'name' => 'Updated Monthly Plan',
-        'first_amount' => 59.00,
-        'first_amount_net' => 49.58,
-        'rebill_amount' => 39.00,
-        'rebill_amount_net' => 32.77,
-        'rebill_times' => 0,
-        'rebill_interval' => 30,
-        'currency' => 'EUR',
-        'is_active' => true,
-        'updated_at' => '2025-03-20T19:15:00Z'
-    ]
-]
-```
+The `paymentPlan` argument wraps a `PaymentPlanFullData` DTO with the following settable properties:
+
+- `firstAmount` (float, optional) — Amount of the first payment (>= 0).
+- `firstBillingInterval` (string, optional) — Interval between purchase and the second payment. Examples: `4_day`, `1_week`, `1_month`, `3_month`, `6_month`, `12_month`.
+- `currency` (string, optional) — 3-letter currency code (e.g. `USD`, `EUR`).
+- `otherAmounts` (float, optional) — Amount for follow-up payments (>= 0).
+- `otherBillingIntervals` (string, optional) — Interval for follow-up payments. Examples: `1_week`, `1_month`, `3_month`, `6_month`, `12_month`.
+- `numberOfInstallments` (int, optional) — Number of installments (>= 0). `0` = subscription (indefinite), `1` = single payment, `>= 2` = installment plan.
+- `isActive` (bool, optional) — Whether the payment plan is active.
+- `cancelPolicy` (string, optional) — Cancellation policy (minimum term) in the format `{minimum_term}m_{notice_period}m`. Allowed: `6m_0`, `6m_6m`, `6m_12m`, `12m_0`, `12m_3m`, `12m_6m`, `12m_12m`, `24m_0`, `24m_6m`, `24m_12m`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\PaymentPlan\UpdatePaymentplanRequest;
+use GoSuccess\Digistore24\Api\DTO\PaymentPlanFullData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update payment plan name
-$response = $api->paymentPlans->updatePaymentplan(
-    paymentplanId: 789,
-    name: 'Updated Monthly Plan'
+$paymentPlan = new PaymentPlanFullData();
+$paymentPlan->currency = 'EUR';
+$paymentPlan->firstAmount = 59.00;
+$paymentPlan->otherAmounts = 39.00;
+$paymentPlan->otherBillingIntervals = '1_month';
+$paymentPlan->isActive = true;
+
+$request = new UpdatePaymentplanRequest(
+    paymentplanId: '789',
+    paymentPlan: $paymentPlan,
 );
 
-echo "Payment plan updated: {$response->name}\n";
+$response = $ds24->paymentPlans->update($request);
 
-// Update pricing
-$response = $api->paymentPlans->updatePaymentplan(
-    paymentplanId: 789,
-    firstAmount: 59.00,
-    rebillAmount: 39.00
-);
-
-echo "First payment: € {$response->firstAmount}\n";
-echo "Recurring: € {$response->rebillAmount}\n";
-
-// Change rebill settings
-$response = $api->paymentPlans->updatePaymentplan(
-    paymentplanId: 789,
-    rebillTimes: 12,  // Change from unlimited to 12 payments
-    rebillInterval: 30
-);
-
-// Deactivate payment plan
-$response = $api->paymentPlans->updatePaymentplan(
-    paymentplanId: 789,
-    isActive: false
-);
-
-if (!$response->isActive) {
-    echo "Payment plan deactivated\n";
-}
-
-// Update with net amounts for VAT
-$response = $api->paymentPlans->updatePaymentplan(
-    paymentplanId: 789,
-    firstAmount: 119.00,
-    firstAmountNet: 100.00,
-    rebillAmount: 59.00,
-    rebillAmountNet: 49.58
-);
-
-// Update multiple settings
-$response = $api->paymentPlans->updatePaymentplan(
-    paymentplanId: 789,
-    name: 'Premium Monthly',
-    firstAmount: 99.00,
-    rebillAmount: 49.00,
-    rebillTimes: 0,
-    rebillInterval: 30,
-    isActive: true
-);
+echo $response->result; // e.g. "success"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid amounts or intervals |
-| 404 | Payment plan not found | Specified payment plan does not exist |
-| 403 | Access denied | No permission to update this payment plan |
-| 409 | Cannot modify | Cannot change plan with active subscriptions |
+`UpdatePaymentplanResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
 
-- Only provided parameters are updated
-- Other settings remain unchanged
-- Changes do NOT affect existing subscriptions
-- New subscriptions will use updated settings
-- Cannot change `product_id` or `currency`
-- Deactivating prevents new subscriptions but keeps existing ones active
-- Consider creating new plan instead of modifying active one
+## Error Handling
+
+```php
+try {
+    $response = $ds24->paymentPlans->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createPaymentplan](createPaymentplan.md)
+- [deletePaymentplan](deletePaymentplan.md)
+- [listPaymentPlans](listPaymentPlans.md)

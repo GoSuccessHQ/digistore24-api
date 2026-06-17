@@ -1,80 +1,56 @@
 # getShippingCostPolicy
 
-Get shipping cost policy details.
+Retrieves detailed information about a specific shipping cost policy.
 
 ## Endpoint
 
-```
-POST /json/getShippingCostPolicy
-```
+**GET** `https://www.digistore24.com/api/call/getShippingCostPolicy`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getShippingCostPolicy.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `policy_id` | int | Yes | Shipping cost policy ID |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'policy_id' => 789,
-        'name' => 'EU Standard Shipping',
-        'product_id' => 123,
-        'product_name' => 'Physical Product',
-        'country_code' => 'DE',
-        'country_name' => 'Germany',
-        'cost' => 5.99,
-        'currency' => 'EUR',
-        'free_shipping_threshold' => 50.00,
-        'is_active' => true,
-        'orders_count' => 245,
-        'created_at' => '2025-01-15T10:00:00Z',
-        'updated_at' => '2025-03-20T14:30:00Z'
-    ]
-]
-```
+- `shippingCostPolicyId` (string, required) — The unique identifier of the shipping cost policy.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Shipping\GetShippingCostPolicyRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get shipping policy details
-$response = $api->shipping->getShippingCostPolicy(
-    policyId: 789
-);
+$request = new GetShippingCostPolicyRequest(shippingCostPolicyId: '112233');
 
-echo "Policy: {$response->name}\n";
-echo "Product: {$response->productName}\n";
-echo "Country: {$response->countryName} ({$response->countryCode})\n";
-echo "Cost: {$response->currency} {$response->cost}\n";
+$response = $ds24->shipping->get($request);
 
-if ($response->freeShippingThreshold) {
-    echo "Free shipping on orders over {$response->currency} {$response->freeShippingThreshold}\n";
-}
-
-echo "Status: " . ($response->isActive ? 'Active' : 'Inactive') . "\n";
-echo "Orders using this policy: {$response->ordersCount}\n";
+echo $response->result;                      // e.g. "success"
+echo $response->shippingCostPolicy['name']; // e.g. "Standard Shipping"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid policy ID |
-| 404 | Policy not found | Specified shipping cost policy does not exist |
-| 403 | Access denied | No permission to view this policy |
+`GetShippingCostPolicyResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `shippingCostPolicy` (array<string, mixed>) — The shipping cost policy details. Read individual values by key, e.g. `$response->shippingCostPolicy['name']`.
 
-- Includes product and country details
-- Shows usage statistics (orders count)
-- Use for policy review and analysis
+## Error Handling
+
+```php
+try {
+    $response = $ds24->shipping->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createShippingCostPolicy](createShippingCostPolicy.md)
+- [updateShippingCostPolicy](updateShippingCostPolicy.md)
+- [deleteShippingCostPolicy](deleteShippingCostPolicy.md)
+- [listShippingCostPolicies](listShippingCostPolicies.md)

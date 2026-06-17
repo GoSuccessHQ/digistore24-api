@@ -1,65 +1,60 @@
 # unregister
 
-Revoke an API key and remove API access.
+Unregisters and revokes the current API access. The API key is no longer valid after this call.
 
 ## Endpoint
 
-```
-POST /json/unregister
-```
+**DELETE** `https://www.digistore24.com/api/call/unregister`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/unregister.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `api_key` | string | Yes | The API key to revoke |
-| `confirm` | bool | Yes | Confirmation flag (must be true) |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'api_key_id' => 'KEY123',
-        'revoked_at' => '2025-10-15 14:30:00',
-        'message' => 'API key has been revoked successfully'
-    ]
-]
-```
+`UnregisterRequest` takes no parameters. The request is optional; calling `$ds24->apiKeys->unregister()` with no arguments creates it for you.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ApiKey\UnregisterRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Revoke API key
-$response = $api->apiKeys->unregister(
-    apiKey: 'KEY-TO-REVOKE',
-    confirm: true
-);
+$response = $ds24->apiKeys->unregister(new UnregisterRequest());
 
-echo "API key revoked at: {$response->revokedAt}\n";
+echo $response->result;                       // e.g. "success"
+echo $response->modified ? 'revoked' : 'unchanged';
+echo $response->note;                         // confirmation message
 ```
 
-## Error Responses
+You can also omit the request entirely:
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Missing confirmation | confirm parameter not set to true |
-| 404 | API key not found | Key does not exist or already revoked |
-| 403 | Cannot revoke active key | Cannot revoke the key being used for the request |
+```php
+$response = $ds24->apiKeys->unregister();
+```
 
-## Notes
+## Response
 
-- **WARNING**: This action is permanent and cannot be undone
-- Revoked keys cannot be reactivated
-- Cannot revoke the key you're currently using
-- All applications using this key will lose access immediately
-- Consider using API key management UI for safer revocation
-- Confirmation parameter is required to prevent accidental revocation
+`UnregisterResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `modified` (bool) — Whether the API key was modified/deleted.
+- `note` (string|null) — Confirmation message from the API.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->apiKeys->unregister(new UnregisterRequest());
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [requestApiKey](requestApiKey.md)
+- [retrieveApiKey](retrieveApiKey.md)

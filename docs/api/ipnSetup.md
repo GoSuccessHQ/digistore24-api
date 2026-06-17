@@ -1,128 +1,92 @@
 # ipnSetup
 
-Setup IPN (Instant Payment Notification) webhook for receiving payment notifications.
+Sets up an IPN (Instant Payment Notification) connection for receiving payment notifications.
 
 ## Endpoint
 
-```
-POST /ipnSetup
-```
+**POST** `https://www.digistore24.com/api/call/ipnSetup`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/ipnSetup.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `ipn_url` | string | Yes | URL where Digistore24 sends the IPN notification |
-| `name` | string | Yes | The name listed on Digistore (e.g. your platform name) |
-| `product_ids` | string | Yes | "all" or a comma-separated list of product IDs |
-| `domain_id` | string | No | Used to delete the IPN connection and ensure uniqueness. Usually your platform name |
-| `categories` | array | No | Transaction categories (orders, affiliations, etickets, customforms, orderform) |
-| `transactions` | array | No | Transaction types (payment, refund, chargeback, payment_missed, payment_denial, rebill_cancelled, rebill_resumed, last_paid_day) |
-| `timing` | string | No | When to send IPN: "before_thankyou" (default) or "delayed" |
-| `sha_passphrase` | string | No | Password for signing parameters. Use "random" for auto-generated 30-char password |
-| `newsletter_send_policy` | string | No | When to send IPN based on newsletter opt-in status |
+## Parameters
 
-## Response
+The request takes scalar and enum constructor arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'domain_id' => 'my-platform',
-        'ipn_url' => 'https://yoursite.com/webhook',
-        'name' => 'My Platform',
-        'created_at' => '2025-10-15 14:30:00'
-    ]
-]
-```
+- `ipnUrl` (string, required) — URL where Digistore24 sends the IPN notification.
+- `name` (string, required) — The name listed on Digistore24 (e.g. your platform name).
+- `productIds` (string, required) — `all` or a comma-separated list of product IDs.
+- `domainId` (string, optional) — Used to delete the IPN connection and ensure uniqueness. Usually your platform name.
+- `categories` (array of `IpnTransactionCategory`, optional) — Transaction categories to receive notifications for. Values: `ORDERS`, `AFFILIATIONS`, `ETICKETS`, `CUSTOMFORMS`, `ORDERFORM`.
+- `transactions` (array of `IpnTransactionType`, optional) — Transaction types to receive notifications for. Defaults to `PAYMENT`, `REFUND`, `CHARGEBACK`, `PAYMENT_MISSED`. Other values: `ALL`, `PAYMENT_DENIAL`, `REBILL_CANCELLED`, `REBILL_RESUMED`, `LAST_PAID_DAY`.
+- `timing` (`IpnTiming`, optional) — Controls when the IPN is sent. Defaults to `IpnTiming::BEFORE_THANKYOU`. Other value: `DELAYED`.
+- `shaPassphrase` (string, optional) — Password for signing parameters. Use `random` for an auto-generated 30-character password.
+- `newsletterSendPolicy` (`IpnNewsletterSendPolicy`, optional) — Controls when to send the IPN based on newsletter opt-in status. Defaults to `IpnNewsletterSendPolicy::SEND_ALWAYS`. Other values: `SEND_IF_NOT_OPTOUT`, `SEND_IF_OPTOUT`, `SEND_IF_OPTIN`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Enum\IpnNewsletterSendPolicy;
-use GoSuccess\Digistore24\Api\Enum\IpnTiming;
+use GoSuccess\Digistore24\Api\Request\Ipn\IpnSetupRequest;
 use GoSuccess\Digistore24\Api\Enum\IpnTransactionCategory;
 use GoSuccess\Digistore24\Api\Enum\IpnTransactionType;
-use GoSuccess\Digistore24\Api\Request\Ipn\IpnSetupRequest;
+use GoSuccess\Digistore24\Api\Enum\IpnTiming;
+use GoSuccess\Digistore24\Api\Enum\IpnNewsletterSendPolicy;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Setup IPN for all products with default settings
 $request = new IpnSetupRequest(
-    ipnUrl: 'https://yoursite.com/webhook',
+    ipnUrl: 'https://example.com/webhooks/digistore24',
     name: 'My Platform',
-    productIds: 'all'
-);
-$response = $api->ipn->setup($request);
-
-// Setup IPN with custom configuration
-$request = new IpnSetupRequest(
-    ipnUrl: 'https://yoursite.com/webhook',
-    name: 'My Platform',
-    productIds: '123,456',
+    productIds: 'all',
     domainId: 'my-platform',
     categories: [
         IpnTransactionCategory::ORDERS,
-        IpnTransactionCategory::AFFILIATIONS
+        IpnTransactionCategory::AFFILIATIONS,
     ],
     transactions: [
         IpnTransactionType::PAYMENT,
         IpnTransactionType::REFUND,
-        IpnTransactionType::CHARGEBACK
+        IpnTransactionType::CHARGEBACK,
     ],
-    timing: IpnTiming::DELAYED,
+    timing: IpnTiming::BEFORE_THANKYOU,
     shaPassphrase: 'random',
-    newsletterSendPolicy: IpnNewsletterSendPolicy::SEND_IF_OPTIN
+    newsletterSendPolicy: IpnNewsletterSendPolicy::SEND_ALWAYS,
 );
-$response = $api->ipn->setup($request);
 
-echo "IPN configured for: {$response->name}";
+$response = $ds24->ipn->setup($request);
+
+echo $response->domainId;      // e.g. "my-platform"
+echo $response->shaPassphrase; // e.g. the generated 30-character passphrase
+echo $response->ipnId;         // e.g. 6789
 ```
 
-## Transaction Types
+## Response
 
-- `all` - All transaction types
-- `payment` - New payment received
-- `refund` - Payment refunded
-- `chargeback` - Chargeback initiated
-- `payment_missed` - Scheduled payment missed
-- `payment_denial` - Payment denied
-- `rebill_cancelled` - Subscription cancelled
-- `rebill_resumed` - Subscription resumed
-- `last_paid_day` - Last payment day notification
+`IpnSetupResponse` exposes typed public properties:
 
-## Transaction Categories
+- `result` (string) — Result status returned by the API.
+- `created` (bool|null) — Whether the IPN was created.
+- `updated` (bool|null) — Whether the IPN was updated.
+- `deleted` (bool|null) — Whether the IPN was deleted.
+- `domainId` (string|null) — Domain ID used to identify the IPN connection.
+- `shaPassphrase` (string|null) — SHA passphrase for signing parameters.
+- `ipnConfigId` (int|null) — IPN configuration ID.
+- `ipnId` (int|null) — IPN ID.
 
-- `orders` - Order transactions
-- `affiliations` - Affiliate transactions
-- `etickets` - E-Ticket transactions
-- `customforms` - Custom form submissions
-- `orderform` - Order form transactions
+## Error Handling
 
-## Newsletter Send Policy
+```php
+try {
+    $response = $ds24->ipn->setup($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
 
-- `send_always` - Always send IPN (default)
-- `send_if_not_optout` - Send if not opted out
-- `send_if_optout` - Send only if opted out
-- `send_if_optin` - Send only if opted in
+## Related Endpoints
 
-## Error Responses
-
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid URL | Webhook URL is invalid or unreachable |
-| 422 | Invalid parameters | Required parameters missing or invalid |
-| 409 | IPN already exists | IPN already configured for this domain_id |
-
-## Notes
-
-- Webhook URL must be publicly accessible via HTTPS
-- Use `domain_id` to uniquely identify your IPN connection
-- Default transactions: payment, refund, chargeback, payment_missed
-- Default timing: before_thankyou
-- Digistore24 will retry failed webhooks automatically
-- Use sha_passphrase="random" for auto-generated secure password
+- [ipnInfo](ipnInfo.md)
+- [ipnDelete](ipnDelete.md)

@@ -1,108 +1,55 @@
 # getUserInfo
 
-Get current user information.
+Retrieves information about the authenticated user/vendor account.
 
 ## Endpoint
 
-```
-POST /json/getUserInfo
-```
+**GET** `https://www.digistore24.com/api/call/getUserInfo`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getUserInfo.yaml)
 
-No parameters required.
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'user_id' => 12345,
-        'vendor_id' => 'VENDOR123',
-        'email' => 'vendor@example.com',
-        'first_name' => 'John',
-        'last_name' => 'Doe',
-        'company' => 'Example Company Ltd.',
-        'street' => 'Main Street 123',
-        'zip' => '12345',
-        'city' => 'Berlin',
-        'country_code' => 'DE',
-        'country_name' => 'Germany',
-        'phone' => '+49 30 12345678',
-        'vat_id' => 'DE123456789',
-        'account_type' => 'business',
-        'account_status' => 'active',
-        'api_access' => true,
-        'products_count' => 15,
-        'total_sales' => 2456,
-        'total_revenue' => 245680.00,
-        'currency' => 'EUR',
-        'created_at' => '2020-05-15T10:00:00Z',
-        'verified_at' => '2020-05-16T14:30:00Z'
-    ]
-]
-```
+This endpoint takes no parameters. The request can be omitted entirely, in which case the resource creates one for you.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\User\GetUserInfoRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get current user information (no parameters needed)
-$response = $api->users->getInfo();
+// The request argument is optional; $ds24->users->getInfo() works as well.
+$response = $ds24->users->getInfo(new GetUserInfoRequest());
 
-echo "User ID: {$response->userId}\n";
-echo "Vendor ID: {$response->vendorId}\n";
-echo "Name: {$response->firstName} {$response->lastName}\n";
-echo "Email: {$response->email}\n";
-echo "Company: {$response->company}\n\n";
+echo $response->result; // e.g. "success"
 
-echo "Address:\n";
-echo "{$response->street}\n";
-echo "{$response->zip} {$response->city}\n";
-echo "{$response->countryName}\n\n";
+// The account details are returned as an associative array.
+$email = $response->userInfo['email'] ?? null;
+$name = $response->userInfo['name'] ?? null;
+```
 
-echo "Account:\n";
-echo "Type: {$response->accountType}\n";
-echo "Status: {$response->accountStatus}\n";
-echo "API Access: " . ($response->apiAccess ? 'Yes' : 'No') . "\n\n";
+## Response
 
-echo "Statistics:\n";
-echo "Products: {$response->productsCount}\n";
-echo "Total Sales: {$response->totalSales}\n";
-echo "Total Revenue: {$response->currency} {$response->totalRevenue}\n";
+`GetUserInfoResponse` exposes typed public properties:
 
-// Check account status
-if ($response->accountStatus === 'active') {
-    echo "\nAccount is active and verified\n";
-} else {
-    echo "\nWarning: Account status is {$response->accountStatus}\n";
-}
+- `result` (string) — Result status returned by the API.
+- `userInfo` (array) — The user account details as an associative array; read individual fields via `$response->userInfo['key']`.
 
-// Check API access
-if (!$response->apiAccess) {
-    echo "Warning: API access is disabled\n";
+## Error Handling
+
+```php
+try {
+    $response = $ds24->users->getInfo(new GetUserInfoRequest());
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Error Responses
+## Related Endpoints
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 401 | Unauthorized | Invalid API key |
-| 403 | Access denied | API key does not have permission |
-
-## Notes
-
-- Returns information for the API key owner
-- Account types: `personal`, `business`
-- Account status: `active`, `suspended`, `closed`
-- Statistics updated daily
-- Use for account verification and dashboard displays
-- VAT ID only present for business accounts in EU
+- [getPurchaseTracking](getPurchaseTracking.md)

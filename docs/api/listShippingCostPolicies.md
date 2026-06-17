@@ -1,64 +1,16 @@
 # listShippingCostPolicies
 
-List all shipping cost policies.
+Retrieves a list of all shipping cost policies.
 
 ## Endpoint
 
-```
-POST /json/listShippingCostPolicies
-```
+**GET** `https://www.digistore24.com/api/call/listShippingCostPolicies`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listShippingCostPolicies.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | No | Filter by product ID |
-| `country_code` | string | No | Filter by country code |
-| `is_active` | bool | No | Filter by active status |
-| `limit` | int | No | Results per page (default: 100, max: 500) |
-| `offset` | int | No | Pagination offset |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'policies' => [
-            [
-                'policy_id' => 789,
-                'name' => 'Germany Standard',
-                'product_id' => 123,
-                'product_name' => 'Physical Product',
-                'country_code' => 'DE',
-                'country_name' => 'Germany',
-                'cost' => 5.99,
-                'currency' => 'EUR',
-                'free_shipping_threshold' => 50.00,
-                'is_active' => true,
-                'orders_count' => 245
-            ],
-            [
-                'policy_id' => 790,
-                'name' => 'US Standard',
-                'product_id' => 123,
-                'product_name' => 'Physical Product',
-                'country_code' => 'US',
-                'country_name' => 'United States',
-                'cost' => 12.99,
-                'currency' => 'USD',
-                'free_shipping_threshold' => 100.00,
-                'is_active' => true,
-                'orders_count' => 187
-            ]
-            // ... more policies
-        ],
-        'total' => 35,
-        'limit' => 100,
-        'offset' => 0
-    ]
-]
-```
+This endpoint takes no parameters. The request can be omitted entirely.
 
 ## Usage Example
 
@@ -66,57 +18,47 @@ POST /json/listShippingCostPolicies
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all shipping policies
-$response = $api->shipping->listShippingCostPolicies(
-    limit: 50
-);
+$response = $ds24->shipping->list();
 
-echo "Total policies: {$response->total}\n\n";
-foreach ($response->policies as $policy) {
-    echo "ID: {$policy->policyId}\n";
-    echo "Name: {$policy->name}\n";
-    echo "Country: {$policy->countryName}\n";
-    echo "Cost: {$policy->currency} {$policy->cost}\n";
-    echo "Orders: {$policy->ordersCount}\n\n";
+echo $response->result; // e.g. "success"
+
+foreach ($response->shippingCostPolicies as $policy) {
+    echo $policy['name'];
 }
-
-// Filter by product
-$response = $api->shipping->listShippingCostPolicies(
-    productId: 123
-);
-
-// Filter by country
-$response = $api->shipping->listShippingCostPolicies(
-    countryCode: 'DE'
-);
-
-// Filter active policies only
-$response = $api->shipping->listShippingCostPolicies(
-    isActive: true
-);
-
-// Combined filters
-$response = $api->shipping->listShippingCostPolicies(
-    productId: 123,
-    countryCode: 'US',
-    isActive: true
-);
 ```
 
-## Error Responses
+You may also pass an explicit `ListShippingCostPoliciesRequest`:
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid filter values or pagination parameters |
+```php
+use GoSuccess\Digistore24\Api\Request\Shipping\ListShippingCostPoliciesRequest;
 
-## Notes
+$response = $ds24->shipping->list(new ListShippingCostPoliciesRequest());
+```
 
-- Results ordered by creation date (newest first)
-- Includes usage statistics (orders count)
-- Max 500 results per request
-- Use pagination for large result sets
-- Filter combinations supported
+## Response
+
+`ListShippingCostPoliciesResponse` exposes:
+
+- `result` (string) — Result status returned by the API.
+- `shippingCostPolicies` (array<string, mixed>) — List of shipping cost policies. Iterate and read each entry by key, e.g. `$policy['name']`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->shipping->list();
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createShippingCostPolicy](createShippingCostPolicy.md)
+- [getShippingCostPolicy](getShippingCostPolicy.md)
+- [updateShippingCostPolicy](updateShippingCostPolicy.md)
+- [deleteShippingCostPolicy](deleteShippingCostPolicy.md)

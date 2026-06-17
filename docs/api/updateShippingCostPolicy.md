@@ -1,108 +1,88 @@
 # updateShippingCostPolicy
 
-Update an existing shipping cost policy.
+Updates an existing shipping cost policy's configuration.
 
 ## Endpoint
 
-```
-POST /json/updateShippingCostPolicy
-```
+**PUT** `https://www.digistore24.com/api/call/updateShippingCostPolicy`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updateShippingCostPolicy.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `policy_id` | int | Yes | Shipping cost policy ID |
-| `name` | string | No | Policy name |
-| `cost` | float | No | Shipping cost |
-| `free_shipping_threshold` | float | No | Order value for free shipping |
-| `is_active` | bool | No | Active status |
+## Parameters
 
-## Response
+- `shippingCostPolicyId` (string, required) — The unique identifier of the shipping cost policy to update.
+- `policy` (`ShippingCostPolicyData`, required) — The updated shipping cost policy configuration.
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'policy_id' => 789,
-        'name' => 'Updated EU Standard Shipping',
-        'product_id' => 123,
-        'country_code' => 'DE',
-        'cost' => 6.99,
-        'currency' => 'EUR',
-        'free_shipping_threshold' => 45.00,
-        'is_active' => true,
-        'updated_at' => '2025-03-20T23:45:00Z'
-    ]
-]
-```
+The `policy` argument wraps a `ShippingCostPolicyData` DTO with the following settable properties:
+
+- `name` (string, required) — Name of the shipping cost policy. Must not exceed 63 characters.
+- `labels` (array<string, string>, optional) — Order-form labels keyed by two-letter language code (e.g. `['en' => 'Shipping', 'de' => 'Versand']`). Each label may be at most 63 characters.
+- `position` (int, optional) — Display position. Must be positive. Defaults to `100`.
+- `isActive` (bool, optional) — Whether the policy is active. Defaults to `true`.
+- `forProductIds` (string, optional) — Comma-separated list of product IDs the policy applies to. Defaults to `"all"`.
+- `forCountries` (string, optional) — Comma-separated list of ISO country codes (e.g. `US,DE`). Defaults to `"all"`.
+- `forCurrencies` (string, optional) — Comma-separated list of currency codes (e.g. `USD,EUR`). Defaults to `"all"`.
+- `feeType` (string, optional) — Type of fee calculation: `total_fee` or `fee_per_unit`. Defaults to `total_fee`.
+- `billingCycle` (string, optional) — When the fee is charged: `once` or `monthly`. Defaults to `once`.
+- `currency` (string, optional) — 3-letter currency code for the fees (e.g. `USD`, `EUR`).
+- `scaleLevelCount` (int, optional) — Number of discount levels (1–5). Defaults to `1`.
+- `scale1Amount` (float, optional) — Base shipping cost amount (>= 0).
+- `scale2From` (int, optional) — Number of items for the second discount level.
+- `scale2Amount` (float, optional) — Shipping cost for `scale2From` or more items (>= 0).
+- `scale3From` (int, optional) — Number of items for the third discount level.
+- `scale3Amount` (float, optional) — Shipping cost for `scale3From` or more items (>= 0).
+- `scale4From` (int, optional) — Number of items for the fourth discount level.
+- `scale4Amount` (float, optional) — Shipping cost for `scale4From` or more items (>= 0).
+- `scale5From` (int, optional) — Number of items for the fifth discount level.
+- `scale5Amount` (float, optional) — Shipping cost for `scale5From` or more items (>= 0).
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Shipping\UpdateShippingCostPolicyRequest;
+use GoSuccess\Digistore24\Api\DTO\ShippingCostPolicyData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update policy name
-$response = $api->shipping->updateShippingCostPolicy(
-    policyId: 789,
-    name: 'Updated EU Standard Shipping'
+$policy = new ShippingCostPolicyData();
+$policy->name = 'Standard Shipping';
+$policy->currency = 'EUR';
+$policy->scale1Amount = 5.95;
+$policy->isActive = true;
+
+$request = new UpdateShippingCostPolicyRequest(
+    shippingCostPolicyId: '112233',
+    policy: $policy,
 );
 
-echo "Policy updated: {$response->name}\n";
+$response = $ds24->shipping->update($request);
 
-// Update shipping cost
-$response = $api->shipping->updateShippingCostPolicy(
-    policyId: 789,
-    cost: 6.99
-);
-
-echo "New cost: {$response->currency} {$response->cost}\n";
-
-// Update free shipping threshold
-$response = $api->shipping->updateShippingCostPolicy(
-    policyId: 789,
-    freeShippingThreshold: 45.00
-);
-
-// Remove free shipping threshold
-$response = $api->shipping->updateShippingCostPolicy(
-    policyId: 789,
-    freeShippingThreshold: 0
-);
-
-// Deactivate policy
-$response = $api->shipping->updateShippingCostPolicy(
-    policyId: 789,
-    isActive: false
-);
-
-// Update multiple settings
-$response = $api->shipping->updateShippingCostPolicy(
-    policyId: 789,
-    name: 'Premium EU Shipping',
-    cost: 7.99,
-    freeShippingThreshold: 60.00,
-    isActive: true
-);
+echo $response->result; // e.g. "success"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid cost or policy ID |
-| 404 | Policy not found | Specified shipping cost policy does not exist |
-| 403 | Access denied | No permission to update this policy |
+`UpdateShippingCostPolicyResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
 
-- Only provided parameters are updated
-- Other settings remain unchanged
-- Cannot change product_id or country_code (create new policy instead)
-- Changes apply to new orders immediately
-- Existing orders use original shipping cost
+## Error Handling
+
+```php
+try {
+    $response = $ds24->shipping->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createShippingCostPolicy](createShippingCostPolicy.md)
+- [getShippingCostPolicy](getShippingCostPolicy.md)
+- [deleteShippingCostPolicy](deleteShippingCostPolicy.md)
+- [listShippingCostPolicies](listShippingCostPolicies.md)

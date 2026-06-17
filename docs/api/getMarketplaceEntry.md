@@ -1,73 +1,87 @@
 # getMarketplaceEntry
 
-Get details of a marketplace entry.
+Retrieves detailed information and statistics about a specific marketplace entry.
 
 ## Endpoint
 
-```
-POST /json/getMarketplaceEntry
-```
+**GET** `https://www.digistore24.com/api/call/getMarketplaceEntry`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getMarketplaceEntry.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `entry_id` | int | Yes | Marketplace entry ID |
+## Parameters
 
-## Response
+The request takes a single scalar constructor argument:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'entry_id' => 123,
-        'product_id' => 12345,
-        'title' => 'My Product',
-        'description' => 'Product description',
-        'category' => 'Software',
-        'price' => 99.99,
-        'currency' => 'EUR',
-        'is_active' => true,
-        'views' => 1500,
-        'sales' => 45,
-        'rating' => 4.5,
-        'reviews_count' => 12,
-        'created_at' => '2025-01-15 10:00:00'
-    ]
-]
-```
+- `entryId` (string, required) — The unique identifier of the marketplace entry to retrieve.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Marketplace\GetMarketplaceEntryRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get marketplace entry
-$response = $api->marketplace->getMarketplaceEntry(
-    entryId: 123
-);
+$request = new GetMarketplaceEntryRequest(entryId: '12345');
 
-echo "Product: {$response->title}\n";
-echo "Views: {$response->views}\n";
-echo "Sales: {$response->sales}\n";
-echo "Rating: {$response->rating}/5 ({$response->reviewsCount} reviews)\n";
+$response = $ds24->marketplace->get($request);
+
+echo $response->headline;        // e.g. "Premium Online Course"
+echo $response->price;           // e.g. 99.0
+echo $response->currency;        // e.g. "EUR"
+echo $response->statsStars;      // e.g. 4.5
+echo $response->statsCountOrders;// e.g. 450
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 404 | Entry not found | Marketplace entry does not exist |
-| 403 | Access denied | Not authorized to access this entry |
+`GetMarketplaceEntryResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `id` (int|null) — Marketplace entry ID.
+- `mainProductId` (int|null) — ID of the main product.
+- `allProductIds` (list<int>) — IDs of all products in the entry.
+- `approvalStatus` (string|null) — Approval status of the entry.
+- `approvalStatusMsg` (string|null) — Human-readable approval status message.
+- `price` (float|null) — Price of the product.
+- `currency` (string|null) — Currency code for the price.
+- `priceMsg` (string|null) — Formatted price message.
+- `language` (string|null) — Language of the entry.
+- `isPriceMsgOverriden` (bool|null) — Whether the price message is overridden.
+- `productCategoryId` (int|null) — Category ID.
+- `productCategory` (string|null) — Category name.
+- `headline` (string|null) — Entry headline.
+- `description` (string|null) — Entry description.
+- `affiliateShare` (float|null) — Affiliate commission share.
+- `productCreatedAt` (DateTimeImmutable|null) — When the product was created.
+- `statsIsValid` (bool|null) — Whether the statistics are valid.
+- `statsUpdatedAt` (DateTimeImmutable|null) — When the statistics were last updated.
+- `statsSellerRank` (int|null) — Seller rank.
+- `statsSellerRankCategory` (int|null) — Seller rank within the category.
+- `statsStars` (float|null) — Average star rating.
+- `statsAffiliateProfitVisitor` (float|null) — Affiliate profit per visitor.
+- `statsAffiliateProfitSale` (float|null) — Affiliate profit per sale.
+- `statsCountOrdersWAff` (int|null) — Number of orders with affiliates.
+- `statsCancelRate` (float|null) — Cancellation rate.
+- `statsRevenue` (float|null) — Total revenue.
+- `statsCountAffiliatesWithSales` (int|null) — Number of affiliates with sales.
+- `statsConversionRate` (float|null) — Conversion rate.
+- `statsCountOrders` (int|null) — Total number of orders.
 
-- Returns detailed marketplace performance metrics
-- Rating is average of all customer reviews (1-5 scale)
-- Views count unique visitors to the marketplace listing
-- Use for monitoring marketplace performance
+## Error Handling
+
+```php
+try {
+    $response = $ds24->marketplace->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [listMarketplaceEntries](listMarketplaceEntries.md)
+- [statsMarketplace](statsMarketplace.md)

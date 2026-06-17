@@ -1,78 +1,18 @@
 # getBuyer
 
-Get detailed information about a buyer.
+Retrieves a single buyer's contact details by buyer ID or email address.
 
 ## Endpoint
 
-```
-GET /getBuyer
-```
+**GET** `https://www.digistore24.com/api/call/getBuyer`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getBuyer.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `buyer_id` | string | Yes | Buyer ID or email address |
+## Parameters
 
-## Response Fields
+`GetBuyerRequest` takes the following constructor argument:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `buyer` | object | Buyer data object |
-
-### Buyer Object
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Buyer ID |
-| `address_id` | string | Address ID |
-| `email` | string | Email address |
-| `salutation` | string | Salutation code (M, F, or empty) |
-| `salutation_msg` | string | Salutation message |
-| `title` | string | Academic or professional title |
-| `first_name` | string | First name |
-| `last_name` | string | Last name |
-| `company` | string | Company name |
-| `street` | string | Full street address |
-| `street_name` | string | Street name (without number) |
-| `street_number` | string | Street number |
-| `street2` | string | Additional address line |
-| `zipcode` | string | ZIP/Postal code |
-| `city` | string | City name |
-| `state` | string | State/Province |
-| `country` | string | Country code (ISO 3166-1 alpha-2) |
-| `phone_no` | string | Phone number |
-| `buyer_type` | string | Buyer type: "business", "consumer", "common", "vendor" |
-| `created_at` | string | Creation timestamp (YYYY-MM-DD HH:MM:SS) |
-
-## Response Structure (PHP)
-
-```php
-GetBuyerResponse {
-  +buyer: BuyerData {
-    +id: ?int
-    +addressId: ?int
-    +email: string
-    +salutation: ?Salutation
-    +salutationMsg: ?string
-    +title: ?string
-    +firstName: ?string
-    +lastName: ?string
-    +company: ?string
-    +street: ?string
-    +streetName: ?string
-    +streetNumber: ?string
-    +street2: ?string
-    +zipcode: ?string
-    +city: ?string
-    +state: ?string
-    +country: ?string
-    +phoneNo: ?string
-    +buyerType: ?BuyerType
-    +createdAt: ?DateTimeImmutable
-  }
-}
-```
+- `buyerId` (string, required) — The buyer ID or the buyer's email address.
 
 ## Usage Example
 
@@ -81,38 +21,40 @@ use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 use GoSuccess\Digistore24\Api\Request\Buyer\GetBuyerRequest;
 
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get buyer by ID
-$request = new GetBuyerRequest(buyerId: '18141656');
-$response = $api->buyers->get($request);
+$request = new GetBuyerRequest(buyerId: 'customer@example.com');
 
-// Access buyer data
-$buyer = $response->buyer;
-echo "Buyer: {$buyer->firstName} {$buyer->lastName}\n";
-echo "Email: {$buyer->email}\n";
-echo "Company: {$buyer->company}\n";
-echo "Type: {$buyer->buyerType?->value}\n";
-echo "Created: {$buyer->createdAt?->format('Y-m-d H:i:s')}\n";
+$response = $ds24->buyers->get($request);
 
-// Get buyer by email
-$request = new GetBuyerRequest(buyerId: 'paul@gosuccess.io');
-$response = $api->buyers->get($request);
+echo $response->result;             // e.g. "success"
+echo $response->buyer->id;          // e.g. 12345
+echo $response->buyer->email;       // e.g. "customer@example.com"
+echo $response->buyer->firstName;   // e.g. "John"
+echo $response->buyer->lastName;    // e.g. "Doe"
+echo $response->buyer->country;     // e.g. "DE"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 401 | Unauthorized | Invalid or missing API key |
-| 403 | Forbidden | Insufficient access rights |
-| 404 | Not found | Buyer with specified ID does not exist |
+`GetBuyerResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `buyer` (`BuyerData`|null) — The buyer record. Notable read-only properties include `id` (int), `addressId` (int), `email` (string), `salutation` (`Salutation`), `title`, `firstName`, `lastName`, `company`, `street`, `streetName`, `streetNumber`, `street2`, `city`, `zipcode`, `state`, `country`, `phoneNo`, `taxId`, `buyerType` (`BuyerType`), and `createdAt` (`DateTimeImmutable`).
 
-- Accepts buyer ID or email address as `buyer_id` parameter
-- Returns comprehensive buyer and address information
-- Country codes follow ISO 3166-1 alpha-2 standard
-- Buyer type indicates whether buyer is business or consumer
-- Created timestamp is in the format YYYY-MM-DD HH:MM:SS
+## Error Handling
+
+```php
+try {
+    $response = $ds24->buyers->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [listBuyers](listBuyers.md)
+- [updateBuyer](updateBuyer.md)

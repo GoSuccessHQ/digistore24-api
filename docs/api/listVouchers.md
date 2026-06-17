@@ -1,96 +1,59 @@
 # listVouchers
 
-List all vouchers in your Digistore24 account.
+Retrieves a list of all vouchers / discount codes.
 
 ## Endpoint
 
-```
-POST /json/listVouchers
-```
+**POST** `https://www.digistore24.com/api/call/listVouchers`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listVouchers.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `limit` | int | No | Maximum number of results (default: 100, max: 1000) |
-| `offset` | int | No | Offset for pagination (default: 0) |
-| `active_only` | bool | No | Filter for active vouchers only |
-| `product_id` | int | No | Filter by product ID |
-| `search` | string | No | Search term for voucher code |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'vouchers' => [
-            [
-                'voucher_id' => 789,
-                'code' => 'SUMMER2025',
-                'discount_type' => 'percentage',
-                'discount_value' => 20.0,
-                'valid_from' => '2025-06-01 00:00:00',
-                'valid_until' => '2025-08-31 23:59:59',
-                'max_uses' => 100,
-                'uses' => 45,
-                'is_active' => true
-            ],
-            // ... more vouchers
-        ],
-        'total' => 25,
-        'limit' => 100,
-        'offset' => 0
-    ]
-]
-```
+This endpoint takes no parameters. The request can be omitted entirely, in which case the resource creates one for you.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Voucher\ListVouchersRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all vouchers
-$response = $api->vouchers->listVouchers(
-    limit: 50
-);
+// The request argument is optional; $ds24->vouchers->list() works as well.
+$response = $ds24->vouchers->list(new ListVouchersRequest());
 
-foreach ($response->vouchers as $voucher) {
-    echo "{$voucher->code}: {$voucher->uses}/{$voucher->maxUses} uses\n";
+foreach ($response->coupons as $voucher) {
+    echo $voucher->code;      // e.g. "SAVE20"
+    echo $voucher->firstRate; // e.g. 20.0
+    echo $voucher->countLeft; // e.g. 50
 }
-
-// List only active vouchers
-$response = $api->vouchers->listVouchers(
-    activeOnly: true,
-    limit: 100
-);
-
-// Search for specific voucher
-$response = $api->vouchers->listVouchers(
-    search: 'SUMMER'
-);
-
-// Filter by product
-$response = $api->vouchers->listVouchers(
-    productId: 123
-);
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid limit or offset |
-| 403 | Access denied | Not authorized to list vouchers |
+`ListVouchersResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `coupons` (array of `VoucherData`) — The list of vouchers. Each item exposes readable properties such as `id`, `code`, `productIds`, `validFrom`, `expiresAt`, `firstRate`, `otherRates`, `firstAmount`, `otherAmounts`, `currency`, `isCountLimited`, `countLeft`, and `upgradePolicy`.
+- `areReturnedDataPublic` (bool) — Whether the returned data is public.
 
-- Results are ordered by creation date (newest first)
-- Use pagination for large result sets
-- Active vouchers are within valid date range and not expired
-- Maximum 1000 results per request
+## Error Handling
+
+```php
+try {
+    $response = $ds24->vouchers->list(new ListVouchersRequest());
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createVoucher](createVoucher.md)
+- [getVoucher](getVoucher.md)
+- [updateVoucher](updateVoucher.md)
+- [deleteVoucher](deleteVoucher.md)

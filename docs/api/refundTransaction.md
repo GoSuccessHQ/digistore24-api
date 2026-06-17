@@ -1,105 +1,62 @@
 # refundTransaction
 
-Refund a transaction.
+Processes a full refund for a specific transaction.
 
 ## Endpoint
 
-```
-POST /json/refundTransaction
-```
+**POST** `https://www.digistore24.com/api/call/refundTransaction`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/refundTransaction.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `transaction_id` | string | Yes | Transaction ID to refund |
-| `amount` | float | No | Partial refund amount (empty = full refund) |
-| `reason` | string | No | Reason for refund |
+## Parameters
 
-## Response
+`RefundTransactionRequest` takes the following constructor arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'refund_id' => 'REF-98765',
-        'transaction_id' => 'TXN-12345',
-        'purchase_id' => 'ABCD1234',
-        'refunded_amount' => 99.00,
-        'currency' => 'EUR',
-        'reason' => 'Customer request',
-        'status' => 'completed',
-        'refunded_at' => '2025-03-20T15:30:00Z'
-    ]
-]
-```
+- `transactionId` (string, required) — The unique identifier of the transaction to refund.
+- `force` (bool, optional) — Force the refund even if it is outside the refund period. Defaults to `null`.
+- `requestDate` (string, optional) — Custom request date in `YYYY-MM-DD` format. Defaults to `null`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Transaction\RefundTransactionRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Full refund
-$response = $api->transactions->refundTransaction(
-    transactionId: 'TXN-12345'
+$request = new RefundTransactionRequest(
+    transactionId: 'TX-12345',
+    force: true,
 );
 
-echo "Refund ID: {$response->refundId}\n";
-echo "Amount: {$response->currency} {$response->refundedAmount}\n";
-echo "Status: {$response->status}\n";
+$response = $ds24->transactions->refund($request);
 
-// Full refund with reason
-$response = $api->transactions->refundTransaction(
-    transactionId: 'TXN-12345',
-    reason: 'Customer not satisfied'
-);
+echo $response->result;                       // e.g. "success"
+echo $response->status;                       // refund status
+echo $response->modified === 'Y' ? 'refunded' : 'unchanged';
+```
 
-// Partial refund
-$response = $api->transactions->refundTransaction(
-    transactionId: 'TXN-12345',
-    amount: 49.50,
-    reason: 'Partial service provided'
-);
+## Response
 
-echo "Partial refund of {$response->currency} {$response->refundedAmount}\n";
+`RefundTransactionResponse` exposes typed public properties:
 
-// Example: Refund with error handling
+- `result` (string) — Result status returned by the API.
+- `status` (string) — The refund status.
+- `modified` (string) — Whether the transaction was modified: `Y` or `N`.
+
+## Error Handling
+
+```php
 try {
-    $response = $api->transactions->refundTransaction(
-        transactionId: 'TXN-12345',
-        reason: 'Duplicate payment'
-    );
-    
-    if ($response->status === 'completed') {
-        echo "Refund processed successfully\n";
-        echo "Refund ID: {$response->refundId}\n";
-    }
-} catch (\Exception $e) {
-    echo "Refund failed: {$e->getMessage()}\n";
+    $response = $ds24->transactions->refund($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Error Responses
+## Related Endpoints
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid transaction ID or amount |
-| 404 | Transaction not found | Specified transaction does not exist |
-| 403 | Access denied | No permission to refund this transaction |
-| 409 | Already refunded | Transaction has already been refunded |
-| 409 | Refund exceeds amount | Partial refund amount exceeds transaction amount |
-
-## Notes
-
-- Full refund if amount not specified
-- Partial refunds supported
-- Cannot refund more than original amount
-- Cannot refund already refunded transactions
-- Refund processed immediately or within 1-3 business days
-- Customer receives email notification
-- Access to product may be revoked
+- [listTransactions](listTransactions.md)

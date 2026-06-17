@@ -1,82 +1,66 @@
 # stopRebilling
 
-Stop rebilling for a purchase.
+Stops automatic rebilling for a purchase or subscription.
 
 ## Endpoint
 
-```
-POST /json/stopRebilling
-```
+**POST** `https://www.digistore24.com/api/call/stopRebilling`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/stopRebilling.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `purchase_id` | string | Yes | Purchase ID |
-| `reason` | string | No | Reason for stopping (cancellation, payment_failed, etc.) |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'purchase_id' => 'ABCD1234',
-        'rebilling_status' => 'stopped',
-        'stopped_at' => '2025-03-20T22:30:00Z',
-        'reason' => 'Customer cancellation',
-        'access_until' => '2025-04-20'
-    ]
-]
-```
+- `purchaseId` (string, required) — The unique identifier of the purchase whose rebilling should be stopped.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Rebilling\StopRebillingRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Stop rebilling without reason
-$response = $api->rebilling->stopRebilling(
-    purchaseId: 'ABCD1234'
-);
+$request = new StopRebillingRequest(purchaseId: 'ABCD1234');
 
-echo "Rebilling Status: {$response->rebillingStatus}\n";
-echo "Stopped at: {$response->stoppedAt}\n";
-echo "Access until: {$response->accessUntil}\n";
+$response = $ds24->rebilling->stop($request);
 
-// Stop with reason
-$response = $api->rebilling->stopRebilling(
-    purchaseId: 'ABCD1234',
-    reason: 'Customer cancellation'
-);
-
-echo "Subscription cancelled: {$response->reason}\n";
-
-// Stop due to payment failure
-$response = $api->rebilling->stopRebilling(
-    purchaseId: 'ABCD1234',
-    reason: 'payment_failed'
-);
+echo $response->result;                     // e.g. "success"
+echo $response->data?->billingStatusMsg;    // human-readable status message
+echo $response->data?->canCancelBefore;     // earliest possible cancellation date
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid purchase ID |
-| 404 | Purchase not found | Specified purchase does not exist |
-| 403 | Access denied | No permission to stop rebilling |
-| 409 | Already stopped | Rebilling already stopped for this purchase |
+`StopRebillingResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (`?RebillingData`) — Typed rebilling details including cancellation information, or `null` when the API returns no payload. Relevant properties:
+  - `modified` (bool) — Whether rebilling was modified.
+  - `note` (?string) — Note text on the outcome.
+  - `code` (?string) — Code indicating the outcome.
+  - `billingStatus` (?string) — Current billing status.
+  - `billingStatusMsg` (?string) — Human-readable billing status message.
+  - `nextPaymentAt` (?DateTimeImmutable) — Date of the next payment.
+  - `rebillingActive` (bool) — Whether rebilling is still active.
+  - `isCancelledNow` (?bool) — Whether the order is canceled immediately.
+  - `isCancelledLater` (?bool) — Whether the order is canceled later.
+  - `canCancelBefore` (?string) — Earliest possible cancellation date.
 
-- Cancels future automatic payments
-- Customer retains access until current period ends
-- Can be restarted later with `startRebilling`
-- Common reasons: `cancellation`, `payment_failed`, `refund`, `customer_request`
-- Does not refund current period
+## Error Handling
+
+```php
+try {
+    $response = $ds24->rebilling->stop($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [startRebilling](startRebilling.md)
+- [createRebillingPayment](createRebillingPayment.md)
+- [listRebillingStatusChanges](listRebillingStatusChanges.md)

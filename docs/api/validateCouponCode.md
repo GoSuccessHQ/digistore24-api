@@ -1,78 +1,67 @@
 # validateCouponCode
 
-Validate a coupon/voucher code for a product.
+Validates a coupon or voucher code and returns its details.
 
 ## Endpoint
 
-```
-POST /json/validateCouponCode
-```
+**GET** `https://www.digistore24.com/api/call/validateCouponCode`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/validateCouponCode.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `code` | string | Yes | Coupon/voucher code |
-| `product_id` | int | No | Product ID to validate against |
-| `cart_amount` | float | No | Cart amount for minimum order validation |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'valid' => true,
-        'code' => 'SUMMER2025',
-        'voucher_id' => 789,
-        'discount_type' => 'percentage',
-        'discount_value' => 20.0,
-        'applicable' => true,
-        'minimum_order_value' => 0.00,
-        'valid_until' => '2025-08-31 23:59:59',
-        'uses_remaining' => 50,
-        'message' => '20% discount applied'
-    ]
-]
-```
+- `code` (string, required) — The coupon or voucher code to validate.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ConversionTool\ValidateCouponCodeRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Validate coupon code
-$response = $api->conversionTools->validateCouponCode(
-    code: 'SUMMER2025',
-    productId: 12345,
-    cartAmount: 150.00
-);
+$request = new ValidateCouponCodeRequest(code: 'SAVE20');
 
-if ($response->valid && $response->applicable) {
-    echo "Valid! {$response->message}\n";
-    echo "Discount: {$response->discountValue}%\n";
+$response = $ds24->conversionTools->validateCoupon($request);
+
+if ($response->isValid()) {
+    echo $response->couponId;    // e.g. 12345
+    echo $response->amountLeft;  // e.g. 49.0
+    echo $response->amountTotal; // e.g. 100.0
+    echo $response->currency;    // e.g. "EUR"
 } else {
-    echo "Invalid or not applicable\n";
+    echo $response->statusMsg;   // human-readable reason
 }
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 404 | Code not found | Coupon code does not exist |
-| 410 | Code expired | Coupon has expired |
-| 422 | Not applicable | Code not valid for this product/amount |
+`ValidateCouponCodeResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `status` (string) — Validation status (`success` or `error`).
+- `statusMsg` (string) — Human-readable status message.
+- `currency` (string|null) — Currency code of the voucher.
+- `couponId` (int|null) — ID of the voucher.
+- `amountLeft` (float|null) — Remaining amount that can be used from this voucher.
+- `amountTotal` (float|null) — Total amount of the voucher.
+- `isTestPayment` (bool|null) — Whether the voucher can only be used for test payments.
 
-- Returns validation details even if code is invalid
-- Check both `valid` and `applicable` flags
-- `applicable` checks product and minimum order requirements
-- `uses_remaining` shows how many times code can still be used
-- Useful for real-time coupon validation in checkout
+The convenience method `isValid()` returns `true` when `status` equals `success`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->conversionTools->validateCoupon($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [listConversionTools](listConversionTools.md)

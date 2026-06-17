@@ -1,117 +1,63 @@
 # listRebillingStatusChanges
 
-List rebilling status changes for a purchase.
+Retrieves a list of rebilling status changes within a date range.
 
 ## Endpoint
 
-```
-POST /json/listRebillingStatusChanges
-```
+**GET** `https://www.digistore24.com/api/call/listRebillingStatusChanges`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listRebillingStatusChanges.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `purchase_id` | string | Yes | Purchase ID |
-| `start_date` | string | No | Start date (Y-m-d) |
-| `end_date` | string | No | End date (Y-m-d) |
-| `limit` | int | No | Results per page (default: 100, max: 500) |
-| `offset` | int | No | Pagination offset |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'purchase_id' => 'ABCD1234',
-        'changes' => [
-            [
-                'change_id' => 1001,
-                'old_status' => null,
-                'new_status' => 'active',
-                'reason' => 'Initial purchase',
-                'changed_at' => '2025-01-20T10:00:00Z',
-                'changed_by' => 'system'
-            ],
-            [
-                'change_id' => 1002,
-                'old_status' => 'active',
-                'new_status' => 'stopped',
-                'reason' => 'Customer cancellation',
-                'changed_at' => '2025-03-15T14:30:00Z',
-                'changed_by' => 'customer'
-            ],
-            [
-                'change_id' => 1003,
-                'old_status' => 'stopped',
-                'new_status' => 'active',
-                'reason' => 'Reactivated by customer',
-                'changed_at' => '2025-03-20T22:45:00Z',
-                'changed_by' => 'vendor'
-            ]
-            // ... more changes
-        ],
-        'total' => 3,
-        'limit' => 100,
-        'offset' => 0
-    ]
-]
-```
+- `from` (string, optional) — Start date for the range. Format: `YYYY-MM-DD`. Defaults to `null`.
+- `to` (string, optional) — End date for the range. Format: `YYYY-MM-DD`. Defaults to `null`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Rebilling\ListRebillingStatusChangesRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all status changes for purchase
-$response = $api->rebilling->listRebillingStatusChanges(
-    purchaseId: 'ABCD1234'
+$request = new ListRebillingStatusChangesRequest(
+    from: '2026-01-01',
+    to: '2026-01-31',
 );
 
-echo "Total changes: {$response->total}\n\n";
-foreach ($response->changes as $change) {
-    echo "Change #{$change->changeId}\n";
-    echo "  From: " . ($change->oldStatus ?? 'N/A') . "\n";
-    echo "  To: {$change->newStatus}\n";
-    echo "  Reason: {$change->reason}\n";
-    echo "  When: {$change->changedAt}\n";
-    echo "  By: {$change->changedBy}\n\n";
+$response = $ds24->rebilling->listStatusChanges($request);
+
+foreach ($response->statusChanges as $change) {
+    echo $change['purchase_id'] ?? '';
+    echo $change['new_status'] ?? '';
 }
-
-// Filter by date range
-$response = $api->rebilling->listRebillingStatusChanges(
-    purchaseId: 'ABCD1234',
-    startDate: '2025-01-01',
-    endDate: '2025-12-31'
-);
-
-// Pagination
-$response = $api->rebilling->listRebillingStatusChanges(
-    purchaseId: 'ABCD1234',
-    limit: 20,
-    offset: 0
-);
 ```
 
-## Error Responses
+The request is optional. Call `$ds24->rebilling->listStatusChanges()` with no arguments to use the API defaults.
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid purchase ID or date format |
-| 404 | Purchase not found | Specified purchase does not exist |
-| 403 | Access denied | No permission to view rebilling changes |
+## Response
 
-## Notes
+`ListRebillingStatusChangesResponse` exposes:
 
-- Shows complete history of subscription status changes
-- Status values: `active`, `stopped`, `paused`, `failed`
-- Changed by: `system`, `customer`, `vendor`, `payment_processor`
-- Results ordered by change date (newest first)
-- Max 500 results per request
-- Use for subscription lifecycle analysis
+- `result` (string) — Result status returned by the API.
+- `statusChanges` (array) — Status change entries. Each entry is an associative array; read values via keys, e.g. `$change['purchase_id']`, `$change['new_status']`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->rebilling->listStatusChanges($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [startRebilling](startRebilling.md)
+- [stopRebilling](stopRebilling.md)
+- [createRebillingPayment](createRebillingPayment.md)

@@ -1,81 +1,59 @@
 # listCountries
 
-List all supported countries with codes and names.
+Retrieves all available countries with localized names and VAT information.
 
 ## Endpoint
 
-```
-POST /json/listCountries
-```
+**GET** `https://www.digistore24.com/api/call/listCountries`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listCountries.yaml)
 
-No parameters required.
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'countries' => [
-            [
-                'code' => 'DE',
-                'name' => 'Germany',
-                'name_de' => 'Deutschland',
-                'name_en' => 'Germany',
-                'eu_member' => true,
-                'vat_rate' => 19.0
-            ],
-            [
-                'code' => 'AT',
-                'name' => 'Austria',
-                'name_de' => 'Österreich',
-                'name_en' => 'Austria',
-                'eu_member' => true,
-                'vat_rate' => 20.0
-            ],
-            // ... more countries
-        ],
-        'total' => 249
-    ]
-]
-```
+This endpoint takes no parameters. The request can be omitted entirely, in which case the resource creates one for you.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Country\ListCountriesRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get all countries (no parameters needed)
-$response = $api->countries->listCountries();
+// The request argument is optional; $ds24->countries->listCountries() works as well.
+$response = $ds24->countries->listCountries(new ListCountriesRequest());
+
+echo $response->total; // e.g. 250
 
 foreach ($response->countries as $country) {
-    echo "{$country->code}: {$country->name}\n";
-    if ($country->euMember) {
-        echo "  VAT Rate: {$country->vatRate}%\n";
-    }
+    echo $country->code;     // e.g. "DE"
+    echo $country->name;     // e.g. "Germany"
+    echo $country->euMember; // e.g. true
+    echo $country->vatRate;  // e.g. 19.0
 }
-
-// Build country selector
-$countries = $response->countries;
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 500 | Server error | Internal error retrieving countries |
+`ListCountriesResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `countries` (array of `CountryData`) — The list of countries. Each item exposes readable properties: `code`, `name`, `nameDe`, `nameEn`, `euMember`, and `vatRate`.
+- `total` (int) — Total number of countries returned.
 
-- Country codes are ISO 3166-1 alpha-2
-- Includes localized names (German and English)
-- EU member status for VAT calculations
-- VAT rates may change; cache with expiration
-- Use for address forms and shipping calculations
+## Error Handling
+
+```php
+try {
+    $response = $ds24->countries->listCountries(new ListCountriesRequest());
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [listCurrencies](listCurrencies.md)

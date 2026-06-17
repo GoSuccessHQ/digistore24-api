@@ -1,86 +1,62 @@
 # getVoucher
 
-Get details of a specific voucher.
+Retrieves the details of a single voucher by its code or ID.
 
 ## Endpoint
 
-```
-POST /json/getVoucher
-```
+**GET** `https://www.digistore24.com/api/call/getVoucher`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getVoucher.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `voucher_id` | int | Yes* | Voucher ID |
-| `code` | string | Yes* | Voucher code |
+## Parameters
 
-*One of `voucher_id` or `code` is required.
-
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'voucher_id' => 789,
-        'code' => 'SUMMER2025',
-        'discount_type' => 'percentage',
-        'discount_value' => 20.0,
-        'currency' => null,
-        'product_ids' => [123, 456],
-        'valid_from' => '2025-06-01 00:00:00',
-        'valid_until' => '2025-08-31 23:59:59',
-        'max_uses' => 100,
-        'uses' => 45,
-        'max_uses_per_buyer' => 1,
-        'minimum_order_value' => 0.00,
-        'is_active' => true,
-        'created_at' => '2025-05-15 10:00:00'
-    ]
-]
-```
+- `code` (string, required) — The voucher code or ID to look up.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Voucher\GetVoucherRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get voucher by code
-$response = $api->vouchers->getVoucher(
-    code: 'SUMMER2025'
-);
+$request = new GetVoucherRequest(code: 'SAVE20');
 
-echo "Voucher: {$response->code}";
-echo "Discount: {$response->discountValue}%";
-echo "Uses: {$response->uses}/{$response->maxUses}";
+$response = $ds24->vouchers->get($request);
 
-// Get voucher by ID
-$response = $api->vouchers->getVoucher(
-    voucherId: 789
-);
+$voucher = $response->voucher; // VoucherData|null
 
-if ($response->isActive) {
-    echo "Voucher is currently active";
+if ($voucher !== null) {
+    echo $voucher->code;          // e.g. "SAVE20"
+    echo $voucher->firstRate;     // e.g. 20.0
+    echo $voucher->productIds;    // e.g. "all"
+    echo $voucher->upgradePolicy; // e.g. "valid"
 }
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Missing parameter | Neither voucher_id nor code provided |
-| 404 | Voucher not found | Voucher does not exist |
-| 403 | Access denied | Not authorized to access this voucher |
+`GetVoucherResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `voucher` (`VoucherData`|null) — The voucher details. Useful readable properties include `id`, `code`, `productIds`, `validFrom`, `expiresAt`, `firstRate`, `otherRates`, `firstAmount`, `otherAmounts`, `currency`, `isCountLimited`, `countLeft`, and `upgradePolicy`.
 
-- Returns all voucher details including usage statistics
-- Use `code` for customer-facing validations
-- Use `voucher_id` for administrative tasks
-- Check `is_active` and date range for validity
+## Error Handling
+
+```php
+try {
+    $response = $ds24->vouchers->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createVoucher](createVoucher.md)
+- [updateVoucher](updateVoucher.md)
+- [deleteVoucher](deleteVoucher.md)
+- [listVouchers](listVouchers.md)

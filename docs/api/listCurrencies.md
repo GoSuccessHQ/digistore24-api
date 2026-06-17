@@ -1,80 +1,59 @@
 # listCurrencies
 
-List all supported currencies.
+Retrieves all available currencies with their pricing limits.
 
 ## Endpoint
 
-```
-POST /json/listCurrencies
-```
+**GET** `https://www.digistore24.com/api/call/listCurrencies`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listCurrencies.yaml)
 
-No parameters required.
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'currencies' => [
-            [
-                'code' => 'EUR',
-                'symbol' => '€',
-                'name' => 'Euro',
-                'decimal_places' => 2
-            ],
-            [
-                'code' => 'USD',
-                'symbol' => '$',
-                'name' => 'US Dollar',
-                'decimal_places' => 2
-            ],
-            [
-                'code' => 'GBP',
-                'symbol' => '£',
-                'name' => 'British Pound',
-                'decimal_places' => 2
-            ],
-            // ... more currencies
-        ],
-        'total' => 150
-    ]
-]
-```
+- `convertTo` (string, optional) — A 3-letter currency code. When provided, price limits are converted to this target currency.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Country\ListCurrenciesRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get all currencies
-$response = $api->countries->listCurrencies();
+// The request argument is optional; $ds24->countries->listCurrencies() works as well.
+$request = new ListCurrenciesRequest(convertTo: 'EUR');
+
+$response = $ds24->countries->listCurrencies($request);
 
 foreach ($response->currencies as $currency) {
-    echo "{$currency->code} ({$currency->symbol}): {$currency->name}\n";
+    echo $currency->code;     // e.g. "USD"
+    echo $currency->symbol;   // e.g. "$"
+    echo $currency->name;     // e.g. "US Dollar"
+    echo $currency->minPrice; // e.g. 1.0
+    echo $currency->maxPrice; // e.g. 10000.0
 }
-
-// Build currency selector
-$currencies = array_column($response->currencies, 'code');
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 500 | Server error | Internal error retrieving currencies |
+`ListCurrenciesResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `currencies` (array of `CurrencyData`) — The list of currencies. Each item exposes readable properties: `id`, `code`, `symbol`, `minPrice`, `maxPrice`, and `name`.
 
-- Currency codes are ISO 4217
-- Includes currency symbols for display
-- Decimal places indicate precision (usually 2)
-- Use for multi-currency pricing
-- Exchange rates not included (use separate service)
+## Error Handling
+
+```php
+try {
+    $response = $ds24->countries->listCurrencies($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [listCountries](listCountries.md)

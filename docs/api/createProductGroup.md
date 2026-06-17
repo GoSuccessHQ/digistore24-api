@@ -1,87 +1,67 @@
 # createProductGroup
 
-Create a new product group.
+Creates a new product group for organizing related products.
 
 ## Endpoint
 
-```
-POST /json/createProductGroup
-```
+**POST** `https://www.digistore24.com/api/call/createProductGroup`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/createProductGroup.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `name` | string | Yes | Product group name |
-| `description` | string | No | Group description |
-| `product_ids` | array | No | Array of product IDs to add |
-| `is_active` | bool | No | Active status (default: true) |
+## Parameters
 
-## Response
+The request wraps a `ProductGroupData` DTO. Populate the following settable properties before passing it to the request:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_group_id' => 567,
-        'name' => 'Premium Bundle',
-        'description' => 'Collection of premium products',
-        'product_ids' => [123, 124, 125],
-        'product_count' => 3,
-        'is_active' => true,
-        'created_at' => '2025-03-20T20:00:00Z'
-    ]
-]
-```
+- `name` (string, required) — Product group name. Must not exceed 31 characters.
+- `position` (int, optional) — The display order. Must be positive. Defaults to `10`.
+- `isShownAsTab` (bool, optional) — If `true`, the group is displayed as a tab in the product list. Defaults to `false`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ProductGroup\CreateProductGroupRequest;
+use GoSuccess\Digistore24\Api\DTO\ProductGroupData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create product group
-$response = $api->productGroups->createProductGroup(
-    name: 'Premium Bundle'
-);
+$productGroup = new ProductGroupData();
+$productGroup->name = 'Premium Bundle';
+$productGroup->position = 20;
+$productGroup->isShownAsTab = true;
 
-echo "Product Group ID: {$response->productGroupId}\n";
-echo "Name: {$response->name}\n";
+$request = new CreateProductGroupRequest(productGroup: $productGroup);
 
-// Create with products
-$response = $api->productGroups->createProductGroup(
-    name: 'Complete Course Bundle',
-    description: 'All courses in one package',
-    productIds: [123, 124, 125]
-);
+$response = $ds24->productGroups->create($request);
 
-echo "Created group with {$response->productCount} products\n";
-
-// Create detailed group
-$response = $api->productGroups->createProductGroup(
-    name: 'Starter Package',
-    description: 'Perfect for beginners',
-    productIds: [101, 102],
-    isActive: true
-);
+echo $response->result;                // e.g. "success"
+echo $response->getProductGroupId();   // e.g. "567"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Missing name or invalid product IDs |
-| 404 | Product not found | One or more product IDs do not exist |
-| 403 | Access denied | No permission to create product groups |
+`CreateProductGroupResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (array<string, mixed>) — Raw response payload. Read individual values by key, e.g. `$response->data['product_group_id']`.
+- `getProductGroupId(): ?string` — Convenience accessor returning the ID of the newly created product group.
 
-- Product groups used for organizing products
-- Products can be in multiple groups
-- Use for bundle offers or product categories
-- Groups can be used in reporting and analytics
-- Add products during creation or later via update
+## Error Handling
+
+```php
+try {
+    $response = $ds24->productGroups->create($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getProductGroup](getProductGroup.md)
+- [updateProductGroup](updateProductGroup.md)
+- [deleteProductGroup](deleteProductGroup.md)
+- [listProductGroups](listProductGroups.md)

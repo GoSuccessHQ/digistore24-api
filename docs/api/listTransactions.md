@@ -1,139 +1,85 @@
 # listTransactions
 
-List all transactions.
+Retrieves a paginated and filterable list of transactions.
 
 ## Endpoint
 
-```
-POST /json/listTransactions
-```
+**POST** `https://www.digistore24.com/api/call/listTransactions`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listTransactions.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `purchase_id` | string | No | Filter by purchase ID |
-| `product_id` | int | No | Filter by product ID |
-| `transaction_type` | string | No | Filter by type (sale, refund, chargeback, rebilling) |
-| `status` | string | No | Filter by status (completed, pending, failed, cancelled) |
-| `start_date` | string | No | Start date (Y-m-d) |
-| `end_date` | string | No | End date (Y-m-d) |
-| `limit` | int | No | Results per page (default: 100, max: 500) |
-| `offset` | int | No | Pagination offset |
+## Parameters
 
-## Response
+`ListTransactionsRequest` takes the following constructor arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'transactions' => [
-            [
-                'transaction_id' => 'TXN-12345',
-                'purchase_id' => 'ABCD1234',
-                'product_id' => 123,
-                'product_name' => 'Premium Course',
-                'buyer_email' => 'customer@example.com',
-                'transaction_type' => 'sale',
-                'amount' => 99.00,
-                'currency' => 'EUR',
-                'payment_method' => 'credit_card',
-                'status' => 'completed',
-                'created_at' => '2025-03-15T10:30:00Z'
-            ],
-            [
-                'transaction_id' => 'TXN-12346',
-                'purchase_id' => 'ABCD1234',
-                'product_id' => 123,
-                'product_name' => 'Premium Course',
-                'buyer_email' => 'customer@example.com',
-                'transaction_type' => 'rebilling',
-                'amount' => 29.00,
-                'currency' => 'EUR',
-                'payment_method' => 'credit_card',
-                'status' => 'completed',
-                'created_at' => '2025-04-15T10:00:00Z'
-            ]
-            // ... more transactions
-        ],
-        'total' => 1245,
-        'limit' => 100,
-        'offset' => 0
-    ]
-]
-```
+- `from` (string, optional) — Start time, e.g. `2014-02-28 23:11:24`, `now`, `-3d`, or `start`. Defaults to `-24h`.
+- `to` (string, optional) — End time. Defaults to `now`.
+- `search` (`TransactionSearchData`, optional) — Search criteria for filtering. Defaults to `null`.
+- `sortBy` (`TransactionSortBy`, optional) — Sort criteria: `TransactionSortBy::DATE`, `EARNING`, or `AMOUNT`. Defaults to `TransactionSortBy::DATE`.
+- `sortOrder` (`SortOrder`, optional) — Sort order: `SortOrder::ASC` or `SortOrder::DESC`. Defaults to `SortOrder::ASC`.
+- `pageNo` (int, optional) — Page number, starting at 1. Defaults to `1`.
+- `pageSize` (int, optional) — Number of items per page. Defaults to `500`.
+
+`TransactionSearchData` constructor arguments (all optional): `role`, `productId`, `firstName`, `lastName`, `email`, `hasAffiliate` (bool), `affiliateName`, `payMethod`, `billingType`, `transactionType` (e.g. `payment`, `refund`, `chargeback`, `refund_request`), `currency`, `purchaseId`. Comma-separated values are supported where multiple entries apply.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Transaction\ListTransactionsRequest;
+use GoSuccess\Digistore24\Api\DTO\TransactionSearchData;
+use GoSuccess\Digistore24\Api\Enum\TransactionSortBy;
+use GoSuccess\Digistore24\Api\Enum\SortOrder;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all transactions
-$response = $api->transactions->listTransactions(
-    limit: 50
+$search = new TransactionSearchData(
+    transactionType: 'payment',
+    currency: 'EUR',
 );
 
-echo "Total transactions: {$response->total}\n\n";
-foreach ($response->transactions as $txn) {
-    echo "ID: {$txn->transactionId}\n";
-    echo "Type: {$txn->transactionType}\n";
-    echo "Amount: {$txn->currency} {$txn->amount}\n";
-    echo "Status: {$txn->status}\n";
-    echo "Date: {$txn->createdAt}\n\n";
+$request = new ListTransactionsRequest(
+    from: '-7d',
+    to: 'now',
+    search: $search,
+    sortBy: TransactionSortBy::DATE,
+    sortOrder: SortOrder::DESC,
+    pageNo: 1,
+    pageSize: 100,
+);
+
+$response = $ds24->transactions->list($request);
+
+echo $response->result; // e.g. "success"
+
+foreach ($response->transactionList as $transaction) {
+    // $transaction is an associative array of transaction fields
+    echo $transaction['id'] ?? '', PHP_EOL;
 }
-
-// Filter by purchase
-$response = $api->transactions->listTransactions(
-    purchaseId: 'ABCD1234'
-);
-
-// Filter by product
-$response = $api->transactions->listTransactions(
-    productId: 123
-);
-
-// Filter by type
-$response = $api->transactions->listTransactions(
-    transactionType: 'refund'
-);
-
-// Filter by status
-$response = $api->transactions->listTransactions(
-    status: 'failed'
-);
-
-// Filter by date range
-$response = $api->transactions->listTransactions(
-    startDate: '2025-01-01',
-    endDate: '2025-12-31'
-);
-
-// Combined filters
-$response = $api->transactions->listTransactions(
-    productId: 123,
-    transactionType: 'sale',
-    status: 'completed',
-    startDate: '2025-03-01',
-    endDate: '2025-03-31'
-);
 ```
 
-## Error Responses
+The request is optional. Calling `$ds24->transactions->list()` with no arguments returns the last 24 hours using the defaults.
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid filter values or pagination parameters |
+## Response
 
-## Notes
+`ListTransactionsResponse` exposes typed public properties:
 
-- Transaction types: `sale`, `refund`, `chargeback`, `rebilling`
-- Status values: `completed`, `pending`, `failed`, `cancelled`
-- Results ordered by creation date (newest first)
-- Max 500 results per request
-- Use pagination for large result sets
-- Filter combinations supported
+- `result` (string) — Result status returned by the API.
+- `transactionList` (array) — The matching transactions, each represented as an associative array of fields. Read individual values with `$transaction['key']`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->transactions->list($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [refundTransaction](refundTransaction.md)

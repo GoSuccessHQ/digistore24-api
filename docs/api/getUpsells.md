@@ -1,95 +1,59 @@
 # getUpsells
 
-Get upsells for a product.
+Retrieves the upsell configuration for a specific product.
 
 ## Endpoint
 
-```
-POST /json/getUpsells
-```
+**GET** `https://www.digistore24.com/api/call/getUpsells`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getUpsells.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | Yes | Product ID |
+## Parameters
 
-## Response
+The request takes a single scalar constructor argument:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_id' => 123,
-        'product_name' => 'Basic Course',
-        'upsells' => [
-            [
-                'upsell_id' => 456,
-                'product_id' => 124,
-                'product_name' => 'Premium Course',
-                'price' => 149.00,
-                'currency' => 'EUR',
-                'position' => 1,
-                'is_active' => true,
-                'conversions_count' => 67,
-                'conversion_rate' => 8.9
-            ],
-            [
-                'upsell_id' => 457,
-                'product_id' => 125,
-                'product_name' => 'VIP Course',
-                'price' => 299.00,
-                'currency' => 'EUR',
-                'position' => 2,
-                'is_active' => true,
-                'conversions_count' => 34,
-                'conversion_rate' => 4.5
-            ]
-            // ... more upsells
-        ],
-        'total_upsells' => 2
-    ]
-]
-```
+- `productId` (int, required) — The unique identifier of the product whose upsell configuration should be returned.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Upsell\GetUpsellsRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get upsells for product
-$response = $api->upsells->getUpsells(
-    productId: 123
-);
+$request = new GetUpsellsRequest(productId: 1234567);
 
-echo "Product: {$response->productName}\n";
-echo "Total Upsells: {$response->totalUpsells}\n\n";
+$response = $ds24->upsells->get($request);
 
-foreach ($response->upsells as $upsell) {
-    echo "Position {$upsell->position}: {$upsell->productName}\n";
-    echo "Price: {$upsell->currency} {$upsell->price}\n";
-    echo "Conversions: {$upsell->conversionsCount} ({$upsell->conversionRate}%)\n";
-    echo "Status: " . ($upsell->isActive ? 'Active' : 'Inactive') . "\n\n";
+echo $response->result; // e.g. "success"
+
+foreach ($response->upsells as $key => $value) {
+    // inspect the upsell configuration entries
 }
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid product ID |
-| 404 | Product not found | Specified product does not exist |
-| 403 | Access denied | No permission to view upsells for this product |
+`GetUpsellsResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `upsells` (array) — The upsell configuration for the product. Read as `$response->upsells['key']`.
 
-- Upsells displayed after checkout in order of position
-- Position determines display order (1 = first)
-- Conversion rate = (conversions / offers shown) * 100
-- Use for optimizing upsell funnels
-- Inactive upsells not shown to customers
+## Error Handling
+
+```php
+try {
+    $response = $ds24->upsells->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [updateUpsells](updateUpsells.md)
+- [deleteUpsells](deleteUpsells.md)

@@ -1,73 +1,69 @@
 # setReferringAffiliate
 
-Set or update the referring affiliate for a customer.
+Assigns a referring affiliate to a specific purchase.
 
 ## Endpoint
 
-```
-POST /json/setReferringAffiliate
-```
+**POST** `https://www.digistore24.com/api/call/setReferringAffiliate`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/setReferringAffiliate.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `email` | string | Yes | Customer email address |
-| `affiliate_code` | string | Yes* | Affiliate code |
-| `affiliate_id` | int | Yes* | Affiliate ID |
+## Parameters
 
-*One of `affiliate_code` or `affiliate_id` is required.
+`SetReferringAffiliateRequest` takes the following constructor arguments:
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'email' => 'customer@example.com',
-        'affiliate_id' => 789,
-        'affiliate_code' => 'AFFILIATE123',
-        'set_at' => '2025-10-15 14:30:00'
-    ]
-]
-```
+- `purchaseId` (string, required) — The purchase ID.
+- `affiliateId` (string, required) — The Digistore24 ID of the affiliate to assign.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Affiliate\SetReferringAffiliateRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Set affiliate by code
-$response = $api->affiliates->setReferringAffiliate(
-    email: 'customer@example.com',
-    affiliateCode: 'AFFILIATE123'
+$request = new SetReferringAffiliateRequest(
+    purchaseId: 'ABC123XYZ',
+    affiliateId: 'max_mustermann',
 );
 
-echo "Affiliate set for {$response->email}\n";
+$response = $ds24->affiliates->setReferring($request);
 
-// Set affiliate by ID
-$response = $api->affiliates->setReferringAffiliate(
-    email: 'customer@example.com',
-    affiliateId: 789
-);
+echo $response->affiliateId;   // e.g. 789
+echo $response->affiliateCode; // e.g. "max_mustermann"
+echo $response->email;         // e.g. "customer@example.com"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Missing required parameters |
-| 404 | Affiliate not found | Affiliate does not exist |
-| 422 | Invalid email | Email format is invalid |
+`SetReferringAffiliateResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `email` (string) — The customer email.
+- `affiliateId` (int|null) — The affiliate ID.
+- `affiliateCode` (string|null) — Affiliate code.
+- `setAt` (DateTimeInterface|null) — Timestamp when the affiliate was set.
 
-- Assigns affiliate to customer for future purchases
-- Overrides any existing affiliate assignment
-- Does not affect past purchases
-- Useful for manual affiliate assignment or corrections
+## Error Handling
+
+```php
+use GoSuccess\Digistore24\Api\Exception\ValidationException;
+use GoSuccess\Digistore24\Api\Exception\ApiException;
+
+try {
+    $response = $ds24->affiliates->setReferring($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getReferringAffiliate](getReferringAffiliate.md)
+- [setAffiliateForEmail](setAffiliateForEmail.md)
+- [validateAffiliate](validateAffiliate.md)
+- [getAffiliateCommission](getAffiliateCommission.md)

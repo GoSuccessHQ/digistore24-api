@@ -1,77 +1,85 @@
 # updateAffiliateCommission
 
-Update affiliate commission settings for a product.
+Updates the affiliate commission settings for a specific affiliate and product.
 
 ## Endpoint
 
-```
-POST /json/updateAffiliateCommission
-```
+**PUT** `https://www.digistore24.com/api/call/updateAffiliateCommission`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updateAffiliateCommission.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | Yes | Product ID |
-| `commission_rate` | float | No | Commission rate (percentage) |
-| `first_level_commission` | float | No | First level commission rate |
-| `second_level_commission` | float | No | Second level commission rate |
-| `is_affiliate_enabled` | bool | No | Enable/disable affiliate program |
+## Parameters
 
-## Response
+`UpdateAffiliateCommissionRequest` takes the following constructor arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_id' => 12345,
-        'commission_rate' => 60.0,
-        'first_level_commission' => 60.0,
-        'second_level_commission' => 15.0,
-        'is_affiliate_enabled' => true,
-        'updated_at' => '2025-10-15 14:30:00'
-    ]
-]
-```
+- `productId` (int, required) — The product ID the commission applies to.
+- `affiliateId` (string, required) — The Digistore24 ID of the affiliate.
+- `commission` (`AffiliateCommissionData`, required) — The commission settings. Populate the following settable properties:
+  - `commissionRate` (float, optional) — Commission percentage. Must be between 0 and 100.
+  - `commissionFix` (float, optional) — Fixed commission amount in the specified currency. Must be >= 0.
+  - `commissionCurrency` (string, optional) — 3-letter currency code for the fixed commission (e.g. `USD`, `EUR`). Stored uppercase.
+  - `approvalStatus` (`AffiliateApprovalStatus`, optional) — Approval status of the affiliation: `AffiliateApprovalStatus::NEW`, `APPROVED`, `REJECTED`, or `PENDING`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Affiliate\UpdateAffiliateCommissionRequest;
+use GoSuccess\Digistore24\Api\DTO\AffiliateCommissionData;
+use GoSuccess\Digistore24\Api\Enum\AffiliateApprovalStatus;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update commission rates
-$response = $api->affiliates->updateAffiliateCommission(
+$commission = new AffiliateCommissionData();
+$commission->commissionRate = 35.0;
+$commission->commissionCurrency = 'EUR';
+$commission->approvalStatus = AffiliateApprovalStatus::APPROVED;
+
+$request = new UpdateAffiliateCommissionRequest(
     productId: 12345,
-    commissionRate: 60.0,
-    firstLevelCommission: 60.0,
-    secondLevelCommission: 15.0
+    affiliateId: 'max_mustermann',
+    commission: $commission,
 );
 
-echo "Commission updated to {$response->commissionRate}%\n";
+$response = $ds24->affiliates->updateCommission($request);
 
-// Disable affiliate program
-$response = $api->affiliates->updateAffiliateCommission(
-    productId: 12345,
-    isAffiliateEnabled: false
-);
+echo $response->productId;      // e.g. 12345
+echo $response->commissionRate; // e.g. 35.0
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid commission rate (must be 0-100) |
-| 404 | Product not found | Product does not exist |
-| 403 | Access denied | Not authorized to update this product |
+`UpdateAffiliateCommissionResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `productId` (int) — The product ID.
+- `commissionRate` (float|null) — Commission rate (percentage).
+- `firstLevelCommission` (float|null) — First level commission rate.
+- `secondLevelCommission` (float|null) — Second level commission rate.
+- `isAffiliateEnabled` (bool) — Whether the affiliate program is enabled.
+- `updatedAt` (DateTimeInterface|null) — Timestamp of the update.
 
-- Only provided fields will be updated
-- Commission rates must be between 0 and 100
-- Changes apply to future sales immediately
-- Existing affiliate links remain valid
+## Error Handling
+
+```php
+use GoSuccess\Digistore24\Api\Exception\ValidationException;
+use GoSuccess\Digistore24\Api\Exception\ApiException;
+
+try {
+    $response = $ds24->affiliates->updateCommission($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+Note: assigning an out-of-range value to the DTO (for example `commissionRate = 150.0`) throws an `\InvalidArgumentException` immediately, before the request is sent.
+
+## Related Endpoints
+
+- [getAffiliateCommission](getAffiliateCommission.md)
+- [validateAffiliate](validateAffiliate.md)
+- [getAffiliateForEmail](getAffiliateForEmail.md)
+- [setAffiliateForEmail](setAffiliateForEmail.md)

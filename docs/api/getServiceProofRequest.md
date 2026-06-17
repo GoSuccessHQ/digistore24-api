@@ -1,89 +1,59 @@
 # getServiceProofRequest
 
-Get service proof request details.
+Retrieves detailed information about a specific service proof request.
 
 ## Endpoint
 
-```
-POST /json/getServiceProofRequest
-```
+**GET** `https://www.digistore24.com/api/call/getServiceProofRequest`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getServiceProofRequest.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `request_id` | int | Yes | Service proof request ID |
+## Parameters
 
-## Response
+The request takes a single scalar constructor argument:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'request_id' => 456,
-        'purchase_id' => 'ABCD1234',
-        'buyer_email' => 'customer@example.com',
-        'product_name' => 'Premium Course',
-        'requested_at' => '2025-03-15T10:00:00Z',
-        'status' => 'pending',
-        'deadline' => '2025-03-29T23:59:59Z',
-        'documents' => [
-            [
-                'document_id' => 789,
-                'filename' => 'service_proof.pdf',
-                'uploaded_at' => '2025-03-18T14:30:00Z',
-                'size' => 245678
-            ]
-        ],
-        'notes' => 'Customer requested service proof for tax purposes'
-    ]
-]
-```
+- `serviceProofRequestId` (string, required) — The unique identifier of the service proof request to retrieve.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ServiceProof\GetServiceProofRequestRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get service proof request details
-$response = $api->serviceProofs->getServiceProofRequest(
-    requestId: 456
-);
+$request = new GetServiceProofRequestRequest(serviceProofRequestId: 'SPR-12345');
 
-echo "Request ID: {$response->requestId}\n";
-echo "Purchase: {$response->purchaseId}\n";
-echo "Product: {$response->productName}\n";
-echo "Status: {$response->status}\n";
-echo "Deadline: {$response->deadline}\n";
+$response = $ds24->serviceProofs->get($request);
 
-if (!empty($response->documents)) {
-    echo "\nDocuments uploaded:\n";
-    foreach ($response->documents as $doc) {
-        echo "  - {$doc->filename} ({$doc->size} bytes)\n";
-    }
-}
+echo $response->result; // e.g. "success"
 
-if ($response->notes) {
-    echo "\nNotes: {$response->notes}\n";
+// Inspect the request details
+$proof = $response->serviceProofRequest;
+echo $proof['request_status'] ?? '';
+```
+
+## Response
+
+`GetServiceProofRequestResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `serviceProofRequest` (array) — The service proof request details. Read as `$response->serviceProofRequest['key']`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->serviceProofs->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Error Responses
+## Related Endpoints
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid request ID |
-| 404 | Request not found | Specified service proof request does not exist |
-| 403 | Access denied | No permission to view this request |
-
-## Notes
-
-- Service proof required for certain products/countries
-- Status values: `pending`, `submitted`, `approved`, `rejected`
-- Typical deadline is 14 days from request date
-- Documents can be uploaded via API or dashboard
+- [listServiceProofRequests](listServiceProofRequests.md)
+- [updateServiceProofRequest](updateServiceProofRequest.md)

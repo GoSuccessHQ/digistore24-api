@@ -1,142 +1,69 @@
 # updateUpsells
 
-Update upsells for a product.
+Updates the upsell configuration for a specific product.
 
 ## Endpoint
 
-```
-POST /json/updateUpsells
-```
+**PUT** `https://www.digistore24.com/api/call/updateUpsells`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updateUpsells.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | Yes | Product ID |
-| `upsells` | array | Yes | Array of upsell configurations |
+## Parameters
 
-Each upsell object:
-- `product_id` (int, required): Upsell product ID
-- `position` (int, required): Display position
-- `is_active` (bool, optional): Active status
+The request takes scalar constructor arguments:
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_id' => 123,
-        'product_name' => 'Basic Course',
-        'upsells' => [
-            [
-                'upsell_id' => 456,
-                'product_id' => 124,
-                'product_name' => 'Premium Course',
-                'position' => 1,
-                'is_active' => true
-            ],
-            [
-                'upsell_id' => 457,
-                'product_id' => 125,
-                'product_name' => 'VIP Course',
-                'position' => 2,
-                'is_active' => true
-            ]
-        ],
-        'updated_at' => '2025-03-21T01:15:00Z'
-    ]
-]
-```
+- `productId` (int, required) — The unique identifier of the product to update.
+- `data` (array, required) — The upsell configuration (upsell products, order, conditions, etc.). The keys are merged into the request alongside `product_id`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Upsell\UpdateUpsellsRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update upsells for product
-$response = $api->upsells->updateUpsells(
-    productId: 123,
-    upsells: [
-        [
-            'product_id' => 124,
-            'position' => 1,
-            'is_active' => true
+$request = new UpdateUpsellsRequest(
+    productId: 1234567,
+    data: [
+        'upsells' => [
+            ['product_id' => 2345678, 'position' => 1],
+            ['product_id' => 3456789, 'position' => 2],
         ],
-        [
-            'product_id' => 125,
-            'position' => 2,
-            'is_active' => true
-        ]
-    ]
+    ],
 );
 
-echo "Upsells updated for: {$response->productName}\n";
-echo "Total upsells: " . count($response->upsells) . "\n";
+$response = $ds24->upsells->update($request);
 
-// Add single upsell
-$response = $api->upsells->updateUpsells(
-    productId: 123,
-    upsells: [
-        [
-            'product_id' => 124,
-            'position' => 1,
-            'is_active' => true
-        ]
-    ]
-);
-
-// Deactivate specific upsell
-$response = $api->upsells->updateUpsells(
-    productId: 123,
-    upsells: [
-        [
-            'product_id' => 124,
-            'position' => 1,
-            'is_active' => false  // Deactivated
-        ],
-        [
-            'product_id' => 125,
-            'position' => 2,
-            'is_active' => true
-        ]
-    ]
-);
-
-// Reorder upsells
-$response = $api->upsells->updateUpsells(
-    productId: 123,
-    upsells: [
-        [
-            'product_id' => 125,
-            'position' => 1  // Now first
-        ],
-        [
-            'product_id' => 124,
-            'position' => 2  // Now second
-        ]
-    ]
-);
+if ($response->wasSuccessful()) {
+    echo 'Upsell configuration updated.';
+}
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid product IDs or positions |
-| 404 | Product not found | Specified product does not exist |
-| 403 | Access denied | No permission to update upsells for this product |
+`UpdateUpsellsResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
 
-- Replaces entire upsell configuration
-- To remove all upsells, pass empty array
-- Position must be unique for each upsell
-- Positions determine display order (1 = first)
-- Changes take effect immediately
-- Cannot upsell product to itself
+It also provides a helper method:
+
+- `wasSuccessful()` (bool) — Returns `true` when `result` equals `"success"`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->upsells->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getUpsells](getUpsells.md)
+- [deleteUpsells](deleteUpsells.md)

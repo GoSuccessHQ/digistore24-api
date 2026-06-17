@@ -1,119 +1,67 @@
-# List E-Ticket Locations
+# listEticketLocations
 
-Lists all available e-ticket event locations.
+Lists all e-ticket event locations available in your account.
 
 ## Endpoint
 
-`GET /listEticketLocations`
+**GET** `https://www.digistore24.com/api/call/listEticketLocations`
 
-## Description
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listEticketLocations.yaml)
 
-Retrieves a simple list of all event locations configured for e-tickets in your account. Use this to get location IDs when creating e-tickets.
+## Parameters
 
-## Request Parameters
+`ListEticketLocationsRequest` takes no constructor arguments.
 
-No parameters required.
+The request is optional. Call `$ds24->etickets->listLocations()` with no argument.
 
-## Response
-
-### Success Response (200 OK)
-
-```json
-[
-  {
-    "id": 5432,
-    "name": "Berlin Conference Center",
-    "address": "Alexanderplatz 1, 10178 Berlin"
-  },
-  {
-    "id": 4321,
-    "name": "Münster Event Hall",
-    "address": "Prinzipialmarkt 10, 48143 Münster"
-  }
-]
-```
-
-### Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| Array of locations | array | List of location objects |
-| `id` | integer | Location ID (required for creating e-tickets) |
-| `name` | string | Location name |
-| `address` | string | Location address |
-
-## PHP Example
+## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 
-$config = new Configuration('YOUR-API-KEY');
-$ds24 = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all e-ticket locations (no parameters needed)
-try {
-    $response = $ds24->etickets->listLocations();
-
-    echo "Available E-Ticket Locations:\n\n";
-
-    foreach ($response->locations as $location) {
-        echo "ID: {$location->locationId}\n";
-        echo "Name: {$location->locationName}\n";
-        echo "Address: {$location->address}\n";
-        echo "---\n";
-    }
-} catch (\GoSuccess\Digistore24\Api\Exception\ApiException $e) {
-    echo "Error: {$e->getMessage()}\n";
-}
-```
-
-## Example: Find Location by Name
-
-```php
-// No request object needed
 $response = $ds24->etickets->listLocations();
 
-$searchName = 'Berlin';
-
-$matchingLocations = array_filter(
-    $response->locations,
-    fn($loc) => stripos($loc->locationName, $searchName) !== false
-);
-
-foreach ($matchingLocations as $location) {
-    echo "Found: {$location->locationName} (ID: {$location->locationId})\n";
+foreach ($response->locations as $location) {
+    echo $location->locationId . ': ' . $location->locationName . PHP_EOL;
+    echo $location->city . ', ' . $location->country . PHP_EOL;
 }
 ```
 
-## Example: Display as Dropdown Options
+## Response
+
+`ListEticketLocationsResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `locations` (array of `EticketLocation`) — The available locations.
+
+Each `EticketLocation` exposes read-only properties:
+
+- `locationId` (string) — The location ID (used when creating e-tickets).
+- `locationName` (string) — The location name.
+- `address` (string|null) — The street address, if available.
+- `city` (string|null) — The city, if available.
+- `country` (string|null) — The country, if available.
+
+## Error Handling
 
 ```php
-// Generate HTML select options for a location picker
-$request = new ListEticketLocationsRequest();
-$response = $ds24->etickets->listLocations($request);
-
-echo "<select name='location_id'>\n";
-echo "  <option value=''>Select a location...</option>\n";
-
-foreach ($response->locations as $location) {
-    $id = htmlspecialchars($location->locationId);
-    $name = htmlspecialchars($location->locationName);
-    echo "  <option value='{$id}'>{$name}</option>\n";
+try {
+    $response = $ds24->etickets->listLocations();
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
-
-echo "</select>\n";
 ```
-
-## Important Notes
-
-- Location IDs are required when creating e-tickets with `createEticket()`
-- Locations must be configured in your Digistore24 account dashboard first
-- Returns only locations you have access to
-- Empty array is returned if no locations are configured
 
 ## Related Endpoints
 
-- [Create E-Ticket](createEticket.md) - Create free e-tickets (requires location ID)
-- [Get E-Ticket Settings](getEticketSettings.md) - Get complete e-ticket configuration
-- [List E-Ticket Templates](listEticketTemplates.md) - List available ticket templates
+- [createEticket](createEticket.md)
+- [listEticketTemplates](listEticketTemplates.md)
+- [getEticketSettings](getEticketSettings.md)
+- [getEticket](getEticket.md)
+- [listEtickets](listEtickets.md)
+- [validateEticket](validateEticket.md)

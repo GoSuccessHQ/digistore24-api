@@ -1,92 +1,84 @@
 # updateBuyer
 
-Update buyer information.
+Updates a buyer's contact details. Every field except the buyer ID is optional; only the fields you provide are sent to the API.
 
 ## Endpoint
 
-```
-POST /json/updateBuyer
-```
+**PUT** `https://www.digistore24.com/api/call/updateBuyer`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updateBuyer.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `email` | string | Yes* | Buyer's email address |
-| `buyer_id` | int | Yes* | Buyer's ID |
-| `first_name` | string | No | First name |
-| `last_name` | string | No | Last name |
-| `company` | string | No | Company name |
-| `street` | string | No | Street address |
-| `zipcode` | string | No | Postal code |
-| `city` | string | No | City |
-| `state` | string | No | State/Province |
-| `country` | string | No | Country code (ISO 3166-1 alpha-2) |
-| `phone` | string | No | Phone number |
-| `language` | string | No | Language code (de, en, es, etc.) |
+## Parameters
 
-*One of `email` or `buyer_id` is required to identify the buyer.
+`UpdateBuyerRequest` takes the following constructor arguments:
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'buyer_id' => 12345,
-        'email' => 'buyer@example.com',
-        'first_name' => 'John',
-        'last_name' => 'Doe',
-        'company' => 'Updated Corp',
-        'updated_at' => '2025-10-15 14:30:00'
-    ]
-]
-```
+- `buyerId` (string, required) — The buyer ID, as returned by e.g. `getPurchase`.
+- `email` (string, optional) — New email address.
+- `firstName` (string, optional) — New first name.
+- `lastName` (string, optional) — New last name.
+- `salutation` (`Salutation`, optional) — New salutation: `Salutation::MR` (`M`), `Salutation::MRS` (`F`), or `Salutation::NONE`.
+- `title` (string, optional) — New title.
+- `company` (string, optional) — New company name.
+- `streetName` (string, optional) — New street name.
+- `streetNumber` (string, optional) — New street number.
+- `phoneNumber` (string, optional) — New phone number. Pass an empty string to clear it.
+- `city` (string, optional) — New city.
+- `zipcode` (string, optional) — New ZIP/postal code.
+- `state` (string, optional) — New state/province.
+- `country` (string, optional) — New two-letter ISO country code (e.g. `DE` or `AT`).
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Buyer\UpdateBuyerRequest;
+use GoSuccess\Digistore24\Api\Enum\Salutation;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update buyer by email
-$response = $api->buyers->updateBuyer(
-    email: 'buyer@example.com',
-    firstName: 'John',
-    lastName: 'Smith',
-    company: 'New Company GmbH',
-    phone: '+49 30 12345678'
+$request = new UpdateBuyerRequest(
+    buyerId: '12345',
+    firstName: 'Jane',
+    lastName: 'Doe',
+    salutation: Salutation::MRS,
+    city: 'Berlin',
+    zipcode: '10115',
+    country: 'DE',
 );
 
-if ($response->result === 'success') {
-    echo "Buyer updated: {$response->buyerId}";
-}
+$response = $ds24->buyers->update($request);
 
-// Update buyer by ID
-$response = $api->buyers->updateBuyer(
-    buyerId: 12345,
-    street: '456 New Street',
-    city: 'Munich',
-    zipcode: '80331'
-);
+echo $response->result;     // e.g. "success"
+echo $response->buyerId;    // e.g. 12345
+echo $response->email;      // e.g. "jane.doe@example.com"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Missing required parameters or invalid format |
-| 404 | Buyer not found | Buyer does not exist |
-| 403 | Access denied | Not authorized to update buyer data |
-| 422 | Validation error | Invalid country code or other validation error |
+`UpdateBuyerResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `buyerId` (int|null) — The updated buyer's ID.
+- `email` (string) — The buyer's email address.
+- `firstName` (string|null) — The buyer's first name.
+- `lastName` (string|null) — The buyer's last name.
+- `company` (string|null) — The buyer's company name.
+- `updatedAt` (`DateTimeInterface`|null) — When the record was updated.
 
-- Only provided fields will be updated
-- Email address cannot be changed through this endpoint
-- Country codes must be valid ISO 3166-1 alpha-2 codes
-- Changes are applied immediately
+## Error Handling
+
+```php
+try {
+    $response = $ds24->buyers->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getBuyer](getBuyer.md)
+- [listBuyers](listBuyers.md)

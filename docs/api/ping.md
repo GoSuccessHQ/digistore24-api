@@ -1,62 +1,67 @@
 # ping
 
-Test API connectivity and authentication.
+Tests the connection to the Digistore24 server and returns the server time. Useful for connectivity checks and time synchronization.
 
 ## Endpoint
 
-```
-POST /json/ping
-```
+**GET** `https://www.digistore24.com/api/call/ping`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/ping.yaml)
 
-No parameters required.
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'message' => 'pong',
-        'timestamp' => '2025-10-15 14:30:00',
-        'api_version' => '2.0',
-        'authenticated' => true
-    ]
-]
-```
+`PingRequest` takes no parameters. The request is optional; calling `$ds24->system->ping()` with no arguments creates it for you.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\System\PingRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Test API connection (no parameters needed)
-$response = $api->system->ping();
+$response = $ds24->system->ping(new PingRequest());
 
-if ($response->message === 'pong') {
-    echo "API connection successful\n";
-    echo "Authenticated: " . ($response->authenticated ? 'Yes' : 'No') . "\n";
+if ($response->wasSuccessful()) {
+    echo 'Connected. API version: ' . $response->apiVersion . PHP_EOL;
+    echo 'Server time: ' . $response->serverTime?->format('Y-m-d H:i:s') . PHP_EOL;
+    echo 'Runtime: ' . $response->runtimeSeconds . 's' . PHP_EOL;
 }
 ```
 
-## Error Responses
+You can also omit the request entirely:
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 401 | Unauthorized | Invalid or missing API key |
-| 403 | Forbidden | API key is disabled or expired |
-| 429 | Too many requests | Rate limit exceeded |
+```php
+$response = $ds24->system->ping();
+```
 
-## Notes
+## Response
 
-- Use this endpoint to verify API connectivity
-- No rate limiting on ping endpoint
-- Returns server timestamp for time synchronization
-- Useful for health checks and monitoring
-- Does not count against API request quotas
+`PingResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `apiVersion` (string) — The API version.
+- `currentTime` (`DateTimeImmutable`|null) — Current server time (top-level field).
+- `serverTime` (`DateTimeImmutable`|null) — Server time from the data field.
+- `runtimeSeconds` (float) — Request runtime in seconds.
+
+It also provides a helper method:
+
+- `wasSuccessful()` (bool) — Returns `true` when the result is `success` or `ok`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->system->ping(new PingRequest());
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getGlobalSettings](getGlobalSettings.md)

@@ -1,87 +1,60 @@
 # createRebillingPayment
 
-Create a manual rebilling payment.
+Creates a manual rebilling payment for a recurring subscription.
 
 ## Endpoint
 
-```
-POST /json/createRebillingPayment
-```
+**POST** `https://www.digistore24.com/api/call/createRebillingPayment`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/createRebillingPayment.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `purchase_id` | string | Yes | Purchase ID with active subscription |
-| `amount` | float | No | Payment amount (default: next rebill amount) |
-| `currency` | string | No | Currency code (default: purchase currency) |
-| `reason` | string | No | Reason for manual rebilling |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'rebilling_payment_id' => 'REBILL-12345',
-        'purchase_id' => 'ABCD1234',
-        'amount' => 29.00,
-        'currency' => 'EUR',
-        'status' => 'pending',
-        'reason' => 'Manual rebilling requested',
-        'created_at' => '2025-03-20T22:00:00Z'
-    ]
-]
-```
+- `purchaseId` (string, required) — The unique identifier of the purchase with an active subscription.
+- `data` (array, optional) — Additional payment data merged into the request (for example `amount`, `currency`, `note`). Defaults to `[]`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Rebilling\CreateRebillingPaymentRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create manual rebilling payment with default amount
-$response = $api->rebilling->createRebillingPayment(
-    purchaseId: 'ABCD1234'
-);
-
-echo "Rebilling Payment ID: {$response->rebillingPaymentId}\n";
-echo "Amount: {$response->currency} {$response->amount}\n";
-echo "Status: {$response->status}\n";
-
-// Create with custom amount
-$response = $api->rebilling->createRebillingPayment(
+$request = new CreateRebillingPaymentRequest(
     purchaseId: 'ABCD1234',
-    amount: 49.00,
-    reason: 'Upgrade to premium tier'
+    data: [
+        'amount' => 29.00,
+        'currency' => 'EUR',
+    ],
 );
 
-// Create with custom currency
-$response = $api->rebilling->createRebillingPayment(
-    purchaseId: 'ABCD1234',
-    amount: 35.00,
-    currency: 'USD',
-    reason: 'Manual billing cycle adjustment'
-);
+$response = $ds24->rebilling->createPayment($request);
+
+echo $response->result; // e.g. "success"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid purchase ID or amount |
-| 404 | Purchase not found | Specified purchase does not exist |
-| 403 | Access denied | No permission or no active subscription |
-| 409 | Rebilling not active | Subscription is not active |
+`CreateRebillingPaymentResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
 
-- Requires active subscription for purchase
-- Default amount is next scheduled rebill amount
-- Payment processed immediately or at next billing cycle
-- Use for missed payments or manual billing adjustments
-- Does not affect regular rebilling schedule
+## Error Handling
+
+```php
+try {
+    $response = $ds24->rebilling->createPayment($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [startRebilling](startRebilling.md)
+- [stopRebilling](stopRebilling.md)
+- [listRebillingStatusChanges](listRebillingStatusChanges.md)

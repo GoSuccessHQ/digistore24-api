@@ -1,165 +1,100 @@
-# Create E-Ticket
+# createEticket
 
-Creates free e-tickets for events.
+Creates one or more free e-tickets for an event.
 
 ## Endpoint
 
-`POST /createEticket`
+**POST** `https://www.digistore24.com/api/call/createEticket`
 
-## Description
+[OpenAPI spec](https://digistore24.com/api/docs/paths/createEticket.yaml)
 
-This endpoint allows you to create electronic tickets for events without payment. It's useful for creating complimentary tickets, staff passes, or promotional tickets.
+## Parameters
 
-## Request Parameters
+`CreateEticketRequest` takes the following constructor arguments:
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `buyer` | object | Yes | - | Buyer information (see Buyer structure below) |
-| `product_id` | string | Yes | - | The product ID |
-| `location_id` | string | Yes | - | The location ID (see `listEticketLocations()`) |
-| `template_id` | string | Yes | - | The template ID (see `listEticketTemplates()`) |
-| `date` | date | Yes | - | Event date (format: YYYY-MM-DD) |
-| `days` | integer | No | 1 | Number of days of the event (minimum: 1) |
-| `note` | string | No | - | Optional note (e.g., event time) |
-| `count` | integer | No | 1 | Number of e-tickets to create (minimum: 1) |
+- `buyer` (BuyerData, required) — Buyer information. Only `email` is required; `title`, `salutation`, `firstName`, and `lastName` are optional and included when set.
+- `productId` (string, required) — The product ID.
+- `locationId` (string, required) — The location ID (see [listEticketLocations](listEticketLocations.md)).
+- `templateId` (string, required) — The template ID (see [listEticketTemplates](listEticketTemplates.md)).
+- `date` (\DateTimeInterface, required) — Event date (sent as `Y-m-d`).
+- `days` (int, optional) — Number of days the event lasts. Defaults to `1`; must be at least `1`.
+- `note` (string, optional) — Optional note (e.g. the event time).
+- `count` (int, optional) — Number of e-tickets to create. Defaults to `1`; must be at least `1`.
 
-### Buyer Structure
+The `buyer` argument is a `BuyerData` DTO. Populate at least its `email` property:
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `email` | string | Yes | Email address |
-| `title` | string | No | Title (e.g., "Dr.", "Prof.") |
-| `salutation` | string | No | "m" (male) or "f" (female) |
-| `first_name` | string | No | First name |
-| `last_name` | string | No | Last name |
+- `email` (string, required) — Buyer email address. Validated as an email.
+- `title` (string, optional) — Title (e.g. `Dr.`).
+- `salutation` (Salutation, optional) — `Salutation::MR` or `Salutation::MRS` (sent lowercase as `m`/`f`).
+- `firstName` (string, optional) — Buyer first name.
+- `lastName` (string, optional) — Buyer last name.
 
-## Response
-
-### Success Response (200 OK)
-
-```json
-{
-  "result": "success",
-  "data": {
-    "etickets": [
-      {
-        "id": "ET12345",
-        "url": "https://www.digistore24.com/eticket/ET12345.pdf",
-        "email": "customer@example.com"
-      },
-      {
-        "id": "ET12346",
-        "url": "https://www.digistore24.com/eticket/ET12346.pdf",
-        "email": "customer@example.com"
-      }
-    ]
-  }
-}
-```
-
-### Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `etickets` | array | List of created e-tickets |
-| `etickets[].id` | string | ID of the created e-ticket |
-| `etickets[].url` | string | URL to download the e-ticket PDF |
-| `etickets[].email` | string | Email address the ticket was created for |
-
-### Error Responses
-
-#### 400 Bad Request
-Invalid request parameters.
-
-#### 403 Forbidden
-Access denied - Full access required.
-
-## PHP Example
+## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 use GoSuccess\Digistore24\Api\Request\Eticket\CreateEticketRequest;
 use GoSuccess\Digistore24\Api\DTO\BuyerData;
+use GoSuccess\Digistore24\Api\Enum\Salutation;
 
-$config = new Configuration('YOUR-API-KEY');
-$ds24 = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create buyer data
-$buyer = new BuyerData();
-$buyer->email = 'customer@example.com';
-$buyer->firstName = 'John';
-$buyer->lastName = 'Doe';
-$buyer->salutation = 'm';
-
-// Create single e-ticket
-$request = new CreateEticketRequest(
-    buyer: $buyer,
-    productId: '12345',
-    locationId: 'LOC123',
-    templateId: 'TPL456',
-    date: new \DateTime('2025-12-25'),
-    days: 1,
-    note: 'Event starts at 18:00',
-    count: 1
+$buyer = new BuyerData(
+    email: 'attendee@example.com',
+    salutation: Salutation::MR,
+    firstName: 'John',
+    lastName: 'Doe',
 );
 
-try {
-    $response = $ds24->etickets->create($request);
-    
-    foreach ($response->etickets as $eticket) {
-        echo "E-Ticket created: {$eticket->id}\n";
-        echo "Download URL: {$eticket->url}\n";
-        echo "Email: {$eticket->email}\n";
-        echo "---\n";
-    }
-} catch (\GoSuccess\Digistore24\Api\Exception\ApiException $e) {
-    echo "Error: {$e->getMessage()}\n";
-}
-```
-
-## Example: Create Multiple Tickets
-
-```php
-// Create 5 e-tickets for the same event
-$buyer = new BuyerData();
-$buyer->email = 'customer@example.com';
-$buyer->firstName = 'John';
-$buyer->lastName = 'Doe';
-
 $request = new CreateEticketRequest(
     buyer: $buyer,
     productId: '12345',
-    locationId: 'LOC123',
-    templateId: 'TPL456',
-    date: new \DateTime('2025-12-25'),
-    count: 5 // Create 5 tickets
+    locationId: '5432',
+    templateId: '1234',
+    date: new DateTimeImmutable('2026-09-15'),
+    days: 1,
+    note: 'Doors open at 18:00',
+    count: 2,
 );
 
 $response = $ds24->etickets->create($request);
 
-echo "Created {count($response->etickets)} e-tickets\n";
-foreach ($response->etickets as $index => $eticket) {
-    echo "Ticket " . ($index + 1) . ": {$eticket->url}\n";
+foreach ($response->etickets as $eticket) {
+    echo $eticket->id . ': ' . $eticket->url . PHP_EOL;
 }
 ```
 
-## Important Notes
+## Response
 
-- **Free e-tickets only** - This endpoint creates complimentary tickets without payment
-- Location and template IDs must exist (use `listEticketLocations()` and `listEticketTemplates()`)
-- The `count` parameter creates multiple tickets with the same details
-- Each ticket gets a unique ID and download URL
-- All tickets are associated with the same buyer email
-- The `note` field is useful for adding event time or special instructions
-- Multi-day events can be specified with the `days` parameter
-- Tickets are immediately available for download via the returned URLs
+`CreateEticketResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `etickets` (array of `EticketItem`) — The created e-tickets.
+
+Each `EticketItem` exposes:
+
+- `id` (string) — The e-ticket ID.
+- `url` (string) — Download URL for the e-ticket PDF.
+- `email` (string) — Email address the e-ticket was created for.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->etickets->create($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
 
 ## Related Endpoints
 
-- [Get E-Ticket](getEticket.md) - Retrieve e-ticket details
-- [List E-Tickets](listEtickets.md) - List all e-tickets
-- [Validate E-Ticket](validateEticket.md) - Validate an e-ticket
-- [List E-Ticket Locations](listEticketLocations.md) - Get available locations
-- [List E-Ticket Templates](listEticketTemplates.md) - Get available templates
-- [Get E-Ticket Settings](getEticketSettings.md) - Get e-ticket configuration
+- [getEticket](getEticket.md)
+- [listEtickets](listEtickets.md)
+- [validateEticket](validateEticket.md)
+- [listEticketLocations](listEticketLocations.md)
+- [listEticketTemplates](listEticketTemplates.md)
+- [getEticketSettings](getEticketSettings.md)

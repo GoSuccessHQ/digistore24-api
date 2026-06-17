@@ -1,68 +1,54 @@
 # resendInvoiceMail
 
-Resend invoice email to customer.
+Resends the invoice email to the customer of a purchase.
 
 ## Endpoint
 
-```
-POST /json/resendInvoiceMail
-```
+**POST** `https://www.digistore24.com/api/call/resendInvoiceMail`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/resendInvoiceMail.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `invoice_id` | string | Yes | Invoice ID |
-| `email` | string | No | Alternative email address (default: original buyer email) |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'invoice_id' => 'INV-2025-12345',
-        'sent_to' => 'buyer@example.com',
-        'sent_at' => '2025-10-15 14:30:00'
-    ]
-]
-```
+- `purchaseId` (string, required) — The ID of the purchase whose invoice email should be resent.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Invoice\ResendInvoiceMailRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Resend to original email
-$response = $api->invoices->resendInvoiceMail(
-    invoiceId: 'INV-2025-12345'
-);
+$request = new ResendInvoiceMailRequest(purchaseId: 'ABCDEF12');
 
-echo "Invoice resent to: {$response->sentTo}\n";
+$response = $ds24->invoices->resendMail($request);
 
-// Send to alternative email
-$response = $api->invoices->resendInvoiceMail(
-    invoiceId: 'INV-2025-12345',
-    email: 'accounting@example.com'
-);
+echo $response->status; // e.g. "success"
+echo $response->note;   // human-readable note from the API
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 404 | Invoice not found | Invoice ID does not exist |
-| 400 | Invalid email | Email format is invalid |
-| 403 | Access denied | Not authorized to resend this invoice |
+`ResendInvoiceMailResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `status` (string) — Status of the resend operation.
+- `note` (string) — Human-readable note from the API.
 
-- Invoice is sent as PDF attachment
-- Use for customer service when invoice was not received
-- Alternative email useful for accounting departments
-- Original buyer email is used if no email specified
+## Error Handling
+
+```php
+try {
+    $response = $ds24->invoices->resendMail($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [listInvoices](listInvoices.md)

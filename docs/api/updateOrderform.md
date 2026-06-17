@@ -1,145 +1,83 @@
 # updateOrderform
 
-Update an existing order form.
+Updates the configuration of an existing order form.
 
 ## Endpoint
 
-```
-POST /json/updateOrderform
-```
+**PUT** `https://www.digistore24.com/api/call/updateOrderform`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updateOrderform.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `orderform_id` | int | Yes | Order form ID |
-| `name` | string | No | Order form name |
-| `design` | string | No | Design template (default, modern, minimal) |
-| `language` | string | No | Language code (de, en, fr, es, it) |
-| `payment_methods` | array | No | Allowed payment methods |
-| `show_quantity_selector` | bool | No | Allow quantity selection |
-| `show_coupon_field` | bool | No | Show coupon input field |
-| `redirect_url` | string | No | Redirect URL after purchase |
-| `custom_fields` | array | No | Custom form fields |
-| `tracking_code` | string | No | Custom tracking code |
-| `is_active` | bool | No | Active status |
+## Parameters
 
-## Response
+`UpdateOrderformRequest` takes the following constructor arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'orderform_id' => 456,
-        'product_id' => 123,
-        'name' => 'Updated Order Form',
-        'url' => 'https://www.digistore24.com/orderform/456',
-        'design' => 'minimal',
-        'language' => 'de',
-        'payment_methods' => ['paypal', 'sepa'],
-        'show_quantity_selector' => false,
-        'show_coupon_field' => true,
-        'redirect_url' => 'https://example.com/new-thank-you',
-        'custom_fields' => [
-            [
-                'label' => 'Telefonnummer',
-                'type' => 'text',
-                'required' => true
-            ]
-        ],
-        'is_active' => true,
-        'updated_at' => '2025-03-20T16:30:00Z'
-    ]
-]
-```
+- `orderformId` (string, required) — The unique identifier of the order form to update.
+- `orderForm` (`OrderFormData`, required) — The updated configuration. Populate only the settable properties you want to change (all optional). Validated properties throw `\InvalidArgumentException` on assignment if invalid:
+  - `name` (string) — Name of the order form. Must not exceed 63 characters.
+  - `layout` (string) — Layout type. Allowed: `widget`, `legacy`.
+  - `backgroundStyle` (string) — Background style. Allowed: `white`, `blue`.
+  - `stepCount` (int) — Number of steps/tabs. Allowed: `1`, `2`, `3`.
+  - `shippingPosition` (string) — Position of shipping details. Allowed: `after_cart`, `before_cart`.
+  - `tabStyle` (string) — Style of tabs. Allowed: `bigtabs`, `image`, `image_url`.
+  - `orderBumpStyle` (string) — Order bump display style. Allowed: `none`, `dashed`.
+  - `orderbumpPosition` / `refundWaiverPosition` (string) — Allowed: `before_playplan`, `after_payplan`, `before_checkout`, `before_pay_button`, `after_pay_button`.
+  - `customCss` (string) — Custom CSS for the order form.
+
+  See [createOrderform](createOrderform.md) for the full list of `OrderFormData` properties.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\OrderForm\UpdateOrderformRequest;
+use GoSuccess\Digistore24\Api\DTO\OrderFormData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update order form name
-$response = $api->orderForms->updateOrderform(
-    orderformId: 456,
-    name: 'Updated Order Form'
+$orderForm = new OrderFormData();
+$orderForm->name = 'Updated Checkout';
+$orderForm->backgroundStyle = 'blue';
+
+$request = new UpdateOrderformRequest(
+    orderformId: '456',
+    orderForm: $orderForm,
 );
 
-echo "Order form updated successfully\n";
-echo "Name: {$response->name}\n";
+$response = $ds24->orderForms->update($request);
 
-// Change design and language
-$response = $api->orderForms->updateOrderform(
-    orderformId: 456,
-    design: 'minimal',
-    language: 'de'
-);
-
-// Update payment methods
-$response = $api->orderForms->updateOrderform(
-    orderformId: 456,
-    paymentMethods: ['paypal', 'sepa']
-);
-
-// Update redirect URL
-$response = $api->orderForms->updateOrderform(
-    orderformId: 456,
-    redirectUrl: 'https://example.com/new-thank-you'
-);
-
-// Add custom fields
-$response = $api->orderForms->updateOrderform(
-    orderformId: 456,
-    customFields: [
-        [
-            'label' => 'Telefonnummer',
-            'type' => 'text',
-            'required' => true
-        ],
-        [
-            'label' => 'Firmenname',
-            'type' => 'text',
-            'required' => false
-        ]
-    ]
-);
-
-// Deactivate order form
-$response = $api->orderForms->updateOrderform(
-    orderformId: 456,
-    isActive: false
-);
-
-// Update multiple settings
-$response = $api->orderForms->updateOrderform(
-    orderformId: 456,
-    name: 'Complete Update',
-    design: 'modern',
-    language: 'en',
-    showQuantitySelector: true,
-    showCouponField: false,
-    trackingCode: 'ga_updated'
-);
+echo $response->wasSuccessful() ? 'updated' : 'failed';
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid data provided |
-| 404 | Order form not found | Specified order form does not exist |
-| 403 | Access denied | No permission to update this order form |
+`UpdateOrderformResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `wasSuccessful(): bool` — Returns `true` when `result === 'success'`.
 
-- Only provided parameters are updated
-- Other settings remain unchanged
-- Available designs: `default`, `modern`, `minimal`
-- Available languages: `de`, `en`, `fr`, `es`, `it`
-- Payment methods: `paypal`, `credit_card`, `sepa`, `sofort`, `giropay`
-- Changes take effect immediately
-- Active order forms can be updated without deactivation
+## Error Handling
+
+```php
+use GoSuccess\Digistore24\Api\Exception\ValidationException;
+use GoSuccess\Digistore24\Api\Exception\ApiException;
+
+try {
+    $response = $ds24->orderForms->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+Note: assigning a disallowed value to the DTO (for example `backgroundStyle = 'green'`) throws an `\InvalidArgumentException` immediately, before the request is sent.
+
+## Related Endpoints
+
+- [createOrderform](createOrderform.md)
+- [getOrderform](getOrderform.md)
+- [deleteOrderform](deleteOrderform.md)
+- [listOrderforms](listOrderforms.md)
+- [getOrderformMetas](getOrderformMetas.md)

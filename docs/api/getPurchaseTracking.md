@@ -1,74 +1,60 @@
 # getPurchaseTracking
 
-Get tracking data for one or more purchases including UTM parameters, click IDs, and campaign information.
+Returns tracking data for one or more orders, including UTM parameters, click IDs, sub IDs, vendor key, and campaign key.
 
 ## Endpoint
 
 **GET** `https://www.digistore24.com/api/call/getPurchaseTracking`
 
-## OpenAPI Specification
-
-[View OpenAPI Spec](https://digistore24.com/api/docs/paths/getPurchaseTracking.yaml)
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getPurchaseTracking.yaml)
 
 ## Parameters
 
-### Required Parameters
+Constructor arguments of `GetPurchaseTrackingRequest`:
 
-- `purchase_id` (string) - Single Digistore24 order ID or comma-separated list of order IDs
-
-## Response
-
-```json
-{
-  "ABCD-1234": {
-    "data": {
-      "utm_params": {
-        "utm_source": "google",
-        "utm_medium": "cpc",
-        "utm_campaign": "spring_sale",
-        "utm_term": "online_course",
-        "utm_content": "ad_variation_1"
-      },
-      "click_id": "gclid_123456789",
-      "sub_ids": ["sub1_value", "sub2_value"],
-      "vendor_key": "vendor_123",
-      "campaign_key": "campaign_456"
-    }
-  }
-}
-```
+- `purchaseId` (string, required) — A single Digistore24 order ID or a comma-separated list of order IDs.
 
 ## Usage Example
 
 ```php
-use Digistore24\Request\Purchase\GetPurchaseTrackingRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Purchase\GetPurchaseTrackingRequest;
 
-$request = new GetPurchaseTrackingRequest(
-    purchaseId: 'ABCD-1234-EFGH'
-);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-$response = $digistore24->purchases->getTracking($request);
+$request = new GetPurchaseTrackingRequest(purchaseId: '12345678,23456789');
 
-foreach ($response->tracking as $purchaseId => $tracking) {
-    echo "Purchase: {$purchaseId}\n";
-    echo "UTM Source: {$tracking->utmParams['utm_source']}\n";
-    echo "UTM Campaign: {$tracking->utmParams['utm_campaign']}\n";
-    echo "Click ID: {$tracking->clickId}\n";
+$response = $ds24->purchases->getTracking($request);
+
+foreach ($response->tracking as $purchaseId => $data) {
+    echo $purchaseId . "\n";
+    echo $data['campaign_key'] ?? '';
+    echo $data['vendor_key'] ?? '';
 }
 ```
 
-## Multiple Purchases
+## Response
+
+`GetPurchaseTrackingResponse` exposes:
+
+- `result` (string) — Result status returned by the API.
+- `tracking` (array) — Tracking data keyed by purchase ID. Read individual values via `$response->tracking[$purchaseId]['campaign_key']`, etc.
+
+## Error Handling
 
 ```php
-$request = new GetPurchaseTrackingRequest(
-    purchaseId: 'ABCD-1234,WXYZ-5678,IJKL-9012'
-);
-
-$response = $digistore24->purchases->getTracking($request);
-echo "Retrieved tracking for " . count($response->tracking) . " purchases";
+try {
+    $response = $ds24->purchases->getTracking($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
 ```
 
 ## Related Endpoints
 
-- [getPurchase](getPurchase.md) - Get full purchase details
-- [listPurchases](listPurchases.md) - List purchases with tracking data
+- [getPurchase](getPurchase.md)
+- [listPurchases](listPurchases.md)
+- [getPurchaseDownloads](getPurchaseDownloads.md)

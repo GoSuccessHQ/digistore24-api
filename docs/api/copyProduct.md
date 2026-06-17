@@ -1,162 +1,72 @@
 # copyProduct
 
-Copy an existing product on Digistore24 with optional modifications.
+Creates a copy of an existing product, optionally overriding selected properties.
 
 ## Endpoint
 
 **POST** `https://www.digistore24.com/api/call/copyProduct`
 
-## OpenAPI Specification
-
-[View OpenAPI Spec](https://digistore24.com/api/docs/paths/copyProduct.yaml)
+[OpenAPI spec](https://digistore24.com/api/docs/paths/copyProduct.yaml)
 
 ## Parameters
 
-### Required Parameters
+`CopyProductRequest` takes the following constructor arguments:
 
-- `product_id` (string) - The ID of the product to be copied
-
-### Optional Parameters (Data Modifications)
-
-- `name_intern` (string, max 63 chars) - Internal product name
-- `product_type_id` (integer) - Product type ID (call `getGlobalSettings` for valid IDs)
-- `language` (string) - Comma separated list of languages (e.g., "en,de")
-- `is_active` (string) - Product activation status: `Y` or `N`
-- `product_group_id` (integer) - Product group ID
-- `name_de` (string, max 63 chars) - German product name
-- `name_en` (string, max 63 chars) - English product name
-- `name_es` (string, max 63 chars) - Spanish product name
-
-## Response
-
-```json
-{
-  "product_id": 12346
-}
-```
-
-### Response Fields
-
-- `product_id` (integer) - ID of the newly created product copy
+- `productId` (int, required) — ID of the product to be copied.
+- `nameIntern` (string, optional) — Internal name for the copy (max 63 chars).
+- `productTypeId` (int, optional) — Product type ID (see [listProductTypes](listProductTypes.md)).
+- `language` (string, optional) — Comma-separated list of languages (e.g. `"en,de"`).
+- `isActive` (bool, optional) — Activation status of the copy.
+- `productGroupId` (int, optional) — Product group ID to assign the copy to.
+- `nameDe` (string, optional) — German name for the copy (max 63 chars).
+- `nameEn` (string, optional) — English name for the copy (max 63 chars).
+- `nameEs` (string, optional) — Spanish name for the copy (max 63 chars).
 
 ## Usage Example
 
 ```php
-use Digistore24\Request\Product\CopyProductRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Product\CopyProductRequest;
+
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
 $request = new CopyProductRequest(
     productId: 12345,
-    nameIntern: 'my-product-v2',
-    nameEn: 'My Product V2',
-    isActive: 'N' // Create as inactive initially
+    nameIntern: 'Online Course 2026 (Copy)',
+    nameEn: 'Online Course 2026 - Edition B',
+    language: 'en,de',
+    isActive: false,
 );
 
-try {
-    $response = $digistore24->products->copy($request);
-    echo "Product copied with new ID: " . $response->productId;
-} catch (\Digistore24\Exception\ApiException $e) {
-    echo "Error: " . $e->getMessage();
-}
+$response = $ds24->products->copy($request);
+
+echo $response->productId; // e.g. 67890
 ```
 
-## Copy Product with New Name
+## Response
 
-```php
-$request = new CopyProductRequest(
-    productId: 12345,
-    nameIntern: 'product-copy-2024',
-    nameEn: 'Updated Product Name 2024',
-    nameDe: 'Aktualisierter Produktname 2024'
-);
+`CopyProductResponse` exposes typed public properties:
 
-$response = $digistore24->products->copy($request);
-echo "New product ID: " . $response->productId;
-```
-
-## Copy Product to Different Type
-
-```php
-$request = new CopyProductRequest(
-    productId: 12345,
-    productTypeId: 3, // Change product type
-    nameIntern: 'product-different-type'
-);
-
-$response = $digistore24->products->copy($request);
-echo "Product copied with new type: " . $response->productId;
-```
-
-## Copy with Multi-Language Support
-
-```php
-$request = new CopyProductRequest(
-    productId: 12345,
-    nameIntern: 'multilingual-product',
-    language: 'en,de,es', // Add multiple languages
-    nameEn: 'International Product',
-    nameDe: 'Internationales Produkt',
-    nameEs: 'Producto Internacional'
-);
-
-$response = $digistore24->products->copy($request);
-echo "Multilingual product created: " . $response->productId;
-```
-
-## Copy Product as Template
-
-```php
-// Copy a product as an inactive template for future use
-$request = new CopyProductRequest(
-    productId: 12345,
-    nameIntern: 'template-product-2024',
-    isActive: 'N', // Keep it inactive
-    nameEn: 'Template Product'
-);
-
-$response = $digistore24->products->copy($request);
-echo "Template created: " . $response->productId;
-```
+- `result` (string) — Result status returned by the API.
+- `productId` (int) — ID of the newly created product copy.
 
 ## Error Handling
 
 ```php
-use Digistore24\Exception\ValidationException;
-use Digistore24\Exception\NotFoundException;
-use Digistore24\Exception\ForbiddenException;
-use Digistore24\Exception\ApiException;
-
 try {
-    $response = $digistore24->products->copy($request);
-    echo "Product copied successfully: " . $response->productId;
-} catch (NotFoundException $e) {
-    // Source product not found
-    echo "Source product not found: " . $e->getMessage();
+    $response = $ds24->products->copy($request);
 } catch (ValidationException $e) {
-    // Invalid parameters
-    echo "Validation error: " . $e->getMessage();
-} catch (ForbiddenException $e) {
-    // Full access required
-    echo "Access denied: " . $e->getMessage();
+    // request failed local validation; $e->getErrors() lists the problems
 } catch (ApiException $e) {
-    // General API error
-    echo "API error: " . $e->getMessage();
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Important Notes
-
-- **Full Access Required**: This endpoint requires a full access API key
-- **Selective Copying**: All product settings are copied except those you explicitly modify
-- **Default Language**: If language is not specified, the current vendor's language is used
-- **Product Groups**: You can assign the copy to a different product group
-- **Inactive Copies**: Consider creating copies as inactive (`is_active: 'N'`) to review before publishing
-- **Name Requirements**: Product names must not exceed 63 characters
-- **Use Cases**: Useful for creating product variants, templates, or seasonal versions
-
 ## Related Endpoints
 
-- [getProduct](getProduct.md) - Get product details before copying
-- [createProduct](createProduct.md) - Create a new product from scratch
-- [updateProduct](updateProduct.md) - Update the copied product
-- [listProducts](listProducts.md) - List all products including copies
-- [deleteProduct](deleteProduct.md) - Delete unwanted copies
+- [createProduct](createProduct.md)
+- [getProduct](getProduct.md)
+- [updateProduct](updateProduct.md)
+- [deleteProduct](deleteProduct.md)
+- [listProducts](listProducts.md)

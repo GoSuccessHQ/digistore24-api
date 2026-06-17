@@ -1,70 +1,61 @@
 # requestApiKey
 
-Request a new API key for your Digistore24 account.
+Requests a new API key for the specified vendor email address. A verification token is sent to that email to confirm ownership.
 
 ## Endpoint
 
-```
-POST /json/requestApiKey
-```
+**POST** `https://www.digistore24.com/api/call/requestApiKey`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/requestApiKey.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `email` | string | Yes | Your Digistore24 account email |
-| `password` | string | Yes | Your Digistore24 account password |
-| `description` | string | No | Description for this API key (e.g., "Production Server") |
+## Parameters
 
-## Response
+`RequestApiKeyRequest` takes the following constructor argument:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'api_key' | 'YOUR-NEW-API-KEY',
-        'created_at' => '2025-10-15 14:30:00',
-        'description' => 'Production Server',
-        'permissions' => ['read', 'write'],
-        'rate_limit' => 1000
-    ]
-]
-```
+- `email` (string, required) — The vendor email address that the verification token is sent to.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ApiKey\RequestApiKeyRequest;
 
-// Initialize API client with existing key (or use HTTP client directly)
-$config = new Configuration('TEMP-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Request new API key
-$response = $api->apiKeys->requestApiKey(
-    email: 'your-email@example.com',
-    password: 'your-password',
-    description: 'Production Server'
-);
+$request = new RequestApiKeyRequest(email: 'vendor@example.com');
 
-echo "New API Key: {$response->apiKey}\n";
-echo "Store this securely - it cannot be retrieved later!\n";
+$response = $ds24->apiKeys->request($request);
+
+echo $response->result;     // e.g. "success"
+echo $response->apiKey;     // the generated API key
+echo $response->createdAt?->format('Y-m-d H:i:s');
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 401 | Invalid credentials | Email/password combination is incorrect |
-| 403 | Account not verified | Email address not verified |
-| 429 | Too many requests | Rate limit exceeded |
+`RequestApiKeyResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `apiKey` (string) — The generated API key.
+- `createdAt` (`DateTimeInterface`|null) — Creation timestamp.
+- `description` (string|null) — API key description.
+- `permissions` (string[]) — Granted permissions.
+- `rateLimit` (int|null) — Rate limit for this API key.
 
-- **IMPORTANT**: Store the returned API key securely immediately
-- API keys cannot be retrieved after creation
-- Each account can have multiple API keys
-- Use descriptions to identify different keys
-- Keys have read/write permissions by default
-- Revoke unused keys for security
+## Error Handling
+
+```php
+try {
+    $response = $ds24->apiKeys->request($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [retrieveApiKey](retrieveApiKey.md)
+- [unregister](unregister.md)

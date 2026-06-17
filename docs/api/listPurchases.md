@@ -1,158 +1,94 @@
-# List Purchases
+# listPurchases
 
-Returns a list of your sales including those where you receive commission.
+Lists all purchases/orders in the account with filtering and pagination options.
 
 ## Endpoint
 
-`GET /listPurchases`
+**GET** `https://www.digistore24.com/api/call/listPurchases`
 
-## Description
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listPurchases.yaml)
 
-Retrieves a filtered list of purchases/orders with flexible search criteria. Supports pagination, date ranges, and various filters for sales analysis and reporting.
+## Parameters
 
-## Request Parameters
+Constructor arguments of `ListPurchasesRequest` (all optional):
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `from` | string | No | -24h | Start time (e.g., "2014-02-28 23:11:24", "now", "-3d", "start") |
-| `to` | string | No | now | End time |
-| `search` | object | No | - | Search criteria (see below) |
-| `sort_by` | string | No | date | Sort by: date, earning, amount |
-| `sort_order` | string | No | asc | Sort order: asc, desc |
-| `load_transactions` | boolean | No | false | Include transaction list for each purchase |
-| `page_no` | integer | No | 1 | Page number (starts at 1) |
-| `page_size` | integer | No | 500 | Items per page (min: 1) |
+- `from` (string) — Start time for the list (e.g. `2026-02-28 23:11:24`, `now`, `-3d`, `start`). Defaults to `-24h`.
+- `to` (string) — End time for the list. Defaults to `now`.
+- `search` (`PurchaseSearchData`, optional) — Search criteria for filtering. Defaults to `null`.
+- `sortBy` (`PurchaseSortBy`) — Sort criteria: `DATE`, `EARNING`, or `AMOUNT`. Defaults to `PurchaseSortBy::DATE`.
+- `sortOrder` (`SortOrder`) — Sort order: `ASC` or `DESC`. Defaults to `SortOrder::ASC`.
+- `loadTransactions` (bool) — Include the transaction list for each purchase. Defaults to `false`.
+- `pageNo` (int) — Page number, starting at 1. Defaults to `1`.
+- `pageSize` (int) — Number of items per page. Defaults to `500`.
 
-### Search Criteria
+`PurchaseSearchData` exposes these optional constructor arguments: `role`, `productId`, `firstName`, `lastName`, `email`, `hasAffiliate` (bool), `affiliateName`, `orderType` (`OrderType::LIVE` or `OrderType::TEST`), `payMethod`, `billingType`, `transactionType`, `currency`, `purchaseId`.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `role` | string | Filter by role: vendor, affiliate, other (comma separated) |
-| `product_id` | string | Filter by product IDs (comma separated) |
-| `first_name` | string | Filter by buyer first name |
-| `last_name` | string | Filter by buyer last name |
-| `email` | string | Filter by buyer email |
-| `has_affiliate` | boolean | Filter purchases with/without affiliate |
-| `affiliate_name` | string | Filter by affiliate name |
-| `order_type` | string | live or test |
-| `pay_method` | string | Payment methods (comma separated) |
-| `billing_type` | string | Billing types (comma separated) |
-| `transaction_type` | string | Transaction types (comma separated) |
-| `currency` | string | Filter by currency |
-| `purchase_id` | string | Filter by purchase IDs (comma separated) |
-
-## Response
-
-### Success Response (200 OK)
-
-```json
-{
-  "purchase_list": [
-    {
-      "id": "ABC123",
-      "amount": 99.00,
-      "currency": "EUR",
-      "billing_type": "single_payment",
-      "billing_status": "completed",
-      "created_at": "2025-10-14T10:30:00Z",
-      "buyer_email": "customer@example.com",
-      "product_name": "Premium Course",
-      "click_id": "CLICK789",
-      "sub_ids": {
-        "sid1": "campaign1",
-        "sid2": "source2"
-      }
-    }
-  ]
-}
-```
-
-## PHP Example
+## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 use GoSuccess\Digistore24\Api\Request\Purchase\ListPurchasesRequest;
+use GoSuccess\Digistore24\Api\DTO\PurchaseSearchData;
+use GoSuccess\Digistore24\Api\Enum\PurchaseSortBy;
+use GoSuccess\Digistore24\Api\Enum\SortOrder;
 
-$config = new Configuration('YOUR-API-KEY');
-$ds24 = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Simple: List all purchases (no parameters needed)
-try {
-    $response = $ds24->purchases->list();
+// List all purchases of the last 24 hours (defaults).
+$response = $ds24->purchases->list();
 
-    echo "Found " . count($response->purchases) . " purchases\n\n";
-
-    foreach ($response->purchases as $purchase) {
-        echo "ID: {$purchase->purchaseId}\n";
-        echo "Amount: {$purchase->amount} {$purchase->currency}\n";
-        echo "Buyer: {$purchase->buyerEmail}\n";
-        echo "Product: {$purchase->productName}\n";
-        echo "Status: {$purchase->billingStatus}\n";
-        echo "---\n";
-    }
-} catch (\GoSuccess\Digistore24\Api\Exception\ApiException $e) {
-    echo "Error: {$e->getMessage()}\n";
-}
-
-// Advanced: List purchases from last 7 days with filters
-$request = new ListPurchasesRequest(
-    fromDate: new DateTime('-7 days'),
-    toDate: new DateTime('now')
-);
-
-$response = $ds24->purchases->list($request);
-```
-
-## Example: Filter by Product and Email
-
-```php
-// List purchases for specific product and buyer
-$request = new ListPurchasesRequest(
-    productId: '39',
-    buyerEmail: 'customer@example.com'
-);
-
-$response = $ds24->purchases->list($request);
-echo "Customer has " . count($response->purchases) . " purchases\n";
-```
-
-## Example: Export Sales Report
-
-```php
-// Generate sales report for last month
-$request = new ListPurchasesRequest(
-    fromDate: new DateTime('-30 days'),
-    toDate: new DateTime('now')
-);
-
-$response = $ds24->purchases->list($request);
-
-$totalRevenue = 0;
-$currencies = [];
+echo $response->totalCount;
 
 foreach ($response->purchases as $purchase) {
-    $totalRevenue += $purchase->amount;
-    $currencies[$purchase->currency] = ($currencies[$purchase->currency] ?? 0) + $purchase->amount;
+    echo $purchase->purchaseId;                          // e.g. "12345678"
+    echo $purchase->productName;                         // e.g. "Premium Course"
+    echo $purchase->amount . ' ' . $purchase->currency;  // e.g. "99 EUR"
+    echo $purchase->buyerEmail;                          // e.g. "customer@example.com"
+    echo $purchase->createdAt->format('Y-m-d H:i:s');
 }
 
-echo "Total Purchases: " . count($response->purchases) . "\n";
-echo "Revenue by Currency:\n";
-foreach ($currencies as $currency => $amount) {
-    echo "  {$currency}: " . number_format($amount, 2) . "\n";
-}
+// Filtered example: paid orders for one product in June 2026, newest first.
+$request = new ListPurchasesRequest(
+    from: '2026-06-01 00:00:00',
+    to: '2026-06-30 23:59:59',
+    search: new PurchaseSearchData(
+        productId: '987654',
+        email: 'customer@example.com',
+    ),
+    sortBy: PurchaseSortBy::DATE,
+    sortOrder: SortOrder::DESC,
+    pageSize: 100,
+);
+
+$response = $ds24->purchases->list($request);
 ```
 
-## Important Notes
+## Response
 
-- Default time range is last 24 hours
-- Maximum page size depends on account settings
-- Use pagination for large datasets
-- Affiliate purchases include `click_id` and `sub_ids`
-- Set `load_transactions=true` for detailed transaction data
-- Date formats: ISO 8601, relative (e.g., "-3d"), or keywords ("now", "start")
+`ListPurchasesResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `purchases` (array of `PurchaseListItem`) — The matching purchases.
+- `totalCount` (int) — Total number of purchases.
+
+Each `PurchaseListItem` exposes readonly properties: `purchaseId` (string), `productId` (string), `productName` (string), `buyerEmail` (string), `paymentStatus` (string), `amount` (float), `currency` (string), and `createdAt` (DateTimeInterface).
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->purchases->list($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
 
 ## Related Endpoints
 
-- [Get Purchase](getPurchase.md) - Get detailed information about specific purchase(s)
-- [Create Buy URL](createBuyUrl.md) - Create customized order URL
+- [getPurchase](getPurchase.md)
+- [listPurchasesOfEmail](listPurchasesOfEmail.md)
+- [getPurchaseTracking](getPurchaseTracking.md)
+- [getPurchaseDownloads](getPurchaseDownloads.md)

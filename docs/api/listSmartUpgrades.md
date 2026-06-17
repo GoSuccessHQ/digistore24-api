@@ -1,115 +1,61 @@
 # listSmartUpgrades
 
-List all smart upgrades.
+Retrieves a list of all configured smart upgrade paths.
 
 ## Endpoint
 
-```
-POST /json/listSmartUpgrades
-```
+**GET** `https://www.digistore24.com/api/call/listSmartUpgrades`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listSmartUpgrades.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `from_product_id` | int | No | Filter by source product ID |
-| `to_product_id` | int | No | Filter by target product ID |
-| `is_active` | bool | No | Filter by active status |
-| `limit` | int | No | Results per page (default: 100, max: 500) |
-| `offset` | int | No | Pagination offset |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'smartupgrades' => [
-            [
-                'smartupgrade_id' => 567,
-                'name' => 'Basic to Premium',
-                'from_product_id' => 123,
-                'from_product_name' => 'Basic Course',
-                'to_product_id' => 124,
-                'to_product_name' => 'Premium Course',
-                'upgrade_price' => 49.00,
-                'currency' => 'EUR',
-                'is_active' => true,
-                'conversions_count' => 87,
-                'conversion_rate' => 12.5
-            ],
-            [
-                'smartupgrade_id' => 568,
-                'name' => 'Premium to VIP',
-                'from_product_id' => 124,
-                'from_product_name' => 'Premium Course',
-                'to_product_id' => 125,
-                'to_product_name' => 'VIP Course',
-                'upgrade_price' => 99.00,
-                'currency' => 'EUR',
-                'is_active' => true,
-                'conversions_count' => 45,
-                'conversion_rate' => 8.3
-            ]
-            // ... more smart upgrades
-        ],
-        'total' => 12,
-        'limit' => 100,
-        'offset' => 0
-    ]
-]
-```
+`ListSmartUpgradesRequest` takes no parameters. The request is optional; calling `$ds24->smartUpgrades->list()` with no arguments creates it for you.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\SmartUpgrade\ListSmartUpgradesRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all smart upgrades
-$response = $api->smartUpgrades->listSmartUpgrades(
-    limit: 50
-);
+$response = $ds24->smartUpgrades->list(new ListSmartUpgradesRequest());
 
-echo "Total smart upgrades: {$response->total}\n\n";
+echo $response->result; // e.g. "success"
+
 foreach ($response->smartupgrades as $upgrade) {
-    echo "ID: {$upgrade->smartupgradeId}\n";
-    echo "Name: {$upgrade->name}\n";
-    echo "Path: {$upgrade->fromProductName} → {$upgrade->toProductName}\n";
-    echo "Price: {$upgrade->currency} {$upgrade->upgradePrice}\n";
-    echo "Conversions: {$upgrade->conversionsCount} ({$upgrade->conversionRate}%)\n\n";
+    // each $upgrade is an associative array of smart upgrade fields
+    echo ($upgrade['name'] ?? '') . PHP_EOL;
 }
-
-// Filter by source product
-$response = $api->smartUpgrades->listSmartUpgrades(
-    fromProductId: 123
-);
-
-// Filter by target product
-$response = $api->smartUpgrades->listSmartUpgrades(
-    toProductId: 124
-);
-
-// Filter active upgrades only
-$response = $api->smartUpgrades->listSmartUpgrades(
-    isActive: true
-);
 ```
 
-## Error Responses
+You can also omit the request entirely:
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid filter values or pagination parameters |
+```php
+$response = $ds24->smartUpgrades->list();
+```
 
-## Notes
+## Response
 
-- Results ordered by creation date (newest first)
-- Includes conversion statistics
-- Max 500 results per request
-- Use pagination for large result sets
-- Filter combinations supported
+`ListSmartUpgradesResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `smartupgrades` (array) — The smart upgrades, each represented as an associative array of fields. Read individual values with `$upgrade['key']`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->smartUpgrades->list(new ListSmartUpgradesRequest());
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getSmartupgrade](getSmartupgrade.md)

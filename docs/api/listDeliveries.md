@@ -1,89 +1,62 @@
 # listDeliveries
 
-List all deliveries with optional filters.
+Retrieves a list of deliveries, optionally filtered by purchase ID.
 
 ## Endpoint
 
-```
-POST /json/listDeliveries
-```
+**GET** `https://www.digistore24.com/api/call/listDeliveries`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listDeliveries.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `purchase_id` | string | No | Filter by purchase ID |
-| `status` | string | No | Filter by status (pending, shipped, delivered, etc.) |
-| `start_date` | string | No | Filter deliveries from date (Y-m-d) |
-| `end_date` | string | No | Filter deliveries to date (Y-m-d) |
-| `limit` | int | No | Number of results (default: 100, max: 1000) |
-| `offset` | int | No | Offset for pagination |
+## Parameters
 
-## Response
+The constructor argument is optional:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'deliveries' => [
-            [
-                'delivery_id' => 123,
-                'purchase_id' => 'ABC123',
-                'tracking_number' => 'TRACK123',
-                'carrier' => 'DHL',
-                'status' => 'delivered',
-                'shipped_at' => '2025-10-10 10:00:00',
-                'delivered_at' => '2025-10-12 14:30:00'
-            ],
-            // ... more deliveries
-        ],
-        'total' => 250,
-        'limit' => 100,
-        'offset' => 0
-    ]
-]
-```
+- `purchaseId` (string, optional) — Purchase ID to filter deliveries by. When omitted, the resource builds an empty `ListDeliveriesRequest` for you and all deliveries are returned.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Delivery\ListDeliveriesRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all deliveries
-$response = $api->deliveries->listDeliveries(
-    limit: 50
-);
+// All deliveries
+$response = $ds24->deliveries->list();
+
+// Or filtered by purchase
+$request = new ListDeliveriesRequest(purchaseId: 'ABCD1234');
+$response = $ds24->deliveries->list($request);
+
+echo $response->result; // e.g. "success"
 
 foreach ($response->deliveries as $delivery) {
-    echo "Delivery {$delivery->deliveryId}: {$delivery->status}\n";
+    // each $delivery is an associative array of delivery fields
 }
-
-// Filter by status
-$response = $api->deliveries->listDeliveries(
-    status: 'shipped',
-    limit: 100
-);
-
-// Get deliveries for specific purchase
-$response = $api->deliveries->listDeliveries(
-    purchaseId: 'ABC123'
-);
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid status or date format |
+`ListDeliveriesResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `deliveries` (array) — The list of deliveries. Read as `$response->deliveries`.
 
-- Results ordered by creation date (newest first)
-- Use pagination for large result sets
-- Status values: pending, shipped, in_transit, delivered, failed, returned
-- Maximum 1000 results per request
+## Error Handling
+
+```php
+try {
+    $response = $ds24->deliveries->list($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getDelivery](getDelivery.md)
+- [updateDelivery](updateDelivery.md)

@@ -1,100 +1,56 @@
 # getProductGroup
 
-Get product group details.
+Retrieves detailed information about a specific product group.
 
 ## Endpoint
 
-```
-POST /json/getProductGroup
-```
+**GET** `https://www.digistore24.com/api/call/getProductGroup`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getProductGroup.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_group_id` | int | Yes | Product group ID |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_group_id' => 567,
-        'name' => 'Premium Bundle',
-        'description' => 'Collection of premium products',
-        'product_ids' => [123, 124, 125],
-        'product_count' => 3,
-        'products' => [
-            [
-                'product_id' => 123,
-                'name' => 'Premium Course A',
-                'price' => 99.00
-            ],
-            [
-                'product_id' => 124,
-                'name' => 'Premium Course B',
-                'price' => 149.00
-            ],
-            [
-                'product_id' => 125,
-                'name' => 'Premium Course C',
-                'price' => 199.00
-            ]
-        ],
-        'is_active' => true,
-        'total_sales' => 245,
-        'total_revenue' => 109735.00,
-        'created_at' => '2025-01-15T10:00:00Z',
-        'updated_at' => '2025-03-20T14:30:00Z'
-    ]
-]
-```
+- `productGroupId` (string, required) — The unique identifier of the product group.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ProductGroup\GetProductGroupRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get product group details
-$response = $api->productGroups->getProductGroup(
-    productGroupId: 567
-);
+$request = new GetProductGroupRequest(productGroupId: '567');
 
-echo "Group: {$response->name}\n";
-echo "Description: {$response->description}\n";
-echo "Products: {$response->productCount}\n";
-echo "Total Sales: {$response->totalSales}\n";
-echo "Total Revenue: € {$response->totalRevenue}\n\n";
+$response = $ds24->productGroups->get($request);
 
-// List products in group
-echo "Products in this group:\n";
-foreach ($response->products as $product) {
-    echo "  - {$product->name} (€ {$product->price})\n";
-}
+echo $response->result;                 // e.g. "success"
+echo $response->productGroup['name'];   // e.g. "Premium Bundle"
+```
 
-// Check if group is active
-if ($response->isActive) {
-    echo "\nGroup is active\n";
+## Response
+
+`GetProductGroupResponse` exposes:
+
+- `result` (string) — Result status returned by the API.
+- `productGroup` (array<string, mixed>) — The product group details. Read individual values by key, e.g. `$response->productGroup['name']`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->productGroups->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Error Responses
+## Related Endpoints
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid product group ID |
-| 404 | Product group not found | Specified product group does not exist |
-| 403 | Access denied | No permission to access this product group |
-
-## Notes
-
-- Includes detailed product information
-- Shows sales and revenue statistics
-- Statistics updated daily
-- Use for bundle performance analysis
+- [createProductGroup](createProductGroup.md)
+- [updateProductGroup](updateProductGroup.md)
+- [deleteProductGroup](deleteProductGroup.md)
+- [listProductGroups](listProductGroups.md)

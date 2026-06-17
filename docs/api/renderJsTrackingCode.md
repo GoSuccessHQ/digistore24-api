@@ -1,113 +1,62 @@
 # renderJsTrackingCode
 
-Render JavaScript tracking code for a product.
+Creates a JavaScript snippet that reads the current affiliate, campaign key, and tracking key on a landing page and stores them, for example in hidden form inputs.
 
 ## Endpoint
 
-```
-POST /json/renderJsTrackingCode
-```
+**GET** `https://www.digistore24.com/api/call/renderJsTrackingCode`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/renderJsTrackingCode.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | Yes | Product ID |
-| `purchase_id` | string | No | Purchase ID for conversion tracking |
-| `amount` | float | No | Transaction amount |
-| `currency` | string | No | Currency code |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_id' => 123,
-        'tracking_code' => '<script>
-            // Google Analytics tracking
-            gtag("event", "purchase", {
-                transaction_id: "ABCD1234",
-                value: 99.00,
-                currency: "EUR",
-                items: [{
-                    item_id: "123",
-                    item_name: "Premium Course",
-                    price: 99.00,
-                    quantity: 1
-                }]
-            });
-            
-            // Facebook Pixel tracking
-            fbq("track", "Purchase", {
-                value: 99.00,
-                currency: "EUR",
-                content_ids: ["123"],
-                content_type: "product"
-            });
-        </script>'
-    ]
-]
-```
+- `affiliateInput` (string, optional) — The name of the HTML form input field that should receive the affiliate name.
+- `campaignkeyInput` (string, optional) — The name of the HTML form input field that should receive the campaign key.
+- `trackingkeyInput` (string, optional) — The name of the HTML form input field that should receive the tracking key.
+- `callback` (string, optional) — The name of a JavaScript function to be called with the data.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Tracking\RenderJsTrackingCodeRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get tracking code for product
-$response = $api->tracking->renderJsTrackingCode(
-    productId: 123
+// The request argument is optional; $ds24->tracking->renderJsCode() works as well.
+$request = new RenderJsTrackingCodeRequest(
+    affiliateInput: 'aff',
+    campaignkeyInput: 'campaignkey',
+    trackingkeyInput: 'trackingkey',
 );
 
-echo "Tracking Code:\n";
-echo $response->trackingCode;
+$response = $ds24->tracking->renderJsCode($request);
 
-// Get tracking code with purchase details
-$response = $api->tracking->renderJsTrackingCode(
-    productId: 123,
-    purchaseId: 'ABCD1234',
-    amount: 99.00,
-    currency: 'EUR'
-);
-
-// Output tracking code to page
-echo $response->trackingCode;
-
-// Example: Embed in thank-you page
-$trackingCode = $response->trackingCode;
-echo <<<HTML
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Thank You</title>
-</head>
-<body>
-    <h1>Thank you for your purchase!</h1>
-    {$trackingCode}
-</body>
-</html>
-HTML;
+echo $response->scriptCode; // the full <script> tag to embed
+echo $response->scriptUrl;  // the script URL
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid product ID or amount |
-| 404 | Product not found | Specified product does not exist |
-| 403 | Access denied | No permission to access this product |
+`RenderJsTrackingCodeResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `scriptCode` (string) — The complete JavaScript tag to be embedded on the landing page.
+- `scriptUrl` (string) — The script URL.
 
-- Includes Google Analytics and Facebook Pixel tracking
-- Automatically includes configured tracking pixels
-- Use on thank-you/confirmation pages
-- Purchase ID enables conversion tracking
-- Amount and currency optional for page views
-- Code includes all active tracking integrations
+## Error Handling
+
+```php
+try {
+    $response = $ds24->tracking->renderJsCode($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getPurchaseTracking](getPurchaseTracking.md)

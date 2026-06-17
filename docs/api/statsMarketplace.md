@@ -1,97 +1,61 @@
 # statsMarketplace
 
-Get marketplace statistics.
+Retrieves marketplace statistics for an optional date range.
 
 ## Endpoint
 
-```
-POST /json/statsMarketplace
-```
+**GET** `https://www.digistore24.com/api/call/statsMarketplace`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/statsMarketplace.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `entry_id` | int | No | Specific entry ID (empty = all entries) |
-| `start_date` | string | No | Start date (Y-m-d) |
-| `end_date` | string | No | End date (Y-m-d) |
+## Parameters
 
-## Response
+All constructor arguments are optional:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'total_views' => 15000,
-        'total_sales' => 450,
-        'total_revenue' => 44925.00,
-        'conversion_rate' => 3.0,
-        'average_rating' => 4.3,
-        'total_reviews' => 120,
-        'by_category' => [
-            'Software' => [
-                'views' => 8000,
-                'sales' => 250,
-                'revenue' => 24975.00
-            ],
-            // ... more categories
-        ],
-        'top_products' => [
-            [
-                'entry_id' => 123,
-                'title' => 'Top Product',
-                'sales' => 150,
-                'revenue' => 14985.00
-            ],
-            // ... more products
-        ]
-    ]
-]
-```
+- `from` (string, optional) — Start date for statistics. Format: `YYYY-MM-DD`.
+- `to` (string, optional) — End date for statistics. Format: `YYYY-MM-DD`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Marketplace\StatsMarketplaceRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get overall marketplace statistics
-$response = $api->marketplace->statsMarketplace();
+$request = new StatsMarketplaceRequest(from: '2026-01-01', to: '2026-06-30');
 
-echo "Total Views: {$response->totalViews}\n";
-echo "Total Sales: {$response->totalSales}\n";
-echo "Revenue: € {$response->totalRevenue}\n";
-echo "Conversion Rate: {$response->conversionRate}%\n";
+$response = $ds24->marketplace->stats($request);
 
-// Get statistics for specific entry
-$response = $api->marketplace->statsMarketplace(
-    entryId: 123,
-    startDate: '2025-01-01',
-    endDate: '2025-12-31'
-);
+echo $response->result; // e.g. "success"
 
-// Get statistics for date range
-$response = $api->marketplace->statsMarketplace(
-    startDate: '2025-10-01',
-    endDate: '2025-10-31'
-);
+// Statistics are returned as an associative array
+foreach ($response->data as $key => $value) {
+    // inspect the marketplace statistics
+}
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid date format |
-| 404 | Entry not found | Specified entry does not exist |
+`StatsMarketplaceResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (array) — The marketplace statistics. Read as `$response->data['key']`.
 
-- Default period is last 30 days if dates not specified
-- Conversion rate = (sales / views) * 100
-- Statistics updated hourly
-- Use for marketplace performance analysis
-- Top products limited to top 10
+## Error Handling
+
+```php
+try {
+    $response = $ds24->marketplace->stats($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getMarketplaceEntry](getMarketplaceEntry.md)
+- [listMarketplaceEntries](listMarketplaceEntries.md)

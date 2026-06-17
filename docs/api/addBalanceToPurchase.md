@@ -1,70 +1,77 @@
 # addBalanceToPurchase
 
-Add or reduce balance on subscription and installment payment purchases.
+Adds balance to a subscription or installment order, which is billed with the next payments.
 
 ## Endpoint
 
 **POST** `https://www.digistore24.com/api/call/addBalanceToPurchase`
 
-## OpenAPI Specification
-
-[View OpenAPI Spec](https://digistore24.com/api/docs/paths/addBalanceToPurchase.yaml)
+[OpenAPI spec](https://digistore24.com/api/docs/paths/addBalanceToPurchase.yaml)
 
 ## Parameters
 
-### Required Parameters
+Constructor arguments of `AddBalanceToPurchaseRequest`:
 
-- `purchase_id` (string) - The Digistore24 order ID
-- `amount` (float) - Balance to add (negative values reduce balance, but total cannot go below 0)
-
-## Response
-
-```json
-{
-  "old_balance": 100.00,
-  "new_balance": 150.00
-}
-```
+- `purchaseId` (string, required) — The Digistore24 order ID.
+- `amount` (float, required) — The balance to add. Negative values reduce the balance, but the total cannot go below 0.
 
 ## Usage Example
 
 ```php
-use Digistore24\Request\Purchase\AddBalanceToPurchaseRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Purchase\AddBalanceToPurchaseRequest;
 
-// Add balance
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
+
 $request = new AddBalanceToPurchaseRequest(
-    purchaseId: 'ABCD-1234-EFGH',
-    amount: 50.00
+    purchaseId: '12345678',
+    amount: 25.0,
 );
 
-$response = $digistore24->purchases->addBalance($request);
-echo "Old balance: {$response->oldBalance}\n";
-echo "New balance: {$response->newBalance}\n";
-echo "Change: " . ($response->newBalance - $response->oldBalance);
+$response = $ds24->purchases->addBalance($request);
+
+echo $response->oldBalance;          // e.g. 0.0
+echo $response->newBalance;          // e.g. 25.0
+echo $response->getBalanceChange();  // e.g. 25.0
 ```
 
-## Reduce Balance
+To reduce the balance, pass a negative amount:
 
 ```php
-// Reduce balance by using negative amount
 $request = new AddBalanceToPurchaseRequest(
-    purchaseId: 'ABCD-1234-EFGH',
-    amount: -25.00
+    purchaseId: '12345678',
+    amount: -10.0,
 );
-
-$response = $digistore24->purchases->addBalance($request);
 ```
 
-## Important Notes
+## Response
 
-- **Subscription/Installment Only**: Only works for subscription and installment payment purchases
-- **Billing**: Balance will be billed with the next payments
-- **Negative Amounts**: Use negative values to reduce balance
-- **Minimum Balance**: Total balance cannot be less than 0
-- **Full Access Required**: Requires full access API key
-- **Currency**: Amount must be in the currency of the order
+`AddBalanceToPurchaseResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `oldBalance` (float) — Balance before the change.
+- `newBalance` (float) — Balance after the change.
+
+It also provides a helper method:
+
+- `getBalanceChange(): float` — Returns `newBalance - oldBalance`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->purchases->addBalance($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
 
 ## Related Endpoints
 
-- [getPurchase](getPurchase.md) - Check current purchase status
-- [createUpgradePurchase](createUpgradePurchase.md) - Upgrade a purchase
+- [getPurchase](getPurchase.md)
+- [updatePurchase](updatePurchase.md)
+- [createBillingOnDemand](createBillingOnDemand.md)
+- [refundPartially](refundPartially.md)

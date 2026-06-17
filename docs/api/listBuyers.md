@@ -1,95 +1,65 @@
 # listBuyers
 
-List all buyers in your Digistore24 account.
+Retrieves a paginated list of all buyers.
 
 ## Endpoint
 
-```
-POST /json/listBuyers
-```
+**GET** `https://www.digistore24.com/api/call/listBuyers`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listBuyers.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `limit` | int | No | Maximum number of results (default: 100, max: 1000) |
-| `offset` | int | No | Offset for pagination (default: 0) |
-| `search` | string | No | Search term for email, name, or company |
-| `country` | string | No | Filter by country code (ISO 3166-1 alpha-2) |
-| `created_after` | string | No | Filter buyers created after date (Y-m-d H:i:s) |
-| `created_before` | string | No | Filter buyers created before date (Y-m-d H:i:s) |
+## Parameters
 
-## Response
+`ListBuyersRequest` takes the following optional constructor arguments. Both default to `null`, in which case the API applies its own defaults.
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'buyers' => [
-            [
-                'buyer_id' => 12345,
-                'email' => 'buyer1@example.com',
-                'first_name' => 'John',
-                'last_name' => 'Doe',
-                'company' => 'Acme Corp',
-                'country' => 'DE',
-                'created_at' => '2024-01-15 10:30:00',
-                'total_purchases' => 5,
-                'total_amount' => 499.95
-            ],
-            // ... more buyers
-        ],
-        'total' => 250,
-        'limit' => 100,
-        'offset' => 0
-    ]
-]
-```
+- `pageNo` (int, optional) — Page number, starting at 1.
+- `pageSize` (int, optional) — Number of buyers per page.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Buyer\ListBuyersRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all buyers
-$response = $api->buyers->listBuyers(
-    limit: 50,
-    offset: 0
-);
+$request = new ListBuyersRequest(pageNo: 1, pageSize: 50);
+
+$response = $ds24->buyers->list($request);
+
+echo $response->total;  // e.g. 327
 
 foreach ($response->buyers as $buyer) {
-    echo "{$buyer->email}: {$buyer->totalPurchases} purchases\n";
+    echo $buyer->id . ': ' . $buyer->email . PHP_EOL;
 }
-
-// Search for specific buyers
-$response = $api->buyers->listBuyers(
-    search: 'john@example.com',
-    limit: 10
-);
-
-// Filter by country and date
-$response = $api->buyers->listBuyers(
-    country: 'DE',
-    createdAfter: '2025-01-01 00:00:00',
-    limit: 100
-);
 ```
 
-## Error Responses
+The request is optional. Calling `$ds24->buyers->list()` with no arguments returns the first page using the API defaults.
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid limit, offset, or date format |
-| 403 | Access denied | Not authorized to list buyers |
+## Response
 
-## Notes
+`ListBuyersResponse` exposes typed public properties:
 
-- Use pagination for large result sets
-- Search supports email, name, and company fields
-- Results are ordered by creation date (newest first)
-- Maximum 1000 results per request
+- `result` (string) — Result status returned by the API.
+- `buyers` (`BuyerData[]`) — The buyers on this page. Each `BuyerData` exposes `id`, `email`, `firstName`, `lastName`, `company`, `country`, and related fields.
+- `total` (int) — Total number of buyers available.
+- `limit` (int) — Result limit that was applied.
+- `offset` (int) — Result offset that was applied.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->buyers->list($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getBuyer](getBuyer.md)
+- [updateBuyer](updateBuyer.md)

@@ -1,27 +1,18 @@
 # ipnDelete
 
-Delete configured IPN (Instant Payment Notification) webhook.
+Deletes an IPN connection identified by its domain ID.
 
 ## Endpoint
 
-```
-DELETE /ipnDelete
-```
+**DELETE** `https://www.digistore24.com/api/call/ipnDelete`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/ipnDelete.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `domain_id` | string | Yes | Domain ID of the IPN connection to delete |
+## Parameters
 
-## Response
+The `delete()` method accepts the domain ID directly as a string (it builds the `IpnDeleteRequest` for you):
 
-```php
-[
-    'result' => 'success',
-    'message' => 'IPN deleted successfully'
-]
-```
+- `domainId` (string, required) — The domain ID that identifies which IPN connection to delete. This is the value supplied as `domainId` during `ipnSetup`.
 
 ## Usage Example
 
@@ -29,53 +20,32 @@ DELETE /ipnDelete
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Delete IPN by domain ID
-$response = $api->ipn->delete('my-platform');
+$response = $ds24->ipn->delete('my-platform');
 
-echo $response->message; // "IPN deleted successfully"
+echo $response->result; // e.g. "success"
 ```
 
-## Complete Example with Error Handling
+## Response
+
+`IpnDeleteResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+
+## Error Handling
 
 ```php
-use GoSuccess\Digistore24\Api\Digistore24;
-use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Exception\NotFoundException;
-
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
-
 try {
-    $domainId = 'my-platform';
-
-    // Delete the IPN
-    $response = $api->ipn->delete($domainId);
-
-    echo "✓ IPN with domain_id '{$domainId}' deleted successfully\n";
-
-} catch (NotFoundException $e) {
-    echo "✗ IPN not found: {$e->getMessage()}\n";
-} catch (\Exception $e) {
-    echo "✗ Error: {$e->getMessage()}\n";
+    $response = $ds24->ipn->delete('my-platform');
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Error Responses
+## Related Endpoints
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 404 | IPN not found | No IPN configured with specified domain_id |
-| 401 | Unauthorized | Invalid API key |
-| 400 | Missing domain_id | Required parameter not provided |
-
-## Notes
-
-- Requires the `domain_id` parameter that was set during IPN setup
-- Deletion is permanent and cannot be undone
-- All webhook notifications for this IPN will stop immediately
-- Use `ipnInfo` endpoint first to verify the domain_id
-- After deletion, you can setup a new IPN with the same domain_id
+- [ipnSetup](ipnSetup.md)
+- [ipnInfo](ipnInfo.md)

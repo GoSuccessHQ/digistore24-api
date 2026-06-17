@@ -1,69 +1,69 @@
 # retrieveApiKey
 
-Retrieve information about an existing API key (not the key itself).
+Retrieves the API key using the vendor email and the verification token received by email.
 
 ## Endpoint
 
-```
-POST /json/retrieveApiKey
-```
+**POST** `https://www.digistore24.com/api/call/retrieveApiKey`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/retrieveApiKey.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `api_key_id` | string | Yes | The API key ID (not the key itself) |
+## Parameters
 
-## Response
+`RetrieveApiKeyRequest` takes the following constructor arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'api_key_id' => 'KEY123',
-        'description' => 'Production Server',
-        'created_at' => '2025-01-15 10:30:00',
-        'last_used_at' => '2025-10-15 14:25:00',
-        'is_active' => true,
-        'permissions' => ['read', 'write'],
-        'rate_limit' => 1000,
-        'requests_today' => 450
-    ]
-]
-```
+- `email` (string, required) — The vendor email address.
+- `token` (string, required) — The verification token received via email.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ApiKey\RetrieveApiKeyRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get API key information
-$response = $api->apiKeys->retrieveApiKey(
-    apiKeyId: 'KEY123'
+$request = new RetrieveApiKeyRequest(
+    email: 'vendor@example.com',
+    token: 'verification-token-from-email',
 );
 
-echo "Description: {$response->description}\n";
-echo "Created: {$response->createdAt}\n";
-echo "Last used: {$response->lastUsedAt}\n";
-echo "Requests today: {$response->requestsToday}/{$response->rateLimit}\n";
+$response = $ds24->apiKeys->retrieve($request);
+
+echo $response->result;       // e.g. "success"
+echo $response->apiKeyId;     // the API key ID
+echo $response->isActive ? 'active' : 'inactive';
+echo $response->requestsToday . '/' . $response->rateLimit;
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 404 | API key not found | Key ID does not exist |
-| 403 | Access denied | Not authorized to access this key |
+`RetrieveApiKeyResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `apiKeyId` (string) — The API key ID.
+- `description` (string|null) — API key description.
+- `createdAt` (`DateTimeInterface`|null) — Creation timestamp.
+- `lastUsedAt` (`DateTimeInterface`|null) — Last usage timestamp.
+- `isActive` (bool) — Whether the API key is active.
+- `permissions` (string[]) — Granted permissions.
+- `rateLimit` (int|null) — Rate limit for this API key.
+- `requestsToday` (int|null) — Number of requests made today.
 
-- This endpoint returns key **information**, not the key itself
-- API keys cannot be retrieved once created
-- Use this to monitor key usage and status
-- Check `requests_today` to monitor rate limit usage
-- Inactive keys return is_active=false
+## Error Handling
+
+```php
+try {
+    $response = $ds24->apiKeys->retrieve($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [requestApiKey](requestApiKey.md)
+- [unregister](unregister.md)

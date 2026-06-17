@@ -1,151 +1,71 @@
-# List Products
+# listProducts
 
-Returns a list of all your Digistore24 products.
+Lists all products in your Digistore24 account.
 
 ## Endpoint
 
-`GET /listProducts`
+**GET** `https://www.digistore24.com/api/call/listProducts`
 
-## Description
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listProducts.yaml)
 
-Retrieves a complete list of products in your Digistore24 account. Products can be sorted by name or product group for better organization.
+## Parameters
 
-## Request Parameters
+`ListProductsRequest` takes the following constructor argument:
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `sort_by` | string | No | name | Sort products by: 'name' or 'group' |
+- `sortBy` (ProductSortBy, optional) — Sort order: `ProductSortBy::NAME` (default) or `ProductSortBy::GROUP`.
 
-## Response
+The request is optional. Call `$ds24->products->list()` with no argument to list all products with the default sort order.
 
-### Success Response (200 OK)
-
-```json
-[
-  {
-    "id": 39,
-    "name": "The Weight Loss Cake",
-    "note": null,
-    "tag": null,
-    "language": "de",
-    "product_group_id": 17,
-    "product_group_name": "My happiness products",
-    "units_left": "infinite",
-    "created_at": "2012-06-07 00:45:36",
-    "modified_at": "2013-09-16 21:45:10"
-  },
-  {
-    "id": 42,
-    "name": "Advanced Marketing Course",
-    "note": "Best seller",
-    "tag": "marketing",
-    "language": "en",
-    "product_group_id": null,
-    "product_group_name": null,
-    "units_left": "50",
-    "created_at": "2013-01-10 12:30:00",
-    "modified_at": "2024-10-01 16:20:00"
-  }
-]
-```
-
-### Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| Array of products | array | List of product objects |
-| `id` | integer | Product ID |
-| `name` | string | Product name |
-| `note` | string\|null | Product note/description |
-| `tag` | string\|null | Product tag |
-| `language` | string | Language code |
-| `product_group_id` | integer\|null | Product group ID |
-| `product_group_name` | string\|null | Product group name |
-| `units_left` | string | Available units |
-| `created_at` | string | Creation timestamp |
-| `modified_at` | string | Last modification timestamp |
-
-## PHP Example
+## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 use GoSuccess\Digistore24\Api\Request\Product\ListProductsRequest;
+use GoSuccess\Digistore24\Api\Enum\ProductSortBy;
 
-$config = new Configuration('YOUR-API-KEY');
-$ds24 = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Simple: List all products with default sorting
-try {
-    $response = $ds24->products->list();
+// List all products, sorted by product group
+$request = new ListProductsRequest(sortBy: ProductSortBy::GROUP);
 
-    echo "Total Products: " . count($response->products) . "\n\n";
-
-    foreach ($response->products as $product) {
-        echo "ID: {$product->productId}\n";
-        echo "Name: {$product->productName}\n";
-        echo "Language: {$product->language}\n";
-        echo "Units Left: {$product->unitsLeft}\n";
-
-        if ($product->productGroupName) {
-            echo "Group: {$product->productGroupName}\n";
-        }
-
-        echo "---\n";
-    }
-} catch (\GoSuccess\Digistore24\Api\Exception\ApiException $e) {
-    echo "Error: {$e->getMessage()}\n";
-}
-
-// Advanced: List products with custom sorting
-$request = new ListProductsRequest(sortBy: 'name');
 $response = $ds24->products->list($request);
-```
 
-## Example: Sort by Product Group
+echo $response->totalCount; // e.g. 12
 
-```php
-// List products grouped by folder
-$response = $ds24->products->list(new ListProductsRequest(sortBy: 'group'));
-
-$grouped = [];
 foreach ($response->products as $product) {
-    $groupName = $product->productGroupName ?? 'Uncategorized';
-    $grouped[$groupName][] = $product;
-}
-
-foreach ($grouped as $groupName => $products) {
-    echo "{$groupName}:\n";
-    foreach ($products as $product) {
-        echo "  - {$product->productName} (ID: {$product->productId})\n";
-    }
-    echo "\n";
+    echo $product->id . ': ' . $product->name . PHP_EOL;
+    echo $product->productGroupName . PHP_EOL;
 }
 ```
 
-## Example: Find Products by Language
+## Response
+
+`ListProductsResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `products` (array of `ProductListItem`) — The list of products.
+- `totalCount` (int) — Number of products returned.
+
+Each `ProductListItem` exposes many read-only typed properties, including `id` (string), `name` (string), `nameIntern` (string), `description` (string), `currency` (string), `language` (string), `productGroupId` (int), `productGroupName` (string), `productTypeId` (int), `isActive` (bool), `affiliateCommission` (string), `salespageUrl` (string), `thankyouUrl` (string), `createdAt` (?DateTimeInterface), and `modifiedAt` (?DateTimeInterface).
+
+## Error Handling
 
 ```php
-// No request object needed for simple listing
-$response = $ds24->products->list();
-
-$language = 'en';
-$filtered = array_filter(
-    $response->products,
-    fn($p) => $p->language === $language
-);
-
-echo "English products: " . count($filtered) . "\n";
+try {
+    $response = $ds24->products->list($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
 ```
-
-## Important Notes
-
-- Returns all products regardless of status
-- Products can be sorted by name or product group
-- Use `units_left` to check product availability
-- Empty array returned if no products exist
 
 ## Related Endpoints
 
-- [Get Product](getProduct.md) - Get details of a specific product
-- [Create Buy URL](createBuyUrl.md) - Create order URL for a product
+- [getProduct](getProduct.md)
+- [createProduct](createProduct.md)
+- [updateProduct](updateProduct.md)
+- [copyProduct](copyProduct.md)
+- [deleteProduct](deleteProduct.md)
+- [listProductTypes](listProductTypes.md)

@@ -1,104 +1,70 @@
 # updateProductGroup
 
-Update an existing product group.
+Updates an existing product group's configuration.
 
 ## Endpoint
 
-```
-POST /json/updateProductGroup
-```
+**PUT** `https://www.digistore24.com/api/call/updateProductGroup`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updateProductGroup.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_group_id` | int | Yes | Product group ID |
-| `name` | string | No | Product group name |
-| `description` | string | No | Group description |
-| `product_ids` | array | No | Array of product IDs (replaces existing) |
-| `is_active` | bool | No | Active status |
+## Parameters
 
-## Response
+- `productGroupId` (string, required) — The unique identifier of the product group to update.
+- `productGroup` (`ProductGroupData`, required) — The updated product group configuration.
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_group_id' => 567,
-        'name' => 'Updated Premium Bundle',
-        'description' => 'Updated collection of premium products',
-        'product_ids' => [123, 124, 125, 126],
-        'product_count' => 4,
-        'is_active' => true,
-        'updated_at' => '2025-03-20T20:45:00Z'
-    ]
-]
-```
+The `productGroup` argument wraps a `ProductGroupData` DTO with the following settable properties:
+
+- `name` (string, required) — Product group name. Must not exceed 31 characters.
+- `position` (int, optional) — The display order. Must be positive. Defaults to `10`.
+- `isShownAsTab` (bool, optional) — If `true`, the group is displayed as a tab in the product list. Defaults to `false`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ProductGroup\UpdateProductGroupRequest;
+use GoSuccess\Digistore24\Api\DTO\ProductGroupData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update group name
-$response = $api->productGroups->updateProductGroup(
-    productGroupId: 567,
-    name: 'Updated Premium Bundle'
+$productGroup = new ProductGroupData();
+$productGroup->name = 'Updated Premium Bundle';
+$productGroup->position = 5;
+$productGroup->isShownAsTab = true;
+
+$request = new UpdateProductGroupRequest(
+    productGroupId: '567',
+    productGroup: $productGroup,
 );
 
-echo "Group updated: {$response->name}\n";
+$response = $ds24->productGroups->update($request);
 
-// Update description
-$response = $api->productGroups->updateProductGroup(
-    productGroupId: 567,
-    description: 'Complete collection of all premium courses'
-);
-
-// Add/update products (replaces existing list)
-$response = $api->productGroups->updateProductGroup(
-    productGroupId: 567,
-    productIds: [123, 124, 125, 126]
-);
-
-echo "Group now has {$response->productCount} products\n";
-
-// Deactivate group
-$response = $api->productGroups->updateProductGroup(
-    productGroupId: 567,
-    isActive: false
-);
-
-if (!$response->isActive) {
-    echo "Group deactivated\n";
-}
-
-// Update multiple settings
-$response = $api->productGroups->updateProductGroup(
-    productGroupId: 567,
-    name: 'Complete Premium Bundle',
-    description: 'Everything you need to succeed',
-    productIds: [123, 124, 125, 126, 127],
-    isActive: true
-);
+echo $response->result; // e.g. "success"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid product IDs or data |
-| 404 | Product group not found | Specified product group does not exist |
-| 403 | Access denied | No permission to update this product group |
+`UpdateProductGroupResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
 
-- Only provided parameters are updated
-- `product_ids` replaces the entire product list (not additive)
-- To add products, include all existing + new product IDs
-- Other settings remain unchanged
-- Changes take effect immediately
+## Error Handling
+
+```php
+try {
+    $response = $ds24->productGroups->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createProductGroup](createProductGroup.md)
+- [getProductGroup](getProductGroup.md)
+- [deleteProductGroup](deleteProductGroup.md)
+- [listProductGroups](listProductGroups.md)

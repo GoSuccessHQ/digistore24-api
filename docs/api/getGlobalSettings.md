@@ -1,101 +1,70 @@
 # getGlobalSettings
 
-Get global Digistore24 settings and configuration.
+Returns global Digistore24 system settings such as product types, countries, currencies, languages, payment methods, and VAT rates.
 
 ## Endpoint
 
-```
-POST /json/getGlobalSettings
-```
+**GET** `https://www.digistore24.com/api/call/getGlobalSettings`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getGlobalSettings.yaml)
 
-No parameters required.
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_types' => [
-            ['id' => 1, 'name' => 'Digital Product'],
-            ['id' => 2, 'name' => 'Physical Product'],
-            ['id' => 3, 'name' => 'Service'],
-            ['id' => 4, 'name' => 'Subscription']
-        ],
-        'countries' => [
-            ['code' => 'DE', 'name' => 'Germany'],
-            ['code' => 'AT', 'name' => 'Austria'],
-            // ... more countries
-        ],
-        'currencies' => [
-            ['code' => 'EUR', 'symbol' => '€', 'name' => 'Euro'],
-            ['code' => 'USD', 'symbol' => '$', 'name' => 'US Dollar'],
-            // ... more currencies
-        ],
-        'languages' => [
-            ['code' => 'de', 'name' => 'Deutsch'],
-            ['code' => 'en', 'name' => 'English'],
-            ['code' => 'es', 'name' => 'Español']
-        ],
-        'payment_methods' => [
-            'paypal', 'credit_card', 'sepa', 'sofort', 'giropay'
-        ],
-        'vat_rates' => [
-            'DE' => 19.0,
-            'AT' => 20.0,
-            // ... more VAT rates
-        ]
-    ]
-]
-```
+`GetGlobalSettingsRequest` takes no parameters. The request is optional; calling `$ds24->system->getGlobalSettings()` with no arguments creates it for you.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\System\GetGlobalSettingsRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get all global settings
-$response = $api->system->getGlobalSettings();
+$response = $ds24->system->getGlobalSettings(new GetGlobalSettingsRequest());
 
-// List available product types
 foreach ($response->productTypes as $type) {
-    echo "Product Type: {$type->name} (ID: {$type->id})\n";
+    echo $type['id'] . ': ' . $type['name'] . PHP_EOL;
 }
 
-// Get supported countries
-foreach ($response->countries as $country) {
-    echo "{$country->code}: {$country->name}\n";
-}
-
-// Get currencies
 foreach ($response->currencies as $currency) {
-    echo "{$currency->code} ({$currency->symbol})\n";
+    echo $currency['code'] . ' (' . $currency['symbol'] . ')' . PHP_EOL;
 }
 
-// Check VAT rate for a country
-$vatRate = $response->vatRates['DE'] ?? 0;
-echo "VAT rate for Germany: {$vatRate}%";
+$germanVat = $response->vatRates['DE'] ?? 0.0;
+echo 'VAT rate for Germany: ' . $germanVat . '%' . PHP_EOL;
 ```
 
-## Error Responses
+You can also omit the request entirely:
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 401 | Unauthorized | Invalid or missing API key |
-| 403 | Forbidden | API key is disabled |
+```php
+$response = $ds24->system->getGlobalSettings();
+```
 
-## Notes
+## Response
 
-- Response includes all reference data needed for API operations
-- Use product type IDs when creating products
-- Country codes are ISO 3166-1 alpha-2
-- Currency codes are ISO 4217
-- VAT rates may change; query regularly
-- Settings are cached; may be up to 1 hour old
+`GetGlobalSettingsResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `productTypes` (array) — List of `['id' => int, 'name' => string]` entries.
+- `countries` (array) — List of `['code' => string, 'name' => string]` entries.
+- `currencies` (array) — List of `['code' => string, 'symbol' => string, 'name' => string]` entries.
+- `languages` (array) — List of `['code' => string, 'name' => string]` entries.
+- `paymentMethods` (string[]) — Available payment method identifiers.
+- `vatRates` (array) — VAT rates keyed by country code, e.g. `['DE' => 19.0]`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->system->getGlobalSettings(new GetGlobalSettingsRequest());
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [ping](ping.md)

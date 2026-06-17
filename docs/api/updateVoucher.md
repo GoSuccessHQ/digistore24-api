@@ -1,94 +1,79 @@
 # updateVoucher
 
-Update an existing voucher.
+Updates the configuration of an existing voucher, identified by its code.
 
 ## Endpoint
 
-```
-POST /json/updateVoucher
-```
+**PUT** `https://www.digistore24.com/api/call/updateVoucher`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updateVoucher.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `voucher_id` | int | Yes* | Voucher ID |
-| `code` | string | Yes* | Current voucher code |
-| `new_code` | string | No | New voucher code |
-| `discount_type` | string | No | 'percentage' or 'fixed' |
-| `discount_value` | float | No | Discount value |
-| `valid_from` | string | No | Start date (Y-m-d H:i:s) |
-| `valid_until` | string | No | Expiration date (Y-m-d H:i:s) |
-| `max_uses` | int | No | Maximum number of uses |
-| `max_uses_per_buyer` | int | No | Max uses per buyer |
-| `is_active` | bool | No | Active status |
+## Parameters
 
-*One of `voucher_id` or `code` is required to identify the voucher.
+- `code` (string, required) — The code of the voucher to update.
+- `voucher` (`VoucherData`, required) — The updated voucher data.
 
-## Response
+Populate the following settable properties on the `VoucherData` DTO:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'voucher_id' => 789,
-        'code' => 'AUTUMN2025',
-        'discount_type' => 'percentage',
-        'discount_value' => 25.0,
-        'updated_at' => '2025-10-15 14:30:00'
-    ]
-]
-```
+- `code` (string, required) — The voucher code. Must not be empty and must not exceed 255 characters.
+- `validFrom` (string, optional) — Point in time from when the code becomes valid. Format: `YYYY-MM-DD HH:MM:SS`.
+- `expiresAt` (string, optional) — Point in time when the code becomes invalid. Format: `YYYY-MM-DD HH:MM:SS`.
+- `firstRate` (float, optional) — Discount percentage on the first/single payment (0–100).
+- `otherRates` (float, optional) — Discount percentage on follow-up payments (0–100).
+- `firstAmount` (float, optional) — Fixed discount amount on the first/single payment (>= 0).
+- `otherAmounts` (float, optional) — Fixed discount amount on follow-up payments (>= 0).
+- `currency` (string, optional) — 3-letter currency code for the fixed discount amounts (e.g. `USD`, `EUR`).
+- `countLeft` (int, optional) — Number of remaining uses (>= 0). Defaults to `1`.
+- `upgradePolicy` (string, optional) — How the code is used for upgrades: `valid`, `other_only`, or `not_valid`. Defaults to `valid`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Voucher\UpdateVoucherRequest;
+use GoSuccess\Digistore24\Api\DTO\VoucherData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update discount value
-$response = $api->vouchers->updateVoucher(
-    voucherId: 789,
-    discountValue: 25.0
-);
+$voucher = new VoucherData();
+$voucher->code = 'SAVE20';
+$voucher->firstRate = 25.0;
+$voucher->expiresAt = '2026-12-31 23:59:59';
 
-// Change voucher code
-$response = $api->vouchers->updateVoucher(
-    code: 'SUMMER2025',
-    newCode: 'AUTUMN2025'
-);
+$request = new UpdateVoucherRequest(code: 'SAVE20', voucher: $voucher);
 
-// Extend validity period
-$response = $api->vouchers->updateVoucher(
-    voucherId: 789,
-    validUntil: '2025-12-31 23:59:59'
-);
+$response = $ds24->vouchers->update($request);
 
-// Deactivate voucher
-$response = $api->vouchers->updateVoucher(
-    voucherId: 789,
-    isActive: false
-);
+echo $response->discountCodeId;        // e.g. 12345
+echo $response->code;                  // e.g. "SAVE20"
+var_dump($response->isModified);       // bool
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Missing required fields or invalid format |
-| 404 | Voucher not found | Voucher does not exist |
-| 409 | Code already exists | New voucher code is already in use |
-| 403 | Access denied | Not authorized to update voucher |
-| 422 | Validation error | Invalid discount value or date range |
+`UpdateVoucherResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `discountCodeId` (int) — ID of the updated voucher.
+- `code` (string) — The voucher code.
+- `isModified` (bool) — Whether the voucher was actually modified.
 
-- Only provided fields will be updated
-- Use `new_code` to change the voucher code
-- Cannot reduce max_uses below current usage count
-- Deactivating doesn't delete usage history
-- Changes are applied immediately
+## Error Handling
+
+```php
+try {
+    $response = $ds24->vouchers->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [createVoucher](createVoucher.md)
+- [getVoucher](getVoucher.md)
+- [deleteVoucher](deleteVoucher.md)
+- [listVouchers](listVouchers.md)

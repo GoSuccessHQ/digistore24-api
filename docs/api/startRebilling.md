@@ -1,77 +1,62 @@
 # startRebilling
 
-Start or restart rebilling for a purchase.
+Starts or resumes automatic rebilling for a purchase.
 
 ## Endpoint
 
-```
-POST /json/startRebilling
-```
+**POST** `https://www.digistore24.com/api/call/startRebilling`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/startRebilling.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `purchase_id` | string | Yes | Purchase ID |
-| `next_rebill_date` | string | No | Next rebill date (Y-m-d, default: +interval days) |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'purchase_id' => 'ABCD1234',
-        'rebilling_status' => 'active',
-        'next_rebill_date' => '2025-04-20',
-        'rebill_amount' => 29.00,
-        'currency' => 'EUR',
-        'started_at' => '2025-03-20T22:15:00Z'
-    ]
-]
-```
+- `purchaseId` (string, required) — The unique identifier of the purchase whose rebilling should be started or resumed.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Rebilling\StartRebillingRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Start rebilling with default next date
-$response = $api->rebilling->startRebilling(
-    purchaseId: 'ABCD1234'
-);
+$request = new StartRebillingRequest(purchaseId: 'ABCD1234');
 
-echo "Rebilling Status: {$response->rebillingStatus}\n";
-echo "Next Rebill Date: {$response->nextRebillDate}\n";
-echo "Rebill Amount: {$response->currency} {$response->rebillAmount}\n";
+$response = $ds24->rebilling->start($request);
 
-// Start with custom next rebill date
-$response = $api->rebilling->startRebilling(
-    purchaseId: 'ABCD1234',
-    nextRebillDate: '2025-04-15'
-);
-
-echo "Rebilling started, next charge on {$response->nextRebillDate}\n";
+echo $response->result;                       // e.g. "success"
+echo $response->data?->rebillingActive;       // bool, true when rebilling is active
+echo $response->data?->billingStatusMsg;      // human-readable status message
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid purchase ID or date format |
-| 404 | Purchase not found | Specified purchase does not exist |
-| 403 | Access denied | No permission to start rebilling |
-| 409 | Already active | Rebilling already active for this purchase |
+`StartRebillingResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (`?RebillingData`) — Typed rebilling details, or `null` when the API returns no payload. Relevant properties:
+  - `modified` (bool) — Whether rebilling was modified.
+  - `note` (?string) — Note text on the outcome.
+  - `billingStatus` (?string) — Current billing status.
+  - `billingStatusMsg` (?string) — Human-readable billing status message.
+  - `nextPaymentAt` (?DateTimeImmutable) — Date of the next payment.
+  - `rebillingActive` (bool) — Whether rebilling is active.
 
-- Restarts subscription that was stopped
-- Requires purchase with payment plan
-- Next rebill date defaults to current date + payment plan interval
-- Cannot start rebilling if payment method is invalid
-- Use after payment method update or voluntary restart
+## Error Handling
+
+```php
+try {
+    $response = $ds24->rebilling->start($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [stopRebilling](stopRebilling.md)
+- [createRebillingPayment](createRebillingPayment.md)
+- [listRebillingStatusChanges](listRebillingStatusChanges.md)

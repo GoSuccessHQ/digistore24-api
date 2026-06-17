@@ -1,103 +1,73 @@
 # createUpgrade
 
-Create a new upgrade path.
+Creates a new upgrade path between products.
 
 ## Endpoint
 
-```
-POST /json/createUpgrade
-```
+**POST** `https://www.digistore24.com/api/call/createUpgrade`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/createUpgrade.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `name` | string | Yes | Upgrade name |
-| `from_product_id` | int | Yes | Source product ID |
-| `to_product_id` | int | Yes | Target product ID |
-| `upgrade_price` | float | Yes | Upgrade price |
-| `currency` | string | No | Currency code (default: EUR) |
-| `description` | string | No | Upgrade description |
-| `is_active` | bool | No | Active status (default: true) |
+## Parameters
 
-## Response
+The request wraps an `UpgradeData` DTO. Populate the following settable properties before passing it to the request:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'upgrade_id' => 789,
-        'name' => 'Basic to Premium Upgrade',
-        'from_product_id' => 123,
-        'from_product_name' => 'Basic Course',
-        'to_product_id' => 124,
-        'to_product_name' => 'Premium Course',
-        'upgrade_price' => 49.00,
-        'currency' => 'EUR',
-        'description' => 'Upgrade to premium features',
-        'is_active' => true,
-        'created_at' => '2025-03-21T00:30:00Z'
-    ]
-]
-```
+- `name` (string, required) — Name of the new upgrade. Must not exceed 255 characters.
+- `toProductId` (int, required) — The product ID being sold as the upgrade. Must be positive.
+- `upgradeFrom` (string, optional) — Comma-separated list of product IDs that can be upgraded from. Changes take effect immediately. Defaults to `''`.
+- `downgradeFrom` (string, optional) — Comma-separated list of product IDs that can be downgraded from. Changes take effect next billing period. Defaults to `''`.
+- `specialOfferFor` (string, optional) — Comma-separated list of product IDs eligible for special member offers. Defaults to `''`.
+- `fallbackProductId` (int, optional) — Product ID to offer if the upgrade is not possible. Must be positive when set. Defaults to `null`.
+- `isActive` (bool, optional) — Whether the upgrade is active and purchasable. Defaults to `true`.
+- `buyerReadonlyKeys` (string, optional) — Which buyer data fields are protected: `none`, `email`, `email_and_name`, or `all`. Defaults to `none`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Upgrade\CreateUpgradeRequest;
+use GoSuccess\Digistore24\Api\DTO\UpgradeData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create upgrade
-$response = $api->upgrades->createUpgrade(
-    name: 'Basic to Premium Upgrade',
-    fromProductId: 123,
-    toProductId: 124,
-    upgradePrice: 49.00
-);
+$upgrade = new UpgradeData();
+$upgrade->name = 'Basic to Premium';
+$upgrade->toProductId = 124;
+$upgrade->upgradeFrom = '123';
+$upgrade->isActive = true;
 
-echo "Upgrade ID: {$response->upgradeId}\n";
-echo "Name: {$response->name}\n";
-echo "From: {$response->fromProductName}\n";
-echo "To: {$response->toProductName}\n";
-echo "Price: {$response->currency} {$response->upgradePrice}\n";
+$request = new CreateUpgradeRequest(upgrade: $upgrade);
 
-// Create with description
-$response = $api->upgrades->createUpgrade(
-    name: 'Premium to VIP Upgrade',
-    fromProductId: 124,
-    toProductId: 125,
-    upgradePrice: 99.00,
-    description: 'Get exclusive VIP access and bonuses'
-);
+$response = $ds24->upgrades->create($request);
 
-// Create with custom currency
-$response = $api->upgrades->createUpgrade(
-    name: 'Standard to Pro',
-    fromProductId: 101,
-    toProductId: 102,
-    upgradePrice: 79.00,
-    currency: 'USD',
-    description: 'Unlock professional features'
-);
+echo $response->getUpgradeId();                       // e.g. "789"
+echo $response->wasSuccessful() ? 'created' : 'failed';
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid price or product IDs |
-| 404 | Product not found | One or both products do not exist |
-| 403 | Access denied | No permission to create upgrades |
-| 409 | Upgrade exists | Upgrade path already exists |
+`CreateUpgradeResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (array) — Inner response payload. Read values such as `$response->data['upgrade_id']`.
+- `getUpgradeId(): ?string` — Convenience accessor for the new upgrade ID.
+- `wasSuccessful(): bool` — `true` when `result` equals `success`.
 
-- Cannot upgrade from and to same product
-- Upgrade price typically less than target product price
-- Customers pay upgrade price to switch products
-- Access to original product maintained until upgrade
-- Use for product upselling strategies
+## Error Handling
+
+```php
+try {
+    $response = $ds24->upgrades->create($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getUpgrade](getUpgrade.md)
+- [deleteUpgrade](deleteUpgrade.md)
+- [listUpgrades](listUpgrades.md)

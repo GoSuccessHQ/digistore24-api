@@ -1,122 +1,83 @@
 # createPaymentplan
 
-Create a new payment plan.
+Creates a new payment plan with installment configuration for a product.
 
 ## Endpoint
 
-```
-POST /json/createPaymentplan
-```
+**POST** `https://www.digistore24.com/api/call/createPaymentplan`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/createPaymentplan.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | Yes | Product ID |
-| `name` | string | Yes | Payment plan name |
-| `first_amount` | float | Yes | First payment amount |
-| `first_amount_net` | float | No | First amount net (without VAT) |
-| `rebill_amount` | float | Yes | Recurring payment amount |
-| `rebill_amount_net` | float | No | Rebill amount net (without VAT) |
-| `rebill_times` | int | Yes | Number of rebills (0 = unlimited) |
-| `rebill_interval` | int | Yes | Interval in days |
-| `currency` | string | No | Currency code (default: EUR) |
-| `is_active` | bool | No | Active status (default: true) |
+## Parameters
 
-## Response
+The request takes two arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'paymentplan_id' => 789,
-        'product_id' => 123,
-        'name' => 'Monthly Subscription',
-        'first_amount' => 49.00,
-        'first_amount_net' => 41.18,
-        'rebill_amount' => 29.00,
-        'rebill_amount_net' => 24.37,
-        'rebill_times' => 0,
-        'rebill_interval' => 30,
-        'currency' => 'EUR',
-        'is_active' => true,
-        'created_at' => '2025-03-20T18:00:00Z'
-    ]
-]
-```
+- `productId` (int, required) — The product the payment plan belongs to.
+- `paymentPlan` (`PaymentPlanFullData`, required) — The payment plan configuration.
+
+The `paymentPlan` argument wraps a `PaymentPlanFullData` DTO with the following settable properties:
+
+- `firstAmount` (float, optional) — Amount of the first payment (>= 0).
+- `firstBillingInterval` (string, optional) — Interval between purchase and the second payment. Examples: `4_day`, `1_week`, `1_month`, `3_month`, `6_month`, `12_month`.
+- `currency` (string, optional) — 3-letter currency code (e.g. `USD`, `EUR`).
+- `otherAmounts` (float, optional) — Amount for follow-up payments (>= 0).
+- `otherBillingIntervals` (string, optional) — Interval for follow-up payments. Examples: `1_week`, `1_month`, `3_month`, `6_month`, `12_month`.
+- `numberOfInstallments` (int, optional) — Number of installments (>= 0). `0` = subscription (indefinite), `1` = single payment, `>= 2` = installment plan.
+- `isActive` (bool, optional) — Whether the payment plan is active.
+- `cancelPolicy` (string, optional) — Cancellation policy (minimum term) in the format `{minimum_term}m_{notice_period}m`. Allowed: `6m_0`, `6m_6m`, `6m_12m`, `12m_0`, `12m_3m`, `12m_6m`, `12m_12m`, `24m_0`, `24m_6m`, `24m_12m`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\PaymentPlan\CreatePaymentplanRequest;
+use GoSuccess\Digistore24\Api\DTO\PaymentPlanFullData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create unlimited monthly subscription
-$response = $api->paymentPlans->createPaymentplan(
+$paymentPlan = new PaymentPlanFullData();
+$paymentPlan->currency = 'EUR';
+$paymentPlan->firstAmount = 49.00;
+$paymentPlan->firstBillingInterval = '1_month';
+$paymentPlan->otherAmounts = 29.00;
+$paymentPlan->otherBillingIntervals = '1_month';
+$paymentPlan->numberOfInstallments = 0; // subscription
+$paymentPlan->isActive = true;
+
+$request = new CreatePaymentplanRequest(
     productId: 123,
-    name: 'Monthly Subscription',
-    firstAmount: 49.00,
-    rebillAmount: 29.00,
-    rebillTimes: 0,  // unlimited
-    rebillInterval: 30  // 30 days
+    paymentPlan: $paymentPlan,
 );
 
-echo "Payment Plan ID: {$response->paymentplanId}\n";
-echo "Name: {$response->name}\n";
-echo "First Payment: € {$response->firstAmount}\n";
-echo "Recurring: € {$response->rebillAmount} every {$response->rebillInterval} days\n";
+$response = $ds24->paymentPlans->create($request);
 
-// Create 12-month payment plan
-$response = $api->paymentPlans->createPaymentplan(
-    productId: 123,
-    name: 'Annual Payment Plan (12 months)',
-    firstAmount: 0.00,  // No initial payment
-    rebillAmount: 49.00,
-    rebillTimes: 12,  // 12 payments total
-    rebillInterval: 30,
-    currency: 'EUR'
-);
-
-// Create weekly payment plan
-$response = $api->paymentPlans->createPaymentplan(
-    productId: 123,
-    name: 'Weekly Coaching',
-    firstAmount: 99.00,
-    rebillAmount: 49.00,
-    rebillTimes: 8,  // 8 weeks
-    rebillInterval: 7  // 7 days
-);
-
-// Create with net amounts (for VAT calculation)
-$response = $api->paymentPlans->createPaymentplan(
-    productId: 123,
-    name: 'B2B Subscription',
-    firstAmount: 119.00,
-    firstAmountNet: 100.00,
-    rebillAmount: 59.00,
-    rebillAmountNet: 49.58,
-    rebillTimes: 0,
-    rebillInterval: 30
-);
+echo $response->result;              // e.g. "success"
+echo $response->getPaymentplanId();  // e.g. "789"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid amounts or intervals |
-| 404 | Product not found | Specified product does not exist |
-| 403 | Access denied | No permission to create payment plans |
+`CreatePaymentplanResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (array<string, mixed>) — Raw response payload. Read individual values by key, e.g. `$response->data['paymentplan_id']`.
+- `getPaymentplanId(): ?string` — Convenience accessor returning the ID of the newly created payment plan.
 
-- `rebill_times = 0` means unlimited recurring payments
-- `rebill_interval` is in days (common: 7, 30, 90, 365)
-- `first_amount` can be 0 for trial periods
-- Supported currencies: EUR, USD, GBP, CHF
-- Net amounts used for VAT calculation if provided
-- Payment plan must be assigned to product to be used
+## Error Handling
+
+```php
+try {
+    $response = $ds24->paymentPlans->create($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [updatePaymentplan](updatePaymentplan.md)
+- [deletePaymentplan](deletePaymentplan.md)
+- [listPaymentPlans](listPaymentPlans.md)

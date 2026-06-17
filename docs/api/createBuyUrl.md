@@ -1,253 +1,100 @@
-# Create Buy URL
+# createBuyUrl
 
-Creates a customized order form URL with pre-filled data, custom pricing, and tracking.
+Creates a customized order form URL with optional pre-filled buyer data, custom pricing, tracking, and more.
 
 ## Endpoint
 
-`POST /createBuyUrl`
+**POST** `https://www.digistore24.com/api/call/createBuyUrl`
 
-## Description
+[OpenAPI spec](https://digistore24.com/api/docs/paths/createBuyUrl.yaml)
 
-Creates a special order form URL that can be customized for the visitor. For example, customer data can be entered and set as read-only. Prices can also be changed.
+## Parameters
 
-This is useful for:
-- Creating personalized order links for specific customers
-- Pre-filling customer information
-- Offering special pricing or payment plans
-- Tracking specific campaigns or affiliates
-- Creating upgrade or downgrade links
+`CreateBuyUrlRequest` is built with `new CreateBuyUrlRequest()` and configured through public properties:
 
-## Request Parameters
+- `productId` (string|int, required) — The ID of the product in Digistore24. Must not be empty.
+- `buyer` (`BuyerData`, optional) — Pre-filled buyer data (see below). Defaults to `null`.
+- `paymentPlan` (`PaymentPlanData`, optional) — Custom price / payment plan. Defaults to `null`.
+- `tracking` (`TrackingData`, optional) — Tracking data for analytics. Defaults to `null`.
+- `validUntil` (string, optional) — Time period until the link expires, e.g. `24h`, `48h`, `7d`, or `forever`. Defaults to `24h`.
+- `urls` (`UrlsData`, optional) — Custom thank-you, fallback, and upgrade-error URLs. Defaults to `null`.
+- `placeholders` (array, optional) — Placeholders for the product title and description. Defaults to `null`.
+- `settings` (`SettingsData`, optional) — Additional order form settings. Defaults to `null`.
+- `addons` (array, optional) — List of add-on products. Defaults to `null`.
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `product_id` | string | Yes | - | The ID of the product in Digistore24 |
-| `buyer` | object | No | - | Buyer data (see Buyer structure below) |
-| `payment_plan` | object | No | - | Purchase price/payment plan data |
-| `tracking` | object | No | - | Tracking data for analytics |
-| `valid_until` | string | No | 24h | Time period until link becomes invalid. Use 'forever' for no expiration. |
-| `urls` | object | No | - | Custom URLs for thank you page, fallback, etc. |
-| `placeholders` | object | No | - | Placeholders for product title and description |
-| `settings` | object | No | - | Additional order form settings |
-| `addons` | array | No | - | List of add-on products |
+`BuyerData` settable properties include: `email` (string, validated), `salutation` (`Salutation`), `title`, `firstName`, `lastName`, `company`, `street`, `streetName`, `streetNumber`, `street2`, `city`, `zipcode`, `state`, `country` (auto-uppercased), `phoneNo`, `taxId`.
 
-### Buyer Structure
+`PaymentPlanData` settable properties include: `firstAmount` (float >= 0), `otherAmounts` (float >= 0), `currency` (3-letter code), `numberOfInstallments` (int >= 0), `firstBillingInterval`, `otherBillingIntervals`, `testInterval`, `template`, `upgradeOrderId`, `upgradeType` (`upgrade`, `downgrade`, or `special_offer`), `taxMode` (`net` or `gross`).
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `email` | string | Email address |
-| `salutation` | string | M (male) or F (female) |
-| `title` | string | e.g. "Prof." or "Dr." |
-| `first_name` | string | First name |
-| `last_name` | string | Last name |
-| `company` | string | Company name |
-| `street` | string | Street address |
-| `city` | string | City |
-| `zipcode` | string | Postal code |
-| `state` | string | State/province |
-| `country` | string | Two-digit country code |
-| `phone_no` | string | Phone number |
-| `tax_id` | string | Tax ID/VAT number |
-| `readonly_keys` | string | Which fields are read-only: all, email, email_and_name, none (default: none) |
-| `id` | string | Buyer ID or order ID to use existing address |
+`TrackingData` settable properties include: `affiliate`, `custom`, `campaignkey`, `trackingkey`, `utmSource`, `utmMedium`, `utmCampaign`, `utmTerm`, `utmContent`, plus validated `thankyou_url`, `cancellation_url`, `billing_failure_url`, `ga_tid`, and `fb_pixel_id`.
 
-### Payment Plan Structure
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `first_amount` | number | Purchase price or first payment amount |
-| `other_amounts` | number | Amount for follow-up payments |
-| `currency` | string | Three-digit currency code (e.g. EUR or USD) |
-| `number_of_installments` | integer | Number of payments (1=single payment, 0=subscription) |
-| `first_billing_interval` | string | Time interval between purchase and second installment |
-| `other_billing_intervals` | string | Time interval for second and further payments |
-| `test_interval` | string | Test period before payment starts |
-| `template` | string | ID of payment method template |
-| `upgrade_order_id` | string | Order ID for upgrade purchase |
-| `upgrade_type` | string | Type of upgrade: upgrade or downgrade |
-| `tax_mode` | string | Tax calculation mode: as_set, exclude, include |
-
-### Tracking Structure
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `custom` | string | Custom value for order reference |
-| `affiliate` | string | Affiliate's Digistore24 ID |
-| `affiliate_priority` | string | Priority for affiliate selection: email, as_set |
-| `campaignkey` | string | Campaign key of the affiliate |
-| `trackingkey` | string | Vendor's tracking key |
-| `utm_source` | string | UTM source parameter |
-| `utm_medium` | string | UTM medium parameter |
-| `utm_campaign` | string | UTM campaign parameter |
-| `utm_term` | string | UTM term parameter |
-| `utm_content` | string | UTM content parameter |
-
-### URLs Structure
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `thankyou_url` | string | Custom thank you page URL |
-| `fallback_url` | string | URL for invalid links |
-| `upgrade_error_url` | string | URL for failed upgrades |
-
-### Settings Structure
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `orderform_id` | string | ID of the order form |
-| `img` | string/object | Product image ID or mapping |
-| `affiliate_commission_rate` | number | Affiliate commission percentage |
-| `affiliate_commission_fix` | number | Fixed affiliate commission amount |
-| `voucher_code` | string | Voucher code to apply |
-| `voucher_1st_rate` | number | Discount percentage on first payment |
-| `voucher_oth_rates` | number | Discount percentage on follow-up payments |
-| `voucher_1st_amount` | number | Discount amount on first payment |
-| `voucher_oth_amounts` | number | Discount amount on follow-up payments |
-| `force_rebilling` | boolean | Require payment method supporting automated payments |
-| `pay_methods` | array | Allowed payment methods (paypal, sezzle, creditcard, elv, banktransfer, klarna) |
-
-### Addon Structure
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `product_id` | string | Product ID of addon |
-| `first_amount` | number | First payment amount for subscription/installment |
-| `other_amounts` | number | Follow-up payment amounts |
-| `single_amount` | number | Purchase amount for single payments |
-| `default_quantity` | integer | Preselected quantity (minimum: 1, default: 1) |
-| `max_quantity_type` | string | Maximum quantity type: unlimited, like_main_item, number |
-| `max_quantity` | integer | Maximum purchasable quantity |
-| `currency` | string | Three-character currency code |
-| `is_quantity_editable_before_purchase` | string | Can buyer change quantity before purchase (Y/N) |
-| `is_quantity_editable_after_purchase` | string | Can buyer change quantity after purchase (Y/N) |
-
-## Response
-
-### Success Response (200 OK)
-
-```json
-{
-  "id": "342033068",
-  "url": "https://www.digistore24.com/offer/342033068/vzJd5b3qByzt/12345",
-  "valid_until": "2025-10-15T17:59:19Z",
-  "upgrade_status": "none"
-}
-```
-
-### Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | ID of the BuyUrl object |
-| `url` | string | Order URL for purchase |
-| `valid_until` | string | Expiration date of the URL (ISO 8601 format) |
-| `upgrade_status` | string | Status of upgrade possibility: none, ok, error |
-
-### Error Responses
-
-#### 400 Bad Request
-Invalid request parameters.
-
-#### 403 Forbidden
-Access denied - Full access required.
-
-## PHP Example
+## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 use GoSuccess\Digistore24\Api\Request\BuyUrl\CreateBuyUrlRequest;
 use GoSuccess\Digistore24\Api\DTO\BuyerData;
+use GoSuccess\Digistore24\Api\DTO\PaymentPlanData;
+use GoSuccess\Digistore24\Api\DTO\TrackingData;
 
-$config = new Configuration('YOUR-API-KEY');
-$ds24 = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create a basic buy URL
-$request = new CreateBuyUrlRequest(productId: '12345');
-$request->validUntil = '+10m'; // 10 minutes valid from now
+$request = new CreateBuyUrlRequest();
+$request->productId = 12345;
+$request->validUntil = '48h';
 
-try {
-    $response = $ds24->buyUrls->create($request);
-    
-    echo "Buy URL: {$response->url}\n";
-    echo "ID: {$response->id}\n";
-    echo "Valid until: {$response->validUntil->format('Y-m-d H:i:s')}\n";
-} catch (\GoSuccess\Digistore24\Api\Exception\ApiException $e) {
-    echo "Error: {$e->getMessage()}\n";
-}
-```
-
-## Example: Pre-filled Customer Data
-
-```php
-use GoSuccess\Digistore24\Api\DTO\BuyerData;
-
-// Create buyer data
+// Optional: pre-fill buyer data
 $buyer = new BuyerData();
 $buyer->email = 'customer@example.com';
 $buyer->firstName = 'John';
 $buyer->lastName = 'Doe';
-$buyer->city = 'Berlin';
 $buyer->country = 'DE';
-
-// Create request with pre-filled data
-$request = new CreateBuyUrlRequest(productId: '12345');
 $request->buyer = $buyer;
-$request->validUntil = '48h'; // Valid for 48 hours
 
-$response = $ds24->buyUrls->create($request);
-echo "Personalized URL: {$response->url}\n";
-```
-
-## Example: Custom Pricing
-
-```php
-use GoSuccess\Digistore24\Api\DTO\PaymentPlanData;
-
-// Create custom payment plan
+// Optional: custom single payment price
 $paymentPlan = new PaymentPlanData();
 $paymentPlan->firstAmount = 99.00;
 $paymentPlan->currency = 'EUR';
-$paymentPlan->numberOfInstallments = 1; // Single payment
-
-$request = new CreateBuyUrlRequest(productId: '12345');
+$paymentPlan->numberOfInstallments = 1;
 $request->paymentPlan = $paymentPlan;
 
-$response = $ds24->buyUrls->create($request);
-echo "Custom price URL: {$response->url}\n";
-```
-
-## Example: With Tracking
-
-```php
-use GoSuccess\Digistore24\Api\DTO\TrackingData;
-
-// Create tracking data
+// Optional: tracking
 $tracking = new TrackingData();
-$tracking->affiliate = 'AFFILIATE123';
-$tracking->utmSource = 'email';
-$tracking->utmCampaign = 'summer2025';
-$tracking->custom = 'customer-segment-A';
-
-$request = new CreateBuyUrlRequest(productId: '12345');
+$tracking->affiliate = 'partner123';
+$tracking->utmSource = 'newsletter';
 $request->tracking = $tracking;
 
 $response = $ds24->buyUrls->create($request);
-echo "Tracked URL: {$response->url}\n";
+
+echo $response->id;                                   // e.g. "342033068"
+echo $response->url;                                  // the order form URL
+echo $response->validUntil->format('Y-m-d H:i:s');    // expiration date
+echo $response->upgradeStatus;                        // "none", "ok", or "error"
 ```
 
-## Important Notes
+## Response
 
-- Only `product_id` is mandatory
-- The `valid_until` parameter accepts relative time (e.g., '+10m', '24h', '7d') or 'forever'
-- Use `readonly_keys` in buyer data to prevent customers from changing pre-filled information
-- Buy URLs are perfect for email marketing campaigns with personalized offers
-- Tracking parameters help you analyze which sources generate the most sales
-- Custom payment plans allow you to offer special pricing to specific customers
-- The URL is automatically invalidated after expiration
-- Upgrade URLs require `upgrade_order_id` in the payment plan
+`CreateBuyUrlResponse` exposes typed public properties:
+
+- `id` (string|null) — ID of the created buy URL object.
+- `url` (string|null) — The order form URL for the purchase.
+- `validUntil` (`DateTimeImmutable`|null) — Expiration date of the URL.
+- `upgradeStatus` (string|null) — Upgrade possibility status: `none`, `ok`, or `error`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->buyUrls->create($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
 
 ## Related Endpoints
 
-- [List Buy URLs](listBuyUrls.md) - List all created buy URLs
-- [Delete Buy URL](deleteBuyUrl.md) - Delete a buy URL
+- [listBuyUrls](listBuyUrls.md)
+- [deleteBuyUrl](deleteBuyUrl.md)

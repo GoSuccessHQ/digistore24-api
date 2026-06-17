@@ -1,97 +1,77 @@
 # updateServiceProofRequest
 
-Update a service proof request.
+Updates an existing service proof request, either providing proof or executing a refund.
 
 ## Endpoint
 
-```
-POST /json/updateServiceProofRequest
-```
+**PUT** `https://www.digistore24.com/api/call/updateServiceProofRequest`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updateServiceProofRequest.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `request_id` | int | Yes | Service proof request ID |
-| `status` | string | No | New status (submitted, approved, rejected) |
-| `notes` | string | No | Additional notes |
-| `document_url` | string | No | URL to uploaded document |
+## Parameters
 
-## Response
+The request takes the service proof request ID plus a `ServiceProofRequestUpdateData` DTO:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'request_id' => 456,
-        'purchase_id' => 'ABCD1234',
-        'status' => 'submitted',
-        'notes' => 'Service proof documents uploaded',
-        'updated_at' => '2025-03-20T23:00:00Z'
-    ]
-]
-```
+- `serviceProofRequestId` (string, required) — The unique identifier of the service proof request.
+- `proofData` (`ServiceProofRequestUpdateData`, required) — The update payload. Populate the following settable properties:
+  - `requestStatus` (string, required) — Either `proof_provided` or `exec_refund`. Any other value throws an `InvalidArgumentException`.
+  - `message` (string, optional) — Additional explanation about the proof or refund decision.
+  - `files` (array of `FileData`, optional) — Files that serve as proof of service delivery.
+
+Each `FileData` entry has these settable properties:
+
+- `url` (string, required) — Download URL for the file contents. Must be a valid URL.
+- `filename` (string, optional) — A filename for the file.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ServiceProof\UpdateServiceProofRequestRequest;
+use GoSuccess\Digistore24\Api\DTO\ServiceProofRequestUpdateData;
+use GoSuccess\Digistore24\Api\DTO\FileData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Update status to submitted
-$response = $api->serviceProofs->updateServiceProofRequest(
-    requestId: 456,
-    status: 'submitted'
+$file = new FileData();
+$file->url = 'https://example.com/proofs/service-proof.pdf';
+$file->filename = 'service-proof.pdf';
+
+$proofData = new ServiceProofRequestUpdateData();
+$proofData->requestStatus = 'proof_provided';
+$proofData->message = 'Coaching session delivered on 2026-06-10.';
+$proofData->files = [$file];
+
+$request = new UpdateServiceProofRequestRequest(
+    serviceProofRequestId: 'SPR-12345',
+    proofData: $proofData,
 );
 
-echo "Request {$response->requestId} updated to: {$response->status}\n";
+$response = $ds24->serviceProofs->update($request);
 
-// Add notes
-$response = $api->serviceProofs->updateServiceProofRequest(
-    requestId: 456,
-    notes: 'Service proof documents uploaded and verified'
-);
-
-// Approve request
-$response = $api->serviceProofs->updateServiceProofRequest(
-    requestId: 456,
-    status: 'approved',
-    notes: 'All documents verified and approved'
-);
-
-// Reject request
-$response = $api->serviceProofs->updateServiceProofRequest(
-    requestId: 456,
-    status: 'rejected',
-    notes: 'Incomplete documentation, please resubmit'
-);
-
-// Update with document URL
-$response = $api->serviceProofs->updateServiceProofRequest(
-    requestId: 456,
-    status: 'submitted',
-    documentUrl: 'https://example.com/docs/proof.pdf',
-    notes: 'Service proof document attached'
-);
+echo $response->result; // e.g. "success"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid request ID or status |
-| 404 | Request not found | Specified service proof request does not exist |
-| 403 | Access denied | No permission to update this request |
-| 409 | Invalid status transition | Cannot change from current status to requested status |
+`UpdateServiceProofRequestResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
 
-- Valid status transitions: pending → submitted → approved/rejected
-- Cannot change status once approved or rejected
-- Notes are appended to request history
-- Approved status releases any payment holds
-- Rejected status may require resubmission
+## Error Handling
+
+```php
+try {
+    $response = $ds24->serviceProofs->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getServiceProofRequest](getServiceProofRequest.md)
+- [listServiceProofRequests](listServiceProofRequests.md)

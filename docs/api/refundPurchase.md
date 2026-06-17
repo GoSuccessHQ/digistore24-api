@@ -1,85 +1,69 @@
 # refundPurchase
 
-Refund all payments of an order according to the refund policy.
+Refunds all payments of an order that may be refunded according to the refund policy.
 
 ## Endpoint
 
 **POST** `https://www.digistore24.com/api/call/refundPurchase`
 
-## OpenAPI Specification
+[OpenAPI spec](https://digistore24.com/api/docs/paths/refundPurchase.yaml)
 
-[View OpenAPI Spec](https://digistore24.com/api/docs/paths/refundPurchase.yaml)
+For a partial refund that keeps the order active, use [refundPartially](refundPartially.md) instead.
 
 ## Parameters
 
-### Required Parameters
+Constructor arguments of `RefundPurchaseRequest`:
 
-- `purchase_id` (string) - The purchase ID
-
-### Optional Parameters
-
-- `force` (boolean) - If false (default), refund only if policy allows. If true, attempt anyway.
-- `request_date` (string) - Apply refund policies based on this date (default: 'now')
-
-## Response
-
-```json
-{
-  "result": "success",
-  "data": {}
-}
-```
+- `purchaseId` (string, required) — The Digistore24 order ID.
+- `force` (bool, optional) — If `false` (default), refund only if the policy allows it. If `true`, attempt the refund anyway.
+- `requestDate` (string, optional) — Apply refund policies based on this date. Defaults to `now` when omitted.
 
 ## Usage Example
 
 ```php
-use Digistore24\Request\Purchase\RefundPurchaseRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Purchase\RefundPurchaseRequest;
+
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
 $request = new RefundPurchaseRequest(
-    purchaseId: 'ABCD-1234-EFGH'
+    purchaseId: '12345678',
+    force: false,
 );
 
-$response = $digistore24->purchases->refund($request);
+$response = $ds24->purchases->refund($request);
 
 if ($response->wasSuccessful()) {
-    echo "Refund processed successfully";
-} else {
-    echo "Refund failed: {$response->result}";
+    echo 'Refund processed.';
 }
 ```
 
-## Force Refund
+## Response
+
+`RefundPurchaseResponse` exposes:
+
+- `result` (string) — Result status returned by the API.
+- `data` (array) — Additional response data, if any.
+
+Helper method:
+
+- `wasSuccessful(): bool` — Returns `true` when `result` equals `success` (case-insensitive).
+
+## Error Handling
 
 ```php
-// Bypass refund policy and attempt refund anyway
-$request = new RefundPurchaseRequest(
-    purchaseId: 'ABCD-1234',
-    force: true
-);
-
-$response = $digistore24->purchases->refund($request);
+try {
+    $response = $ds24->purchases->refund($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
 ```
-
-## Backdated Refund
-
-```php
-// Apply refund policy as if requested on a specific date
-$request = new RefundPurchaseRequest(
-    purchaseId: 'ABCD-1234',
-    requestDate: '2024-01-15'
-);
-
-$response = $digistore24->purchases->refund($request);
-```
-
-## Important Notes
-
-- **Policy Compliance**: By default, respects refund policy settings
-- **Force Option**: Use with caution - bypasses policy checks
-- **Processing Delay**: Use `request_date` if there's a delay between request and processing
-- **Full Refund**: Refunds all payments that may be refunded
 
 ## Related Endpoints
 
-- [getPurchase](getPurchase.md) - Check purchase details before refunding
-- [updatePurchase](updatePurchase.md) - Update purchase information
+- [refundPartially](refundPartially.md)
+- [getPurchase](getPurchase.md)
+- [updatePurchase](updatePurchase.md)

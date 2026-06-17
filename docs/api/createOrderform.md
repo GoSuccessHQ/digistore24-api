@@ -1,123 +1,90 @@
 # createOrderform
 
-Create a new order form.
+Creates a new order form (checkout page) with the given configuration.
 
 ## Endpoint
 
-```
-POST /json/createOrderform
-```
+**POST** `https://www.digistore24.com/api/call/createOrderform`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/createOrderform.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | Yes | Product ID |
-| `name` | string | Yes | Order form name |
-| `design` | string | No | Design template (default, modern, minimal) |
-| `language` | string | No | Language code (de, en, fr, es, it) |
-| `payment_methods` | array | No | Allowed payment methods |
-| `show_quantity_selector` | bool | No | Allow quantity selection (default: false) |
-| `show_coupon_field` | bool | No | Show coupon input field (default: true) |
-| `redirect_url` | string | No | Redirect URL after purchase |
-| `custom_fields` | array | No | Custom form fields |
-| `tracking_code` | string | No | Custom tracking code |
+## Parameters
 
-## Response
+`CreateOrderformRequest` wraps an `OrderFormData` DTO. Populate the settable properties you need before passing it to the request (all are optional; validated values throw `\InvalidArgumentException` on assignment if invalid):
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'orderform_id' => 456,
-        'product_id' => 123,
-        'name' => 'Premium Order Form',
-        'url' => 'https://www.digistore24.com/orderform/456',
-        'design' => 'modern',
-        'language' => 'en',
-        'payment_methods' => ['paypal', 'credit_card', 'sepa'],
-        'show_quantity_selector' => true,
-        'show_coupon_field' => true,
-        'redirect_url' => 'https://example.com/thank-you',
-        'custom_fields' => [
-            [
-                'label' => 'Company',
-                'type' => 'text',
-                'required' => false
-            ]
-        ],
-        'is_active' => true,
-        'created_at' => '2025-01-15T10:30:00Z'
-    ]
-]
-```
+- `name` (string) — Name of the order form. Must not exceed 63 characters.
+- `layout` (string) — Layout type. Allowed: `widget`, `legacy`.
+- `backgroundStyle` (string) — Background style. Allowed: `white`, `blue`.
+- `stepCount` (int) — Number of steps/tabs. Allowed: `1`, `2`, `3`.
+- `shippingPosition` (string) — Position of shipping details relative to the cart. Allowed: `after_cart`, `before_cart`.
+- `summaryPositions` (string) — Comma-separated positions for purchase order summaries.
+- `flexElementsOrder` (string) — Order of flex elements (order bump, summary, refund waiver).
+- `tabStyle` (string) — Style of tabs. Allowed: `bigtabs`, `image`, `image_url`.
+- `tabText1Hl`, `tabText1Sl`, `tabText2Hl`, `tabText2Sl`, `tabText3Hl`, `tabText3Sl` (string) — Tab headlines/subtitles for `bigtabs`.
+- `tabImage1Id`, `tabImage2Id`, `tabImage3Id` (string) — Tab image IDs.
+- `tabImage1Url`, `tabImage2Url`, `tabImage3Url` (string) — Tab image URLs.
+- `orderBumpStyle` (string) — Order bump display style. Allowed: `none`, `dashed`.
+- `orderbumpProductId` (string) — Product ID for the order bump (must be an addon of the main product).
+- `orderbumpHeadline` (string) — Headline for the order bump.
+- `orderbumpHtml` (string) — Text/HTML content for the order bump.
+- `orderbumpPosition` (string) — Position of the order bump. Allowed: `before_playplan`, `after_payplan`, `before_checkout`, `before_pay_button`, `after_pay_button`.
+- `refundWaiverPosition` (string) — Position of the refund waiver. Allowed: `before_playplan`, `after_payplan`, `before_checkout`, `before_pay_button`, `after_pay_button`.
+- `customCss` (string) — Custom CSS for the order form.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\OrderForm\CreateOrderformRequest;
+use GoSuccess\Digistore24\Api\DTO\OrderFormData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create basic order form
-$response = $api->orderForms->createOrderform(
-    productId: 123,
-    name: 'Standard Order Form'
-);
+$orderForm = new OrderFormData();
+$orderForm->name = 'Premium Checkout';
+$orderForm->layout = 'widget';
+$orderForm->backgroundStyle = 'white';
+$orderForm->stepCount = 2;
 
-echo "Order Form ID: {$response->orderformId}\n";
-echo "URL: {$response->url}\n";
+$request = new CreateOrderformRequest(orderForm: $orderForm);
 
-// Create advanced order form with custom settings
-$response = $api->orderForms->createOrderform(
-    productId: 123,
-    name: 'Premium Order Form',
-    design: 'modern',
-    language: 'en',
-    paymentMethods: ['paypal', 'credit_card', 'sepa'],
-    showQuantitySelector: true,
-    showCouponField: true,
-    redirectUrl: 'https://example.com/thank-you',
-    customFields: [
-        [
-            'label' => 'Company',
-            'type' => 'text',
-            'required' => false
-        ],
-        [
-            'label' => 'VAT ID',
-            'type' => 'text',
-            'required' => false
-        ]
-    ],
-    trackingCode: 'ga_12345'
-);
+$response = $ds24->orderForms->create($request);
 
-// Create order form with specific payment methods
-$response = $api->orderForms->createOrderform(
-    productId: 123,
-    name: 'PayPal Only Form',
-    paymentMethods: ['paypal']
-);
+echo $response->getOrderformId(); // e.g. "456"
+echo $response->wasSuccessful() ? 'created' : 'failed';
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Missing required fields or invalid data |
-| 404 | Product not found | Specified product does not exist |
-| 403 | Access denied | No permission to create order forms |
+`CreateOrderformResponse` exposes:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (array) — Raw response payload. Read individual values by key, e.g. `$response->data['orderform_id']`.
+- `getOrderformId(): ?string` — Convenience accessor for the new order form ID.
+- `wasSuccessful(): bool` — Returns `true` when `result === 'success'`.
 
-- Available designs: `default`, `modern`, `minimal`
-- Available languages: `de`, `en`, `fr`, `es`, `it`
-- Payment methods: `paypal`, `credit_card`, `sepa`, `sofort`, `giropay`
-- Custom fields support: `text`, `textarea`, `checkbox`, `select`
-- Order form URL is automatically generated
-- Use for customized checkout experiences
-- Can be embedded via iframe or direct link
+## Error Handling
+
+```php
+use GoSuccess\Digistore24\Api\Exception\ValidationException;
+use GoSuccess\Digistore24\Api\Exception\ApiException;
+
+try {
+    $response = $ds24->orderForms->create($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+Note: assigning a disallowed value to the DTO (for example `layout = 'fancy'` or a `name` longer than 63 characters) throws an `\InvalidArgumentException` immediately, before the request is sent.
+
+## Related Endpoints
+
+- [getOrderform](getOrderform.md)
+- [updateOrderform](updateOrderform.md)
+- [deleteOrderform](deleteOrderform.md)
+- [listOrderforms](listOrderforms.md)
+- [getOrderformMetas](getOrderformMetas.md)

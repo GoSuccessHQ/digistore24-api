@@ -1,377 +1,68 @@
 # listProductTypes
 
-List all available product types in Digistore24.
+Lists all product types available in Digistore24. Use the returned IDs when creating or updating products.
 
-## Description
+## Endpoint
 
-Returns a comprehensive list of all product types available in Digistore24. This endpoint is essential when creating or updating products, as you need to specify a valid `product_type_id`. Each product type has a unique ID, name, and belongs to a specific category.
+**GET** `https://www.digistore24.com/api/call/listProductTypes`
 
-Use this endpoint to:
-- Discover available product types before creating products
-- Validate product type IDs
-- Filter product types by category
-- Display product type options in user interfaces
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listProductTypes.yaml)
 
-## OpenAPI Specification
+## Parameters
 
-[View OpenAPI Specification](https://digistore24.com/api/docs/paths/listProductTypes.yaml)
+`ListProductTypesRequest` takes no constructor arguments.
 
-## Request
+The request is optional. Call `$ds24->products->listProductTypes()` with no argument.
 
-### Parameters
-
-This endpoint does not require any parameters.
-
-### Example Request
+## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$client = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// No request object needed - all parameters are optional
-$response = $client->products->listProductTypes();
+$response = $ds24->products->listProductTypes();
+
+foreach ($response->productTypes as $type) {
+    echo $type->id . ': ' . $type->name . ' (' . $type->category . ')' . PHP_EOL;
+}
+
+// Look up a single product type by ID
+$type = $response->getProductTypeById(1);
+if ($type !== null) {
+    echo $type->name;
+}
 ```
 
 ## Response
 
-### Response Object
+`ListProductTypesResponse` exposes typed public properties:
 
-The response contains an array of product type objects, each with:
+- `result` (string) — Result status returned by the API.
+- `productTypes` (array of objects) — Each object has `id` (int), `name` (string), and `category` (string).
 
-- `id` (integer): Unique product type ID
-- `name` (string): Human-readable product type name
-- `category` (string): Product type category
+It also provides helper methods:
 
-### Response Methods
-
-```php
-// Get all product types
-$allTypes = $response->productTypes;
-
-// Get a specific product type by ID
-$productType = $response->getProductTypeById(1);
-if ($productType !== null) {
-    echo "Type: {$productType->name} (Category: {$productType->category})";
-}
-
-// Get product types in a specific category
-$digitalTypes = $response->getProductTypesByCategory('Digital');
-
-// Get all unique categories
-$categories = array_values(array_unique(array_map(fn ($type) => $type->category, $response->productTypes)));
-```
-
-### Example Response
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Standard Product",
-    "category": "Digital"
-  },
-  {
-    "id": 2,
-    "name": "Subscription",
-    "category": "Digital"
-  },
-  {
-    "id": 3,
-    "name": "Physical Product",
-    "category": "Physical"
-  },
-  {
-    "id": 4,
-    "name": "Service",
-    "category": "Service"
-  },
-  {
-    "id": 5,
-    "name": "Ticket/Event",
-    "category": "Event"
-  }
-]
-```
-
-## Use Cases
-
-### 1. Display Product Type Selector
-
-Show available product types when creating a new product:
-
-```php
-use GoSuccess\Digistore24\Api\Digistore24;
-use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
-
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$client = new Digistore24($config);
-
-$request = new ListProductTypesRequest();
-$response = $client->products->listProductTypes($request);
-
-// Group by category for better UI organization
-$categories = array_values(array_unique(array_map(fn ($type) => $type->category, $response->productTypes)));
-
-echo "<h2>Select Product Type</h2>";
-foreach ($categories as $category) {
-    $types = $response->getProductTypesByCategory($category);
-
-    echo "<h3>{$category}</h3>";
-    echo "<ul>";
-    foreach ($types as $type) {
-        echo "<li><input type='radio' name='product_type' value='{$type->id}'> {$type->name}</li>";
-    }
-    echo "</ul>";
-}
-```
-
-### 2. Validate Product Type ID
-
-Ensure a product type ID is valid before creating a product:
-
-```php
-use GoSuccess\Digistore24\Api\Digistore24;
-use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
-use GoSuccess\Digistore24\Api\Request\Product\CreateProductRequest;
-
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$client = new Digistore24($config);
-
-// Get available product types
-$request = new ListProductTypesRequest();
-$response = $client->products->listProductTypes($request);
-
-// Validate user's selected product type
-$selectedTypeId = 5; // From user input
-
-$productType = $response->getProductTypeById($selectedTypeId);
-if ($productType === null) {
-    throw new InvalidArgumentException("Invalid product type ID: {$selectedTypeId}");
-}
-
-// Product type is valid, proceed with creation
-$createRequest = new CreateProductRequest(
-    nameIntern: 'my-product',
-    productTypeId: $selectedTypeId
-);
-
-$product = $client->products->create($createRequest);
-```
-
-### 3. Cache Product Types
-
-Cache product types to reduce API calls:
-
-```php
-use GoSuccess\Digistore24\Api\Digistore24;
-use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
-
-function getProductTypes(Digistore24 $client, bool $forceRefresh = false): array
-{
-    $cacheKey = 'digistore24_product_types';
-    $cacheDuration = 86400; // 24 hours
-
-    // Check cache (example using file cache)
-    $cacheFile = sys_get_temp_dir() . '/' . $cacheKey . '.json';
-
-    if (!$forceRefresh && file_exists($cacheFile)) {
-        $cacheAge = time() - filemtime($cacheFile);
-        if ($cacheAge < $cacheDuration) {
-            $cached = json_decode(file_get_contents($cacheFile), true);
-            return $cached;
-        }
-    }
-
-    // Fetch fresh data
-    $request = new ListProductTypesRequest();
-    $response = $client->products->listProductTypes($request);
-
-    $types = $response->productTypes;
-
-    // Save to cache
-    file_put_contents($cacheFile, json_encode($types));
-
-    return $types;
-}
-
-// Usage
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$client = new Digistore24($config);
-$productTypes = getProductTypes($client);
-```
-
-### 4. Filter by Category
-
-Get only digital product types:
-
-```php
-use GoSuccess\Digistore24\Api\Digistore24;
-use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
-
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$client = new Digistore24($config);
-
-$request = new ListProductTypesRequest();
-$response = $client->products->listProductTypes($request);
-
-// Get only digital products
-$digitalTypes = $response->getProductTypesByCategory('Digital');
-
-echo "Available digital product types:\n";
-foreach ($digitalTypes as $type) {
-    echo "- {$type->name} (ID: {$type->id})\n";
-}
-```
-
-### 5. Product Type Reference List
-
-Generate a reference document of all product types:
-
-```php
-use GoSuccess\Digistore24\Api\Digistore24;
-use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
-
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$client = new Digistore24($config);
-
-$request = new ListProductTypesRequest();
-$response = $client->products->listProductTypes($request);
-
-$categories = array_values(array_unique(array_map(fn ($type) => $type->category, $response->productTypes)));
-
-echo "# Digistore24 Product Types Reference\n\n";
-echo "Generated: " . date('Y-m-d H:i:s') . "\n\n";
-
-foreach ($categories as $category) {
-    echo "## {$category}\n\n";
-
-    $types = $response->getProductTypesByCategory($category);
-    foreach ($types as $type) {
-        echo "- **{$type->name}** (ID: `{$type->id}`)\n";
-    }
-    echo "\n";
-}
-```
-
-### 6. Dynamic Product Creation Form
-
-Build a dynamic form based on available product types:
-
-```php
-use GoSuccess\Digistore24\Api\Digistore24;
-use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
-
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$client = new Digistore24($config);
-
-$request = new ListProductTypesRequest();
-$response = $client->products->listProductTypes($request);
-
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create New Product</title>
-</head>
-<body>
-    <h1>Create New Product</h1>
-    <form method="post" action="create-product.php">
-        <div>
-            <label for="product_name">Product Name:</label>
-            <input type="text" id="product_name" name="product_name" required>
-        </div>
-
-        <div>
-            <label for="product_type">Product Type:</label>
-            <select id="product_type" name="product_type_id" required>
-                <option value="">-- Select Product Type --</option>
-                <?php
-                $categories = array_values(array_unique(array_map(fn ($type) => $type->category, $response->productTypes)));
-                foreach ($categories as $category) {
-                    echo "<optgroup label='{$category}'>";
-                    $types = $response->getProductTypesByCategory($category);
-                    foreach ($types as $type) {
-                        echo "<option value='{$type->id}'>{$type->name}</option>";
-                    }
-                    echo "</optgroup>";
-                }
-                ?>
-            </select>
-        </div>
-
-        <button type="submit">Create Product</button>
-    </form>
-</body>
-</html>
-```
+- `getProductTypeById(int $id): ?object` — Returns the matching product type, or `null`.
+- `getProductTypesByCategory(string $category): array` — Returns all product types in a category.
+- `getCategories(): array` — Returns the unique list of category names.
 
 ## Error Handling
 
 ```php
-use GoSuccess\Digistore24\Api\Digistore24;
-use GoSuccess\Digistore24\Api\Client\Configuration;
-use GoSuccess\Digistore24\Api\Request\Product\ListProductTypesRequest;
-use GoSuccess\Digistore24\Api\Exception\ApiException;
-use GoSuccess\Digistore24\Api\Exception\AuthenticationException;
-
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$client = new Digistore24($config);
-
 try {
-    $request = new ListProductTypesRequest();
-    $response = $client->products->listProductTypes($request);
-
-    $types = $response->productTypes;
-
-    if (empty($types)) {
-        echo "Warning: No product types returned\n";
-    } else {
-        echo "Found " . count($types) . " product types\n";
-    }
-
-} catch (AuthenticationException $e) {
-    echo "Authentication failed: " . $e->getMessage() . "\n";
-    echo "Please check your API key.\n";
-
+    $response = $ds24->products->listProductTypes();
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
 } catch (ApiException $e) {
-    echo "API error: " . $e->getMessage() . "\n";
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Notes
-
-- This endpoint does not require any parameters
-- Product types are relatively stable and can be cached for extended periods (e.g., 24 hours)
-- Product type IDs are integers and are consistent across API calls
-- Categories help organize product types into logical groups (e.g., Digital, Physical, Service, Event)
-- Use the returned product type IDs when creating or updating products with `createProduct` or `updateProduct`
-- The list of product types may grow over time as Digistore24 adds new product categories
-
 ## Related Endpoints
 
-- [createProduct](createProduct.md) - Create a new product (requires valid product_type_id)
-- [updateProduct](updateProduct.md) - Update product settings (can change product_type_id)
-- [getProduct](getProduct.md) - Get product details (includes product_type_id)
-- [listProducts](listProducts.md) - List products (can filter by product_type_id)
-
-## See Also
-
-- [Products API Documentation](https://digistore24.com/api/docs#tag/Products)
-- [Product Management Guide](https://digistore24.com/guide/products)
+- [createProduct](createProduct.md)
+- [updateProduct](updateProduct.md)
+- [getProduct](getProduct.md)
+- [listProducts](listProducts.md)

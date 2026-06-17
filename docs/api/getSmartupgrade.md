@@ -1,76 +1,59 @@
 # getSmartupgrade
 
-Get smart upgrade details.
+Retrieves detailed information about a specific smart upgrade configuration.
 
 ## Endpoint
 
-```
-POST /json/getSmartupgrade
-```
+**GET** `https://www.digistore24.com/api/call/getSmartupgrade`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getSmartupgrade.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `smartupgrade_id` | int | Yes | Smart upgrade ID |
+## Parameters
 
-## Response
+`GetSmartupgradeRequest` takes the following constructor arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'smartupgrade_id' => 567,
-        'name' => 'Premium Upgrade Path',
-        'from_product_id' => 123,
-        'from_product_name' => 'Basic Course',
-        'to_product_id' => 124,
-        'to_product_name' => 'Premium Course',
-        'upgrade_price' => 49.00,
-        'currency' => 'EUR',
-        'is_active' => true,
-        'conversions_count' => 87,
-        'conversion_rate' => 12.5,
-        'created_at' => '2025-01-15T10:00:00Z'
-    ]
-]
-```
+- `smartupgradeId` (string, required) — The unique identifier of the smart upgrade.
+- `purchaseId` (string, optional) — A purchase ID used to check upgrade eligibility. Defaults to `null`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\SmartUpgrade\GetSmartupgradeRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get smart upgrade details
-$response = $api->smartUpgrades->getSmartupgrade(
-    smartupgradeId: 567
+$request = new GetSmartupgradeRequest(
+    smartupgradeId: '567',
+    purchaseId: 'ABCD1234',
 );
 
-echo "Upgrade: {$response->name}\n";
-echo "From: {$response->fromProductName}\n";
-echo "To: {$response->toProductName}\n";
-echo "Price: {$response->currency} {$response->upgradePrice}\n";
-echo "Conversions: {$response->conversionsCount}\n";
-echo "Conversion Rate: {$response->conversionRate}%\n";
-echo "Status: " . ($response->isActive ? 'Active' : 'Inactive') . "\n";
+$response = $ds24->smartUpgrades->get($request);
+
+echo $response->result;                 // e.g. "success"
+echo $response->data['name'] ?? '';     // smart upgrade fields live in $response->data
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid smart upgrade ID |
-| 404 | Smart upgrade not found | Specified smart upgrade does not exist |
-| 403 | Access denied | No permission to view this smart upgrade |
+`GetSmartupgradeResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `data` (array) — The smart upgrade details as an associative array. Read individual values with `$response->data['key']`.
 
-- Smart upgrades allow customers to upgrade from one product to another
-- Upgrade price is the difference between products
-- Conversion rate = (conversions / offers shown) * 100
-- Use for analyzing upgrade performance
+## Error Handling
+
+```php
+try {
+    $response = $ds24->smartUpgrades->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [listSmartUpgrades](listSmartUpgrades.md)

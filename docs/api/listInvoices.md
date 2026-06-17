@@ -1,94 +1,59 @@
 # listInvoices
 
-List all invoices with optional filters.
+Retrieves all invoices for a specific purchase.
 
 ## Endpoint
 
-```
-POST /json/listInvoices
-```
+**GET** `https://www.digistore24.com/api/call/listInvoices`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listInvoices.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `purchase_id` | string | No | Filter by purchase ID |
-| `buyer_email` | string | No | Filter by buyer email |
-| `start_date` | string | No | Filter invoices from date (Y-m-d) |
-| `end_date` | string | No | Filter invoices to date (Y-m-d) |
-| `limit` | int | No | Number of results (default: 100, max: 1000) |
-| `offset` | int | No | Offset for pagination |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'invoices' => [
-            [
-                'invoice_id' => 'INV-2025-12345',
-                'invoice_number' => 'RE-2025-12345',
-                'purchase_id' => 'ABC123XYZ',
-                'buyer_email' => 'buyer@example.com',
-                'amount' => 149.99,
-                'currency' => 'EUR',
-                'vat_amount' => 23.85,
-                'created_at' => '2025-10-15 10:00:00',
-                'pdf_url' => 'https://...'
-            ],
-            // ... more invoices
-        ],
-        'total' => 1500,
-        'limit' => 100,
-        'offset' => 0
-    ]
-]
-```
+- `purchaseId` (string, required) — The ID of the purchase whose invoices should be listed.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Invoice\ListInvoicesRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// List all invoices
-$response = $api->invoices->listInvoices(
-    limit: 50
-);
+$request = new ListInvoicesRequest(purchaseId: 'ABCDEF12');
 
-foreach ($response->invoices as $invoice) {
-    echo "Invoice {$invoice->invoiceNumber}: € {$invoice->amount}\n";
-    echo "PDF: {$invoice->pdfUrl}\n";
+$response = $ds24->invoices->list($request);
+
+echo $response->purchaseId; // e.g. "ABCDEF12"
+
+foreach ($response->invoiceList as $invoice) {
+    // Each entry is an associative array as returned by the API.
+    echo $invoice['invoice_no'] ?? '';
+    echo $invoice['amount'] ?? '';
 }
-
-// Filter by date range
-$response = $api->invoices->listInvoices(
-    startDate: '2025-01-01',
-    endDate: '2025-12-31',
-    limit: 100
-);
-
-// Get invoices for specific buyer
-$response = $api->invoices->listInvoices(
-    buyerEmail: 'buyer@example.com'
-);
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid date format or parameters |
+`ListInvoicesResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `purchaseId` (string) — The purchase ID the invoices belong to.
+- `invoiceList` (array) — The list of invoices. Each item is an associative array; read individual fields via `$invoice['key']`.
 
-- Results ordered by creation date (newest first)
-- PDF URLs are temporary and expire after 24 hours
-- Use pagination for large result sets
-- Maximum 1000 results per request
-- Includes VAT breakdown for tax reporting
+## Error Handling
+
+```php
+try {
+    $response = $ds24->invoices->list($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [resendInvoiceMail](resendInvoiceMail.md)

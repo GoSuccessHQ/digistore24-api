@@ -1,86 +1,60 @@
 # deleteUpsells
 
-Delete all upsells for a product.
+Deletes all upsell configurations for a specific product.
 
 ## Endpoint
 
-```
-POST /json/deleteUpsells
-```
+**DELETE** `https://www.digistore24.com/api/call/deleteUpsells`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/deleteUpsells.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | Yes | Product ID |
+## Parameters
 
-## Response
+The request takes a single scalar constructor argument:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_id' => 123,
-        'deleted' => true,
-        'deleted_at' => '2025-03-21T01:30:00Z'
-    ]
-]
-```
+- `productId` (int, required) — The unique identifier of the product whose upsell configurations should be deleted.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Upsell\DeleteUpsellsRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Delete all upsells for product
-$response = $api->upsells->deleteUpsells(
-    productId: 123
-);
+$request = new DeleteUpsellsRequest(productId: 1234567);
 
-if ($response->deleted) {
-    echo "All upsells for product {$response->productId} deleted successfully\n";
-    echo "Deleted at: {$response->deletedAt}\n";
-}
+$response = $ds24->upsells->delete($request);
 
-// Example: Delete after confirmation
-try {
-    // Get current upsells first
-    $current = $api->upsells->getUpsells(productId: 123);
-    
-    echo "About to delete {$current->totalUpsells} upsells\n";
-    foreach ($current->upsells as $upsell) {
-        echo "  - {$upsell->productName}\n";
-    }
-    
-    // Proceed with deletion
-    $response = $api->upsells->deleteUpsells(
-        productId: 123
-    );
-    
-    echo "All upsells deleted successfully\n";
-} catch (\Exception $e) {
-    echo "Error: {$e->getMessage()}\n";
+if ($response->wasSuccessful()) {
+    echo 'Upsell configuration deleted.';
 }
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid product ID |
-| 404 | Product not found | Specified product does not exist |
-| 403 | Access denied | No permission to delete upsells for this product |
+`DeleteUpsellsResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
 
-- Deletes ALL upsells for the product
-- Deletion is permanent and cannot be undone
-- Does not affect completed purchases with upsells
-- Statistics history for upsells will be lost
-- Alternative: use `updateUpsells` with empty array
-- Consider deactivating instead of deleting for historical data
+It also provides a helper method:
+
+- `wasSuccessful()` (bool) — Returns `true` when `result` equals `"success"`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->upsells->delete($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getUpsells](getUpsells.md)
+- [updateUpsells](updateUpsells.md)

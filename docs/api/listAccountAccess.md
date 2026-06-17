@@ -1,121 +1,65 @@
 # listAccountAccess
 
-Lists all logged member accesses for a specific purchase.
-
-## Description
-
-Retrieves the history of all logged member accesses for a purchase. This provides information about when and how buyers have accessed their membership content. This data is important for compliance with German refund regulations and for tracking member engagement.
+Lists the account access permissions granted by and to the API key owner.
 
 ## Endpoint
 
-`POST /listAccountAccess`
+**GET** `https://www.digistore24.com/api/call/listAccountAccess`
+
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listAccountAccess.yaml)
 
 ## Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `purchase_id` | string | Yes | The ID of the purchase to list accesses for |
+- `purchaseId` (string, required) — The unique identifier of the purchase.
 
-## Response
-
-The response contains an array of access log entries.
-
-### Response Structure
-
-```php
-[
-    'accesses' => [
-        [
-            'platform_name' => 'VIP Club',
-            'login_name' => 'john.doe',
-            'login_url' => 'https://example.com/login',
-            'number_of_unlocked_lectures' => 10,
-            'total_number_of_lectures' => 20,
-            'login_at' => '2024-01-15 10:30:00'
-        ],
-        // ... more entries
-    ]
-]
-```
-
-### Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `platform_name` | string | Readable name of the membership area |
-| `login_name` | string | Buyer's username for the membership area |
-| `login_url` | string | URL the buyer used to login |
-| `number_of_unlocked_lectures` | int | Number of lectures the member has access to |
-| `total_number_of_lectures` | int | Total number of lectures in the course |
-| `login_at` | string | Date and time of the login (ISO 8601 format) |
-
-## Example Usage
+## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
 use GoSuccess\Digistore24\Api\Request\AccountAccess\ListAccountAccessRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$ds24 = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-$request = new ListAccountAccessRequest(
-    purchaseId: 'ABC123XYZ'
-);
+$request = new ListAccountAccessRequest(purchaseId: 'ABCDEF12');
 
-try {
-    $response = $ds24->accountAccess->listAccesses($request);
-    
-    echo "Found " . count($response->accesses) . " access log entries\n";
-    
-    foreach ($response->accesses as $access) {
-        echo sprintf(
-            "%s logged in to %s at %s\n",
-            $access->loginName,
-            $access->platformName,
-            $access->loginAt->format('Y-m-d H:i:s')
-        );
-        echo sprintf(
-            "  Progress: %d/%d lectures unlocked\n",
-            $access->numberOfUnlockedLectures,
-            $access->totalNumberOfLectures
-        );
-    }
-} catch (\Exception $e) {
-    echo "Error: " . $e->getMessage();
+$response = $ds24->accountAccess->listAccesses($request);
+
+// Accounts you have granted access to.
+foreach ($response->byMe as $access) {
+    echo $access->accessorId;  // e.g. 4711
+    echo $access->permissions; // e.g. "can_see_revenue"
+    echo $access->canSeeRevenue ? 'yes' : 'no';
+}
+
+// Accounts you have been granted access to.
+foreach ($response->toMe as $access) {
+    echo $access->ownerId; // e.g. 8150
 }
 ```
 
-## Use Cases
+## Response
 
-- **Compliance Tracking**: Track member accesses for German refund regulations
-- **Engagement Analytics**: Monitor how actively members access content
-- **Support**: Verify member access history when troubleshooting issues
-- **Reporting**: Generate usage reports for course creators
+`ListAccountAccessResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `byMe` (array of `AccountAccessData`) — Accounts you have granted access to.
+- `toMe` (array of `AccountAccessData`) — Accounts you have been granted access to.
 
-- Access entries are logged via the `logMemberAccess` endpoint
-- Only accesses that were explicitly logged will be returned
-- Entries are typically sorted by `login_at` in descending order (most recent first)
-- Empty result indicates no logged accesses for this purchase
-
-## Related Endpoints
-
-- [logMemberAccess](logMemberAccess.md) - Log a member access to content
-- [getPurchase](getPurchase.md) - Get purchase details
+Each `AccountAccessData` entry exposes readable properties including `id`, `ownerId`, `accessorId`, `permissions`, `permissionsMsg`, `createdAt`, `modifiedAt`, and a set of boolean capability flags such as `canSeeNonAffiliatePurchases`, `canApproveAffiliations`, `canSeeEditMarketplaceLink`, `canEditProducts`, `canEditAffiliateCommissions`, `canReadMailHistory`, `canApprovePurchases`, `canEditPurchasesApprovalPolicy`, `canGivePermissions`, `canSeeRevenue`, `canEditDiscountVouchers`, and `canCsvExport`.
 
 ## Error Handling
 
 ```php
 try {
     $response = $ds24->accountAccess->listAccesses($request);
-} catch (\GoSuccess\Digistore24\Api\Exception\NotFoundException $e) {
-    // Purchase not found
-} catch (\GoSuccess\Digistore24\Api\Exception\AuthenticationException $e) {
-    // Invalid API key
-} catch (\GoSuccess\Digistore24\Api\Exception\ApiException $e) {
-    // Other API error
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
+
+## Related Endpoints
+
+- [logMemberAccess](logMemberAccess.md)

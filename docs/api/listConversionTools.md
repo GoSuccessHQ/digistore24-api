@@ -1,78 +1,58 @@
 # listConversionTools
 
-List all conversion tools (vouchers, bundles, upsells) for a product.
+Retrieves a list of conversion tools (such as vouchers or coupons) by type.
 
 ## Endpoint
 
-```
-POST /json/listConversionTools
-```
+**GET** `https://www.digistore24.com/api/call/listConversionTools`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/listConversionTools.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | Yes | Product ID |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'product_id' => 12345,
-        'vouchers' => [
-            [
-                'voucher_id' => 789,
-                'code' => 'SUMMER2025',
-                'discount_type' => 'percentage',
-                'discount_value' => 20.0,
-                'is_active' => true
-            ],
-            // ... more vouchers
-        ],
-        'upsells' => [
-            [
-                'upsell_id' => 456,
-                'product_name' => 'Premium Upgrade',
-                'position' => 1,
-                'is_active' => true
-            ]
-        ],
-        'bundles' => []
-    ]
-]
-```
+- `type` (string, required) — The conversion tool type to list (e.g. `voucher`, `coupon`).
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\ConversionTool\ListConversionToolsRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get all conversion tools for a product
-$response = $api->conversionTools->listConversionTools(
-    productId: 12345
-);
+$request = new ListConversionToolsRequest(type: 'voucher');
 
-echo "Vouchers: " . count($response->vouchers) . "\n";
-echo "Upsells: " . count($response->upsells) . "\n";
-echo "Bundles: " . count($response->bundles) . "\n";
+$response = $ds24->conversionTools->list($request);
+
+echo $response->result; // e.g. "success"
+
+foreach ($response->smartupgrades as $tool) {
+    // Each entry is an associative array as returned by the API.
+    echo $tool['id'] ?? '';
+    echo $tool['name'] ?? '';
+}
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 404 | Product not found | Product does not exist |
-| 403 | Access denied | Not authorized to access this product |
+`ListConversionToolsResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `smartupgrades` (array) — The list of conversion tools. Each item is an associative array; read individual fields via `$tool['key']`.
 
-- Returns all active and inactive conversion tools
-- Use to audit and manage product conversion strategy
-- Includes vouchers, upsells, and product bundles
+## Error Handling
+
+```php
+try {
+    $response = $ds24->conversionTools->list($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [validateCouponCode](validateCouponCode.md)

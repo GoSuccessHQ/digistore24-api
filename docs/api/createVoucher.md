@@ -1,101 +1,75 @@
 # createVoucher
 
-Create a new voucher (coupon code) for products.
+Creates a new voucher / discount code.
 
 ## Endpoint
 
-```
-POST /json/createVoucher
-```
+**POST** `https://www.digistore24.com/api/call/createVoucher`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/createVoucher.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `code` | string | Yes | Voucher code (unique, alphanumeric) |
-| `discount_type` | string | Yes | 'percentage' or 'fixed' |
-| `discount_value` | float | Yes | Discount value (percentage: 0-100, fixed: amount) |
-| `currency` | string | No | Currency code (required for fixed discounts) |
-| `product_ids` | array | No | Array of product IDs (empty = all products) |
-| `valid_from` | string | No | Start date (Y-m-d H:i:s) |
-| `valid_until` | string | No | Expiration date (Y-m-d H:i:s) |
-| `max_uses` | int | No | Maximum number of uses (0 = unlimited) |
-| `max_uses_per_buyer` | int | No | Max uses per buyer (0 = unlimited) |
-| `minimum_order_value` | float | No | Minimum order value required |
+## Parameters
 
-## Response
+The request wraps a `VoucherData` DTO. Populate the following settable properties before passing it to the request:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'voucher_id' => 789,
-        'code' => 'SUMMER2025',
-        'discount_type' => 'percentage',
-        'discount_value' => 20.0,
-        'valid_from' => '2025-06-01 00:00:00',
-        'valid_until' => '2025-08-31 23:59:59',
-        'max_uses' => 100,
-        'uses' => 0,
-        'is_active' => true
-    ]
-]
-```
+- `code` (string, required) — The voucher code. Must not be empty and must not exceed 255 characters.
+- `validFrom` (string, optional) — Point in time from when the code becomes valid. Format: `YYYY-MM-DD HH:MM:SS`.
+- `expiresAt` (string, optional) — Point in time when the code becomes invalid. Format: `YYYY-MM-DD HH:MM:SS`.
+- `firstRate` (float, optional) — Discount percentage on the first/single payment (0–100).
+- `otherRates` (float, optional) — Discount percentage on follow-up payments (0–100).
+- `firstAmount` (float, optional) — Fixed discount amount on the first/single payment (>= 0).
+- `otherAmounts` (float, optional) — Fixed discount amount on follow-up payments (>= 0).
+- `currency` (string, optional) — 3-letter currency code for the fixed discount amounts (e.g. `USD`, `EUR`).
+- `countLeft` (int, optional) — Number of remaining uses (>= 0). Defaults to `1`.
+- `upgradePolicy` (string, optional) — How the code is used for upgrades: `valid`, `other_only`, or `not_valid`. Defaults to `valid`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Voucher\CreateVoucherRequest;
+use GoSuccess\Digistore24\Api\DTO\VoucherData;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create percentage discount voucher
-$response = $api->vouchers->createVoucher(
-    code: 'SUMMER2025',
-    discountType: 'percentage',
-    discountValue: 20.0,
-    validFrom: '2025-06-01 00:00:00',
-    validUntil: '2025-08-31 23:59:59',
-    maxUses: 100
-);
+$voucher = new VoucherData();
+$voucher->code = 'SAVE20';
+$voucher->firstRate = 20.0;
+$voucher->expiresAt = '2026-12-31 23:59:59';
+$voucher->currency = 'EUR';
 
-echo "Voucher created: {$response->code}";
+$request = new CreateVoucherRequest(voucher: $voucher);
 
-// Create fixed amount discount
-$response = $api->vouchers->createVoucher(
-    code: 'WELCOME10',
-    discountType: 'fixed',
-    discountValue: 10.00,
-    currency: 'EUR',
-    maxUsesPerBuyer: 1,
-    productIds: [123, 456] // Only for specific products
-);
+$response = $ds24->vouchers->create($request);
 
-// Create voucher with minimum order value
-$response = $api->vouchers->createVoucher(
-    code: 'BIGORDER',
-    discountType: 'percentage',
-    discountValue: 15.0,
-    minimumOrderValue: 100.00
-);
+echo $response->discountCodeId; // e.g. 12345
+echo $response->code;           // e.g. "SAVE20"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Missing required fields or invalid format |
-| 409 | Code already exists | Voucher code is already in use |
-| 422 | Validation error | Invalid discount value or date range |
+`CreateVoucherResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `discountCodeId` (int) — ID of the newly created voucher.
+- `code` (string) — The voucher code.
 
-- Voucher codes must be unique across your account
-- Percentage discounts: 0-100
-- Fixed discounts require currency parameter
-- Empty product_ids array applies voucher to all products
-- Set max_uses to 0 for unlimited uses
-- Valid dates are optional (no dates = always valid)
+## Error Handling
+
+```php
+try {
+    $response = $ds24->vouchers->create($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getVoucher](getVoucher.md)
+- [updateVoucher](updateVoucher.md)
+- [deleteVoucher](deleteVoucher.md)
+- [listVouchers](listVouchers.md)

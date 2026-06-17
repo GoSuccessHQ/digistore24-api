@@ -1,79 +1,72 @@
 # setAffiliateForEmail
 
-Create or update affiliate for an email address.
+Assigns an affiliate to a specific email address.
 
 ## Endpoint
 
-```
-POST /json/setAffiliateForEmail
-```
+**POST** `https://www.digistore24.com/api/call/setAffiliateForEmail`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/setAffiliateForEmail.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `email` | string | Yes | Email address |
-| `first_name` | string | No | First name |
-| `last_name` | string | No | Last name |
-| `affiliate_code` | string | No | Custom affiliate code (auto-generated if not provided) |
-| `is_active` | bool | No | Active status (default: true) |
+## Parameters
 
-## Response
+`SetAffiliateForEmailRequest` takes the following constructor arguments:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'affiliate_id' => 789,
-        'email' => 'newaffiliate@example.com',
-        'first_name' => 'Jane',
-        'last_name' => 'Smith',
-        'affiliate_code' => 'JANE2025',
-        'is_active' => true,
-        'created_at' => '2025-10-15 14:30:00'
-    ]
-]
-```
+- `email` (string, required) — The email address.
+- `affiliateId` (string, required) — The Digistore24 ID of the affiliate to assign.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Affiliate\SetAffiliateForEmailRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Create new affiliate
-$response = $api->affiliates->setAffiliateForEmail(
-    email: 'newaffiliate@example.com',
-    firstName: 'Jane',
-    lastName: 'Smith',
-    affiliateCode: 'JANE2025'
+$request = new SetAffiliateForEmailRequest(
+    email: 'customer@example.com',
+    affiliateId: 'max_mustermann',
 );
 
-echo "Affiliate created: {$response->affiliateId}\n";
-echo "Affiliate code: {$response->affiliateCode}\n";
+$response = $ds24->affiliates->setForEmail($request);
 
-// Update existing affiliate
-$response = $api->affiliates->setAffiliateForEmail(
-    email: 'existing@example.com',
-    isActive: false
-);
+echo $response->affiliateId;   // e.g. 789
+echo $response->affiliateCode; // e.g. "max_mustermann"
+echo $response->email;         // e.g. "customer@example.com"
 ```
 
-## Error Responses
+## Response
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Missing email or invalid format |
-| 409 | Affiliate code exists | Custom code already in use |
-| 422 | Validation error | Invalid affiliate code format |
+`SetAffiliateForEmailResponse` exposes typed public properties:
 
-## Notes
+- `result` (string) — Result status returned by the API.
+- `affiliateId` (int|null) — The affiliate ID.
+- `email` (string) — The email address.
+- `firstName` (string|null) — First name.
+- `lastName` (string|null) — Last name.
+- `affiliateCode` (string|null) — Affiliate code.
+- `isActive` (bool) — Whether the affiliate is active.
+- `createdAt` (DateTimeInterface|null) — Creation timestamp.
 
-- Creates affiliate if email doesn't exist, updates if it does
-- Affiliate codes must be unique
-- Auto-generated codes are based on name/email
-- Inactive affiliates cannot earn new commissions
+## Error Handling
+
+```php
+use GoSuccess\Digistore24\Api\Exception\ValidationException;
+use GoSuccess\Digistore24\Api\Exception\ApiException;
+
+try {
+    $response = $ds24->affiliates->setForEmail($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [getAffiliateForEmail](getAffiliateForEmail.md)
+- [setReferringAffiliate](setReferringAffiliate.md)
+- [validateAffiliate](validateAffiliate.md)
+- [updateAffiliateCommission](updateAffiliateCommission.md)

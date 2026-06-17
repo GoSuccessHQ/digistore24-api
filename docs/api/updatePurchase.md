@@ -1,77 +1,83 @@
 # updatePurchase
 
-Update purchase tracking data and extend rebilling payment intervals.
+Changes the tracking data of an order and can extend rebilling intervals.
 
 ## Endpoint
 
 **PUT** `https://www.digistore24.com/api/call/updatePurchase`
 
-## OpenAPI Specification
-
-[View OpenAPI Spec](https://digistore24.com/api/docs/paths/updatePurchase.yaml)
+[OpenAPI spec](https://digistore24.com/api/docs/paths/updatePurchase.yaml)
 
 ## Parameters
 
-### Required Parameters
+Constructor arguments of `UpdatePurchaseRequest`:
 
-- `purchase_id` (string) - The ID of the purchase to update
-
-### Optional Parameters
-
-- `tracking_param` (string) - The vendor's tracking key
-- `custom` (string) - The custom field
-- `unlock_invoices` (boolean) - Grant buyer access to order details and invoices (access expires after 3 years by default)
-- `next_payment_at` (string) - Extend rebilling payment interval (date-time format) - cannot shorten intervals
-
-## Response
-
-```json
-{
-  "data": {
-    "is_modified": "Y"
-  }
-}
-```
+- `purchaseId` (string, required) — The ID of the purchase to update.
+- `trackingParam` (string, optional) — The vendor's tracking key.
+- `custom` (string, optional) — The custom field.
+- `unlockInvoices` (bool, optional) — Grant the buyer access to order details and invoices.
+- `nextPaymentAt` (string, optional) — Extend the rebilling payment interval (date-time format). Intervals can only be extended, not shortened.
 
 ## Usage Example
 
 ```php
-use Digistore24\Request\Purchase\UpdatePurchaseRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Purchase\UpdatePurchaseRequest;
+
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
 $request = new UpdatePurchaseRequest(
-    purchaseId: 'ABCD-1234-EFGH',
-    trackingParam: 'campaign_123',
-    custom: 'customer_reference_456',
-    unlockInvoices: true
+    purchaseId: '12345678',
+    trackingParam: 'campaign-2026',
+    custom: 'customer-reference-456',
+    unlockInvoices: true,
 );
 
-$response = $digistore24->purchases->update($request);
+$response = $ds24->purchases->update($request);
 
 if ($response->wasModified()) {
-    echo "Purchase updated successfully";
+    echo 'Purchase updated.';
 } else {
-    echo "No changes made";
+    echo 'No changes were made.';
 }
 ```
 
-## Extend Payment Pause
+To grant a payment pause, extend the next payment date:
 
 ```php
 $request = new UpdatePurchaseRequest(
-    purchaseId: 'ABCD-1234',
-    nextPaymentAt: '2024-06-01 00:00:00' // Grant payment pause
+    purchaseId: '12345678',
+    nextPaymentAt: '2026-09-01 00:00:00',
 );
-
-$response = $digistore24->purchases->update($request);
 ```
 
-## Important Notes
+## Response
 
-- **Partial Updates**: Only include fields you want to change
-- **Payment Intervals**: Can only extend (not shorten) rebilling intervals
-- **Invoice Access**: Use `unlock_invoices` to restore access after 3-year expiry
+`UpdatePurchaseResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `isModified` (string) — `Y` if the purchase was modified, `N` otherwise.
+
+Helper method:
+
+- `wasModified(): bool` — Returns `true` when `isModified` equals `Y`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->purchases->update($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
 
 ## Related Endpoints
 
-- [getPurchase](getPurchase.md) - Get current purchase details
-- [refundPurchase](refundPurchase.md) - Refund a purchase
+- [getPurchase](getPurchase.md)
+- [refundPurchase](refundPurchase.md)
+- [addBalanceToPurchase](addBalanceToPurchase.md)
+- [resendPurchaseConfirmationMail](resendPurchaseConfirmationMail.md)

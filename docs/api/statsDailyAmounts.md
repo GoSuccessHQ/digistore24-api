@@ -1,114 +1,63 @@
 # statsDailyAmounts
 
-Get daily amount statistics.
+Retrieves daily revenue amounts for a specified date range.
 
 ## Endpoint
 
-```
-POST /json/statsDailyAmounts
-```
+**GET** `https://www.digistore24.com/api/call/statsDailyAmounts`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/statsDailyAmounts.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | No | Filter by product ID |
-| `start_date` | string | Yes | Start date (Y-m-d) |
-| `end_date` | string | Yes | End date (Y-m-d) |
-| `currency` | string | No | Currency code (default: EUR) |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'start_date' => '2025-03-01',
-        'end_date' => '2025-03-31',
-        'currency' => 'EUR',
-        'daily_amounts' => [
-            [
-                'date' => '2025-03-01',
-                'gross_amount' => 1245.00,
-                'net_amount' => 1046.22,
-                'vat_amount' => 198.78,
-                'refunds' => 0.00,
-                'transactions_count' => 12
-            ],
-            [
-                'date' => '2025-03-02',
-                'gross_amount' => 985.50,
-                'net_amount' => 828.15,
-                'vat_amount' => 157.35,
-                'refunds' => 49.00,
-                'transactions_count' => 10
-            ]
-            // ... more daily amounts
-        ],
-        'total_gross' => 38675.00,
-        'total_net' => 32495.80,
-        'total_vat' => 6179.20,
-        'total_refunds' => 450.00,
-        'total_transactions' => 345
-    ]
-]
-```
+- `from` (string, optional) — Start date for statistics. Format: `YYYY-MM-DD`. Defaults to `null`.
+- `to` (string, optional) — End date for statistics. Format: `YYYY-MM-DD`. Defaults to `null`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Statistics\StatsDailyAmountsRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get daily amounts for current month
-$response = $api->statistics->statsDailyAmounts(
-    startDate: '2025-03-01',
-    endDate: '2025-03-31'
+$request = new StatsDailyAmountsRequest(
+    from: '2026-03-01',
+    to: '2026-03-31',
 );
 
-echo "Period: {$response->startDate} to {$response->endDate}\n";
-echo "Total Gross: {$response->currency} {$response->totalGross}\n";
-echo "Total Net: {$response->currency} {$response->totalNet}\n";
-echo "Total VAT: {$response->currency} {$response->totalVat}\n";
-echo "Total Refunds: {$response->currency} {$response->totalRefunds}\n";
-echo "Total Transactions: {$response->totalTransactions}\n\n";
+$response = $ds24->statistics->dailyAmounts($request);
 
-// Display daily breakdown
 foreach ($response->dailyAmounts as $day) {
-    echo "{$day->date}: {$response->currency} {$day->grossAmount} ";
-    echo "({$day->transactionsCount} transactions)\n";
+    echo $day['date'] ?? '';
+    echo $day['amount'] ?? '';
 }
-
-// Filter by product
-$response = $api->statistics->statsDailyAmounts(
-    productId: 123,
-    startDate: '2025-01-01',
-    endDate: '2025-12-31'
-);
-
-// Get USD statistics
-$response = $api->statistics->statsDailyAmounts(
-    startDate: '2025-03-01',
-    endDate: '2025-03-31',
-    currency: 'USD'
-);
 ```
 
-## Error Responses
+The request is optional. Call `$ds24->statistics->dailyAmounts()` with no arguments to use the API defaults.
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid date format or range |
-| 404 | Product not found | Specified product does not exist |
+## Response
 
-## Notes
+`StatsDailyAmountsResponse` exposes:
 
-- Maximum date range is 365 days
-- Results include VAT breakdown
-- Refunds are subtracted from daily amounts
-- Use for financial reporting and analysis
-- Data updated daily at midnight UTC
+- `result` (string) — Result status returned by the API.
+- `dailyAmounts` (array) — Daily revenue entries. Each entry is an associative array; read values via keys, e.g. `$day['date']`, `$day['amount']`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->statistics->dailyAmounts($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [statsSales](statsSales.md)
+- [statsSalesSummary](statsSalesSummary.md)
+- [statsAffiliateToplist](statsAffiliateToplist.md)

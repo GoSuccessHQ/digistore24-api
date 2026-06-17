@@ -1,104 +1,62 @@
 # getOrderform
 
-Get order form details.
+Retrieves detailed information about a specific order form.
 
 ## Endpoint
 
-```
-POST /json/getOrderform
-```
+**GET** `https://www.digistore24.com/api/call/getOrderform`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/getOrderform.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `orderform_id` | int | Yes | Order form ID |
+## Parameters
 
-## Response
+`GetOrderformRequest` takes the following constructor argument:
 
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'orderform_id' => 456,
-        'product_id' => 123,
-        'name' => 'Premium Order Form',
-        'url' => 'https://www.digistore24.com/orderform/456',
-        'design' => 'modern',
-        'language' => 'en',
-        'payment_methods' => ['paypal', 'credit_card', 'sepa'],
-        'show_quantity_selector' => true,
-        'show_coupon_field' => true,
-        'redirect_url' => 'https://example.com/thank-you',
-        'custom_fields' => [
-            [
-                'label' => 'Company',
-                'type' => 'text',
-                'required' => false
-            ]
-        ],
-        'tracking_code' => 'ga_12345',
-        'is_active' => true,
-        'views' => 1250,
-        'conversions' => 37,
-        'conversion_rate' => 2.96,
-        'created_at' => '2025-01-15T10:30:00Z',
-        'updated_at' => '2025-03-20T14:45:00Z'
-    ]
-]
-```
+- `orderformId` (string, required) — The unique identifier of the order form.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\OrderForm\GetOrderformRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get order form details
-$response = $api->orderForms->getOrderform(
-    orderformId: 456
-);
+$request = new GetOrderformRequest(orderformId: '456');
 
-echo "Name: {$response->name}\n";
-echo "URL: {$response->url}\n";
-echo "Design: {$response->design}\n";
-echo "Language: {$response->language}\n";
-echo "Views: {$response->views}\n";
-echo "Conversions: {$response->conversions}\n";
-echo "Conversion Rate: {$response->conversionRate}%\n";
+$response = $ds24->orderForms->get($request);
 
-// Check if order form is active
-if ($response->isActive) {
-    echo "Order form is active\n";
-    echo "Payment methods: " . implode(', ', $response->paymentMethods) . "\n";
-}
+echo $response->data['name'];   // e.g. "Premium Checkout"
+echo $response->data['layout']; // e.g. "widget"
+```
 
-// Display custom fields
-if (!empty($response->customFields)) {
-    echo "Custom fields:\n";
-    foreach ($response->customFields as $field) {
-        echo "  - {$field['label']} ({$field['type']})";
-        echo $field['required'] ? " - Required\n" : "\n";
-    }
+## Response
+
+`GetOrderformResponse` exposes:
+
+- `result` (string) — Result status returned by the API.
+- `data` (array) — Raw order form payload. Read individual values by key, e.g. `$response->data['orderform_id']`, `$response->data['name']`, `$response->data['layout']`.
+
+## Error Handling
+
+```php
+use GoSuccess\Digistore24\Api\Exception\ValidationException;
+use GoSuccess\Digistore24\Api\Exception\ApiException;
+
+try {
+    $response = $ds24->orderForms->get($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
 
-## Error Responses
+## Related Endpoints
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid order form ID |
-| 404 | Order form not found | Specified order form does not exist |
-| 403 | Access denied | No permission to access this order form |
-
-## Notes
-
-- Includes performance statistics (views, conversions, conversion rate)
-- Conversion rate = (conversions / views) * 100
-- Statistics updated in real-time
-- Use for monitoring order form performance
-- Returns complete configuration including custom fields
+- [createOrderform](createOrderform.md)
+- [updateOrderform](updateOrderform.md)
+- [deleteOrderform](deleteOrderform.md)
+- [listOrderforms](listOrderforms.md)
+- [getOrderformMetas](getOrderformMetas.md)

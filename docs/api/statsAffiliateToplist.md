@@ -1,99 +1,64 @@
 # statsAffiliateToplist
 
-Get affiliate performance statistics and top performers.
+Retrieves a ranked list of top-performing affiliates for a date range.
 
 ## Endpoint
 
-```
-POST /json/statsAffiliateToplist
-```
+**GET** `https://www.digistore24.com/api/call/statsAffiliateToplist`
 
-## Request Parameters
+[OpenAPI spec](https://digistore24.com/api/docs/paths/statsAffiliateToplist.yaml)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `product_id` | int | No | Filter by product ID (empty = all products) |
-| `start_date` | string | No | Start date (Y-m-d) |
-| `end_date` | string | No | End date (Y-m-d) |
-| `limit` | int | No | Number of results (default: 50, max: 500) |
-| `order_by` | string | No | Sort by: 'sales', 'revenue', 'commissions' (default: 'revenue') |
+## Parameters
 
-## Response
-
-```php
-[
-    'result' => 'success',
-    'data' => [
-        'affiliates' => [
-            [
-                'affiliate_id' => 789,
-                'affiliate_code' => 'AFFILIATE123',
-                'name' => 'John Doe',
-                'email' => 'affiliate@example.com',
-                'total_sales' => 150,
-                'total_revenue' => 15000.00,
-                'total_commissions' => 7500.00,
-                'conversion_rate' => 3.5
-            ],
-            // ... more affiliates
-        ],
-        'total_affiliates' => 250,
-        'period' => [
-            'start' => '2025-01-01',
-            'end' => '2025-10-15'
-        ]
-    ]
-]
-```
+- `from` (string, optional) — Start date for statistics. Format: `YYYY-MM-DD`. Defaults to `null`.
+- `to` (string, optional) — End date for statistics. Format: `YYYY-MM-DD`. Defaults to `null`.
+- `limit` (int, optional) — Maximum number of affiliates to return. Defaults to `null`.
 
 ## Usage Example
 
 ```php
 use GoSuccess\Digistore24\Api\Digistore24;
 use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Statistics\StatsAffiliateToplistRequest;
 
-// Initialize API client
-$config = new Configuration('YOUR-API-KEY');
-$api = new Digistore24($config);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-// Get top 10 affiliates by revenue
-$response = $api->statistics->statsAffiliateToplist(
+$request = new StatsAffiliateToplistRequest(
+    from: '2026-01-01',
+    to: '2026-01-31',
     limit: 10,
-    orderBy: 'revenue'
 );
 
-foreach ($response->affiliates as $affiliate) {
-    echo "{$affiliate->name}: € {$affiliate->totalRevenue}\n";
-    echo "  Sales: {$affiliate->totalSales}\n";
-    echo "  Commissions: € {$affiliate->totalCommissions}\n";
+$response = $ds24->statistics->affiliateToplist($request);
+
+foreach ($response->toplist as $affiliate) {
+    echo $affiliate['name'] ?? '';
 }
-
-// Get top performers for specific product
-$response = $api->statistics->statsAffiliateToplist(
-    productId: 12345,
-    startDate: '2025-01-01',
-    endDate: '2025-12-31',
-    limit: 20
-);
-
-// Get top sellers by number of sales
-$response = $api->statistics->statsAffiliateToplist(
-    orderBy: 'sales',
-    limit: 50
-);
 ```
 
-## Error Responses
+The request is optional. Call `$ds24->statistics->affiliateToplist()` with no arguments to retrieve the default toplist.
 
-| Code | Message | Description |
-|------|---------|-------------|
-| 400 | Invalid parameters | Invalid date format or limit |
-| 404 | Product not found | Specified product does not exist |
+## Response
 
-## Notes
+`StatsAffiliateToplistResponse` exposes:
 
-- Default period is last 30 days if dates not specified
-- Conversion rate is percentage of visitors who purchased
-- Results are ordered by specified metric (revenue default)
-- Use for affiliate leaderboards and performance analysis
-- Maximum 500 results per request
+- `result` (string) — Result status returned by the API.
+- `toplist` (array) — Ranked affiliate entries. Each entry is an associative array; read values via keys, e.g. `$affiliate['name']`, `$affiliate['turnover']`.
+
+## Error Handling
+
+```php
+try {
+    $response = $ds24->statistics->affiliateToplist($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
+}
+```
+
+## Related Endpoints
+
+- [statsSales](statsSales.md)
+- [statsSalesSummary](statsSalesSummary.md)
+- [statsDailyAmounts](statsDailyAmounts.md)

@@ -1,76 +1,67 @@
 # resendPurchaseConfirmationMail
 
-Resend the order confirmation email to the buyer.
+Resends the order confirmation email to the buyer.
 
 ## Endpoint
 
 **POST** `https://www.digistore24.com/api/call/resendPurchaseConfirmationMail`
 
-## OpenAPI Specification
-
-[View OpenAPI Spec](https://digistore24.com/api/docs/paths/resendPurchaseConfirmationMail.yaml)
+[OpenAPI spec](https://digistore24.com/api/docs/paths/resendPurchaseConfirmationMail.yaml)
 
 ## Parameters
 
-### Required Parameters
+Constructor arguments of `ResendPurchaseConfirmationMailRequest`:
 
-- `purchase_id` (string) - The Digistore24 order ID
-
-## Response
-
-```json
-{
-  "data": {
-    "modified": "Y",
-    "note": "Email sent successfully"
-  }
-}
-```
+- `purchaseId` (string, required) — The Digistore24 order ID.
 
 ## Usage Example
 
 ```php
-use Digistore24\Request\Purchase\ResendPurchaseConfirmationMailRequest;
+use GoSuccess\Digistore24\Api\Digistore24;
+use GoSuccess\Digistore24\Api\Client\Configuration;
+use GoSuccess\Digistore24\Api\Request\Purchase\ResendPurchaseConfirmationMailRequest;
 
-$request = new ResendPurchaseConfirmationMailRequest(
-    purchaseId: 'ABCD-1234-EFGH'
-);
+$ds24 = new Digistore24(new Configuration('YOUR-API-KEY'));
 
-$response = $digistore24->purchases->resendConfirmationMail($request);
+$request = new ResendPurchaseConfirmationMailRequest(purchaseId: '12345678');
+
+$response = $ds24->purchases->resendConfirmationMail($request);
 
 if ($response->wasSuccessful()) {
-    echo "Confirmation email sent";
-    if ($response->note) {
-        echo "Note: {$response->note}";
+    echo 'Confirmation email sent.';
+
+    if ($response->note !== null) {
+        echo $response->note;
     }
-} else {
-    echo "Failed to send email";
 }
 ```
 
-## Customer Support
+## Response
+
+`ResendPurchaseConfirmationMailResponse` exposes typed public properties:
+
+- `result` (string) — Result status returned by the API.
+- `modified` (string) — `Y` if the email was sent, `N` otherwise.
+- `note` (string|null) — Optional note about the operation.
+
+Helper method:
+
+- `wasSuccessful(): bool` — Returns `true` when `modified` equals `Y`.
+
+## Error Handling
 
 ```php
-// Customer says they didn't receive confirmation email
-$request = new ResendPurchaseConfirmationMailRequest(
-    purchaseId: 'CUSTOMER-PURCHASE-ID'
-);
-
 try {
-    $response = $digistore24->purchases->resendConfirmationMail($request);
-    echo "Email resent to customer";
-} catch (\Digistore24\Exception\ApiException $e) {
-    echo "Error: " . $e->getMessage();
+    $response = $ds24->purchases->resendConfirmationMail($request);
+} catch (ValidationException $e) {
+    // request failed local validation; $e->getErrors() lists the problems
+} catch (ApiException $e) {
+    // API returned an error or the HTTP call failed
 }
 ```
-
-## Important Notes
-
-- **Duplicate Emails**: Customer will receive another copy of the original confirmation
-- **Email Limits**: Be mindful of spam filters when resending multiple times
-- **Customer Support**: Useful for customers who lost or deleted their confirmation
 
 ## Related Endpoints
 
-- [getPurchase](getPurchase.md) - Verify purchase details before resending
-- [listPurchasesOfEmail](listPurchasesOfEmail.md) - Find purchase by customer email
+- [getPurchase](getPurchase.md)
+- [listPurchasesOfEmail](listPurchasesOfEmail.md)
+- [updatePurchase](updatePurchase.md)
