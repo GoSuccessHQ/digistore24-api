@@ -5,9 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] - 2026-06-17
+
+Major release that aligns the SDK with the Digistore24 OpenAPI spec and removes
+long-standing inconsistencies. The public surface is largely unchanged; see
+`MIGRATION.md` for upgrade steps. Note that most "breaking" changes touch code
+paths that were previously broken.
+
+### Added
+- `SpecConformanceTest` that freezes the spec's endpoint -> HTTP method mapping
+  (122 endpoints) and guards against future drift.
+- `DeliveryTrackingUpdateData` DTO and `DeliveryTrackingOperation` enum for sending
+  shipment tracking via `updateDelivery`.
+- `ProductApprovalStatus` and `ProductBuyerType` enums with exactly the values that
+  `createProduct`/`updateProduct` accept.
+
+### Changed
+- Request HTTP methods now match the spec: read/list/validate/stats endpoints use
+  GET, update endpoints use PUT, and delete endpoints use DELETE (previously almost
+  every request defaulted to POST). Public method signatures are unchanged.
+- `refundPartially` now lives on `PurchaseResource` (`$ds24->purchases->refundPartially()`)
+  instead of `BillingResource`; the spec tags this endpoint under Purchases.
+- `validateCouponCode` and `getMarketplaceEntry` responses expose typed properties
+  instead of a raw `array $data`.
+- Request validation now runs inside `execute()`; an invalid request throws a
+  `ValidationException` (HTTP 400, exposing `getErrors()`) before any HTTP call.
+- Replaced 385 self-referential `get`-only property hooks in Response classes with
+  plain defaulted properties (no behavior change, ~546 fewer lines).
+
+### Fixed
+- `updateBuyer` sends flat address fields (`street_name`, `city`, ...) instead of a
+  non-spec `address` array, and now also supports `salutation`, `title`, `company`,
+  `phone_number`, `state`, and `zipcode`.
+- `updateDelivery` nests its status fields in a `data` object, supports a `tracking`
+  array, and exposes `notify_via_email`.
+- `VoucherData` no longer leaks the response-only `id` or the non-spec `valid_until`
+  alias into create/update requests.
+- `ShippingCostPolicyData` emits language-suffixed labels (`label_en`, `label_de`)
+  instead of the literal key `label_XX`.
+- `createEticket` sends the buyer salutation as a lowercase `m`/`f` value (as the
+  endpoint requires) instead of the enum object.
 
 ### Removed
+- `BillingResource::refundPartially()` and the duplicate
+  `Request/Response\Billing\RefundPartially*` classes (use
+  `PurchaseResource::refundPartially()`).
+- `ShippingCostPolicyData::$labelXX` (replaced by the `$labels` map).
+- The non-spec `reason` parameter from `RefundPartiallyRequest`.
 - Generated `openapi.yaml` specification file. The canonical OpenAPI spec is hosted by
   Digistore24 at https://digistore24.com/api/docs/openapi.yaml (per-endpoint files at
   `https://digistore24.com/api/docs/paths/<operationId>.yaml`) and is already referenced from
@@ -19,6 +63,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Obsolete `export-ignore` rules for `scripts`, `openapi.yaml`, and `.openapi-cache` in
   `.gitattributes`, the `.openapi-cache/` entry in `.gitignore`, and the `scripts/**` path
   filter in the Code Style GitHub Actions workflow.
+
+### Breaking Changes
+- `CreateProductRequest`/`UpdateProductRequest` accept `ProductApprovalStatus`/`ProductBuyerType`
+  instead of `AffiliateApprovalStatus`/`BuyerType`.
+- `UpdateBuyerRequest` no longer accepts an `$address` array; pass the individual address fields.
+- `UpdateDeliveryRequest::toArray()` nests the delivery status under a `data` key.
+- `ShippingCostPolicyData::$labelXX` is replaced by an `array $labels` keyed by language code.
+- `ValidateCouponCodeResponse`/`GetMarketplaceEntryResponse` no longer expose a `$data` array.
+- `refundPartially` moved from `$ds24->billing` to `$ds24->purchases`.
+- A request that fails its own validation rules now throws a `ValidationException`.
+- The spec-aligned HTTP methods may change wire behavior for code that relied on the old all-POST behavior.
 
 ## [2.0.5] - 2025-11-12
 

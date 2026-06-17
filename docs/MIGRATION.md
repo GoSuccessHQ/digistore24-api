@@ -1,5 +1,77 @@
 # Migration Guide
 
+## From 2.x to 3.0
+
+Version 3.0 aligns the SDK with the Digistore24 OpenAPI spec. The public surface is
+largely unchanged, but a few request/response classes changed. Most of these
+"breaking" changes touch code paths that were previously broken.
+
+### HTTP methods
+
+Read/list/validate/stats endpoints now use GET, update endpoints use PUT, and
+delete endpoints use DELETE (previously almost everything was POST). Method
+signatures are unchanged — no code changes are needed unless you called
+`getMethod()` directly.
+
+### `refundPartially` moved to `PurchaseResource`
+
+```php
+// Before
+$ds24->billing->refundPartially($request);
+// After
+$ds24->purchases->refundPartially($request);
+```
+
+Use `GoSuccess\Digistore24\Api\Request\Purchase\RefundPartiallyRequest` (the
+`Billing\RefundPartially*` classes were removed). The non-spec `reason` parameter
+was dropped.
+
+### `UpdateBuyerRequest`
+
+```php
+// Before
+new UpdateBuyerRequest('B1', address: ['street' => 'Main St', 'city' => 'Berlin']);
+// After
+new UpdateBuyerRequest('B1', streetName: 'Main St', city: 'Berlin', salutation: Salutation::MR);
+```
+
+The `$address` array is gone; pass the individual flat fields. `salutation` is a
+`Salutation` enum.
+
+### `UpdateDeliveryRequest`
+
+Status fields are now nested under `data` in the payload, and the constructor gained
+optional `$tracking` (a list of `DeliveryTrackingUpdateData`) and `$notifyViaEmail`
+parameters.
+
+### Product enums
+
+`CreateProductRequest`/`UpdateProductRequest` now take `ProductApprovalStatus`
+(new/pending) and `ProductBuyerType` (consumer/business) instead of
+`AffiliateApprovalStatus`/`BuyerType`.
+
+### `ShippingCostPolicyData` labels
+
+```php
+// Before
+$policy->labelXX = 'Shipping';
+// After
+$policy->labels = ['en' => 'Shipping', 'de' => 'Versand'];
+```
+
+### Typed responses
+
+`ValidateCouponCodeResponse` and `GetMarketplaceEntryResponse` expose typed
+properties (e.g. `$response->couponId`, `$response->statsStars`) instead of a raw
+`$data` array.
+
+### Request validation
+
+A request that fails its own `rules()` now throws a `ValidationException`
+(HTTP 400, exposing `getErrors()`) from the resource method before any HTTP call.
+
+---
+
 ## From `gosuccess/php-ds24-api-wrapper` to `gosuccess/digistore24-api`
 
 This package has been renamed and refactored with breaking changes.

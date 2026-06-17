@@ -721,7 +721,7 @@ Upgrading from `gosuccess/php-ds24-api-wrapper`? See [MIGRATION.md](docs/MIGRATI
 
 ## Testing
 
-The project has comprehensive test coverage with 1035+ tests and 2116 assertions.
+The project has comprehensive test coverage with over 1035 tests.
 
 ```bash
 # Run all tests
@@ -739,7 +739,7 @@ composer test:integration
 ```
 
 **Quality Metrics:**
-- **Tests**: 1035 tests, 2116 assertions
+- **Tests**: 1035+ tests
 - **Coverage**: Lines ~98%, Functions ~99%, Classes 100%
 - **Mutation Score**: 85%+ MSI (test quality indicator)
 - **PHPStan**: Level 9 (maximum strictness)
