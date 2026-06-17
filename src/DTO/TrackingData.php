@@ -137,11 +137,10 @@ final class TrackingData extends AbstractDataTransferObject
 
         foreach (get_object_vars($this) as $property => $value) {
             if ($value !== null) {
-                $data[$property] = $value;
+                $data[ArrayHelper::toSnakeCase((string)$property)] = $value;
             }
         }
 
-        /** @var array<string, mixed> */
-        return ArrayHelper::keysToSnakeCase($data);
+        return $data;
     }
 }

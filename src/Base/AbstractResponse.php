@@ -172,6 +172,7 @@ abstract class AbstractResponse implements ResponseInterface
         $data = [];
 
         foreach (get_object_vars($this) as $property => $value) {
+            $property = (string)$property;
             if ($property === 'rawResponse') {
                 continue;
             }

@@ -41,8 +41,7 @@
     "friendsofphp/php-cs-fixer": "^3.88",
     "infection/infection": "^0.31.7",
     "phpstan/phpstan": "^2.1",
-    "phpunit/phpunit": "^11.0",
-    "symfony/yaml": "^7.3"
+    "phpunit/phpunit": "^11.0"
   },
   "scripts": {
     "test": "phpunit",
