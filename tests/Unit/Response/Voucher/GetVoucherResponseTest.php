@@ -53,6 +53,11 @@ final class GetVoucherResponseTest extends TestCase
         $this->assertTrue($response->voucher->isCountLimited);
         $this->assertSame(50, $response->voucher->countLeft);
         $this->assertSame('valid', $response->voucher->upgradePolicy);
+
+        // The full coupon payload is also exposed as a completeness safety-net.
+        $this->assertSame('SUMMER2024', $response->data['code']);
+        $this->assertSame(12345, $response->data['id']);
+        $this->assertSame('valid', $response->data['upgrade_policy']);
     }
 
     public function test_can_create_with_minimal_data(): void

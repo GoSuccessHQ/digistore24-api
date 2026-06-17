@@ -65,6 +65,7 @@ final class ListVouchersResponseTest extends TestCase
         $this->assertSame(20.0, $response->coupons[0]->firstRate);
         $this->assertTrue($response->coupons[0]->isCountLimited);
         $this->assertSame(50, $response->coupons[0]->countLeft);
+        $this->assertFalse($response->coupons[0]->isDiscardingEarlyBird);
 
         // Check second voucher
         $this->assertInstanceOf(VoucherData::class, $response->coupons[1]);
@@ -73,6 +74,7 @@ final class ListVouchersResponseTest extends TestCase
         $this->assertSame('123,456', $response->coupons[1]->productIds);
         $this->assertSame(25.0, $response->coupons[1]->firstAmount);
         $this->assertFalse($response->coupons[1]->isCountLimited);
+        $this->assertTrue($response->coupons[1]->isDiscardingEarlyBird);
     }
 
     public function test_can_create_with_empty_list(): void

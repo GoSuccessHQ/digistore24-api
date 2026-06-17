@@ -27,6 +27,14 @@ final class GetVoucherResponse extends AbstractResponse
     public ?VoucherData $voucher = null;
 
     /**
+     * The complete voucher payload as returned by the API, so every field is
+     * accessible even when not surfaced on the VoucherData object above.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
+
+    /**
      * Create response from API data
      *
      * @param array<string, mixed> $data
@@ -47,6 +55,7 @@ final class GetVoucherResponse extends AbstractResponse
         /** @var array<string, mixed> $validatedVoucherData */
         $validatedVoucherData = $voucherData;
         $instance->voucher = VoucherData::fromArray(data: $validatedVoucherData);
+        $instance->data = $validatedVoucherData;
 
         return $instance;
     }

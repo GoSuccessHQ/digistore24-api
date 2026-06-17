@@ -189,11 +189,20 @@ final class VoucherData extends AbstractDataTransferObject
     }
 
     /**
+     * Whether using this voucher discards an active early-bird discount (response-only).
+     *
+     * Returned by listVouchers as the string enum "Y"/"N" and exposed here as a bool.
+     */
+    public ?bool $isDiscardingEarlyBird = null {
+        get => $this->isDiscardingEarlyBird;
+    }
+
+    /**
      * Convert to array for createVoucher/updateVoucher requests.
      *
-     * Only the fields the spec defines are emitted. The response-only `id` and the
-     * non-spec `validUntil` alias are intentionally excluded so they never leak
-     * into a request payload.
+     * Only the request fields the spec defines are emitted. The response-only
+     * fields (`id`, the `validUntil` alias, and `is_discarding_early_bird`) are
+     * intentionally excluded so they never leak into a request payload.
      *
      * @return array<string, mixed>
      */
