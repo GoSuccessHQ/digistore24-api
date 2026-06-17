@@ -45,6 +45,23 @@ paths that were previously broken.
   instead of the literal key `label_XX`.
 - `createEticket` sends the buyer salutation as a lowercase `m`/`f` value (as the
   endpoint requires) instead of the enum object.
+- Entity create/update endpoints (`createProductGroup`, `createOrderform`, `createVoucher`,
+  `createShippingCostPolicy`, `updateProductGroup`, `updateOrderform`, `updatePaymentplan`,
+  `updateShippingCostPolicy`) nest their fields under the `data` object the API requires.
+  When sent flat, the API either silently ignored them (e.g. `updateOrderform` returned
+  `modified:N`) or rejected the call with `Parameter fehlt: data[...]`. Verified live.
+- `createPaymentplan` now sends the required `product_id` (flat) alongside the `data` object.
+- `updateShippingCostPolicy`, `deleteShippingCostPolicy`, and `getShippingCostPolicy` use the
+  API's `policy_id` parameter (was `shipping_cost_policy_id`); `updateServiceProofRequest` uses
+  `service_proof_id` (was `service_proof_request_id`).
+- DTO response parsing (`AbstractDataTransferObject::fromArray()`) no longer throws when the API
+  returns a value that a strict input-validation setter would reject (e.g. `getVoucher`'s
+  `valid_from`, a buyer email). The validating set hooks are bypassed via `setRawValue()` when
+  deserializing trusted API data; validation still runs on direct user assignment.
+- Ten response parsers (`createOrderform`, `createUpgrade`, `getOrderform`, `getUpgrade`,
+  `refundPurchase`, `getPurchaseTracking`, `listPurchasesOfEmail`, and others) no longer unwrap
+  the `data` envelope a second time, which had made them expose an empty result. They now use
+  the inherited `extractInnerData()` helper.
 
 ### Removed
 - `BillingResource::refundPartially()` and the duplicate
@@ -74,6 +91,8 @@ paths that were previously broken.
 - `refundPartially` moved from `$ds24->billing` to `$ds24->purchases`.
 - A request that fails its own validation rules now throws a `ValidationException`.
 - The spec-aligned HTTP methods may change wire behavior for code that relied on the old all-POST behavior.
+- `CreatePaymentplanRequest` now takes a `$productId` argument before `$paymentPlan`; the
+  `createPaymentplan` endpoint requires a flat `product_id` in addition to the `data` object.
 
 ## [2.0.5] - 2025-11-12
 

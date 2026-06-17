@@ -70,6 +70,28 @@ properties (e.g. `$response->couponId`, `$response->statsStars`) instead of a ra
 A request that fails its own `rules()` now throws a `ValidationException`
 (HTTP 400, exposing `getErrors()`) from the resource method before any HTTP call.
 
+### `CreatePaymentplanRequest`
+
+`createPaymentplan` requires the product the plan belongs to, so the request now takes
+a `$productId` before the data object:
+
+```php
+// Before
+$ds24->paymentPlans->create(new CreatePaymentplanRequest($plan));
+// After
+$ds24->paymentPlans->create(new CreatePaymentplanRequest(productId: 123, paymentPlan: $plan));
+```
+
+### Corrected create/update payloads (no caller change)
+
+Several entity create/update endpoints were sending their fields flat when the API
+expects them nested under a `data` object, so the calls were silently ignored. This is
+fixed inside the request classes -- existing calling code keeps working -- for
+`createProductGroup`, `createOrderform`, `createVoucher`, `createShippingCostPolicy`,
+`updateProductGroup`, `updateOrderform`, `updatePaymentplan`, and
+`updateShippingCostPolicy`. The shipping-policy and service-proof endpoints now also
+send the API's real parameter names (`policy_id`, `service_proof_id`).
+
 ---
 
 ## From `gosuccess/php-ds24-api-wrapper` to `gosuccess/digistore24-api`
