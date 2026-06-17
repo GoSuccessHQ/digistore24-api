@@ -10,43 +10,49 @@ use PHPUnit\Framework\TestCase;
 
 final class GetMarketplaceEntryResponseTest extends TestCase
 {
-    public function test_can_create_from_array(): void
+    public function test_maps_typed_fields_from_array(): void
     {
         $data = [
             'data' => [
-                'entry_id' => 'ENTRY001',
-                'product_name' => 'Premium Course',
-                'description' => 'Learn advanced techniques',
+                'id' => 42,
+                'main_product_id' => 100,
+                'all_product_ids' => [100, 101, 102],
+                'approval_status' => 'approved',
                 'price' => 99.99,
-                'status' => 'active',
+                'currency' => 'EUR',
+                'headline' => 'Premium Course',
+                'stats_is_valid' => 'Y',
+                'stats_stars' => 4.5,
+                'stats_count_orders' => 1234,
             ],
         ];
         $response = GetMarketplaceEntryResponse::fromArray($data);
 
-        $this->assertInstanceOf(GetMarketplaceEntryResponse::class, $response);
-        $this->assertArrayHasKey('entry_id', $response->data);
-        $this->assertSame('ENTRY001', $response->data['entry_id']);
+        $this->assertSame(42, $response->id);
+        $this->assertSame(100, $response->mainProductId);
+        $this->assertSame([100, 101, 102], $response->allProductIds);
+        $this->assertSame('approved', $response->approvalStatus);
+        $this->assertSame(99.99, $response->price);
+        $this->assertSame('EUR', $response->currency);
+        $this->assertSame('Premium Course', $response->headline);
+        $this->assertTrue($response->statsIsValid);
+        $this->assertSame(4.5, $response->statsStars);
+        $this->assertSame(1234, $response->statsCountOrders);
     }
 
     public function test_can_create_from_response(): void
     {
         $httpResponse = new Response(
             statusCode: 200,
-            data: [
-                'data' => [
-                    'entry_id' => 'ENTRY002',
-                    'product_name' => 'Starter Package',
-                    'price' => 49.99,
-                ],
-            ],
+            data: ['data' => ['id' => 7, 'headline' => 'Starter Package', 'price' => 49.99]],
             headers: [],
             rawBody: '',
         );
 
         $response = GetMarketplaceEntryResponse::fromResponse($httpResponse);
 
-        $this->assertInstanceOf(GetMarketplaceEntryResponse::class, $response);
-        $this->assertSame('Starter Package', $response->data['product_name']);
+        $this->assertSame(7, $response->id);
+        $this->assertSame('Starter Package', $response->headline);
     }
 
     public function test_has_raw_response(): void

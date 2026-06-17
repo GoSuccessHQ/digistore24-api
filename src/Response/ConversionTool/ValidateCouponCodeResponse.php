@@ -6,33 +6,59 @@ namespace GoSuccess\Digistore24\Api\Response\ConversionTool;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Validate Coupon Code Response
  *
- * Response object for the ConversionTool API endpoint.
+ * Response object for the validateCouponCode endpoint.
+ *
+ * @link https://digistore24.com/api/docs/paths/validateCouponCode.yaml
  */
 final class ValidateCouponCodeResponse extends AbstractResponse
 {
     /**
-     * Result status
+     * Result status of the API call
      */
     public string $result = '';
 
     /**
-     * Validation status
+     * Validation status (success or error)
      */
     public string $status = '';
 
     /**
-     * Coupon data
-     *
-     * @var array<string, mixed>
+     * Human-readable status message
      */
-    public array $data = [];
+    public string $statusMsg = '';
 
     /**
-     * Check if coupon is valid
+     * Currency code of the voucher
+     */
+    public ?string $currency = null;
+
+    /**
+     * ID of the voucher
+     */
+    public ?int $couponId = null;
+
+    /**
+     * Remaining amount that can be used from this voucher
+     */
+    public ?float $amountLeft = null;
+
+    /**
+     * Total amount of the voucher
+     */
+    public ?float $amountTotal = null;
+
+    /**
+     * Whether the voucher can only be used for test payments
+     */
+    public ?bool $isTestPayment = null;
+
+    /**
+     * Check if the coupon is valid
      */
     public function isValid(): bool
     {
@@ -43,15 +69,15 @@ final class ValidateCouponCodeResponse extends AbstractResponse
     {
         $innerData = self::extractInnerData(data: $data);
 
-        /** @var array<string, mixed> $validatedCouponData */
-        $validatedCouponData = $innerData;
-
-        $status = $validatedCouponData['status'] ?? '';
-
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->status = is_string($status) ? $status : '';
-        $response->data = $validatedCouponData;
+        $response->status = TypeConverter::toString($innerData['status'] ?? null) ?? '';
+        $response->statusMsg = TypeConverter::toString($innerData['status_msg'] ?? null) ?? '';
+        $response->currency = TypeConverter::toString($innerData['currency'] ?? null);
+        $response->couponId = TypeConverter::toInt($innerData['coupon_id'] ?? null);
+        $response->amountLeft = TypeConverter::toFloat($innerData['amount_left'] ?? null);
+        $response->amountTotal = TypeConverter::toFloat($innerData['amount_total'] ?? null);
+        $response->isTestPayment = TypeConverter::toBool($innerData['is_test_payment'] ?? null);
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

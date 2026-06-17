@@ -10,19 +10,28 @@ use PHPUnit\Framework\TestCase;
 
 final class ValidateCouponCodeResponseTest extends TestCase
 {
-    public function test_can_create_from_array(): void
+    public function test_maps_typed_fields_from_array(): void
     {
         $data = [
             'data' => [
                 'status' => 'success',
-                'code' => 'SAVE20',
-                'discount' => 20,
+                'status_msg' => 'Voucher is valid',
+                'currency' => 'EUR',
+                'coupon_id' => 2477,
+                'amount_left' => 10.0,
+                'amount_total' => 25.0,
+                'is_test_payment' => 'N',
             ],
         ];
         $response = ValidateCouponCodeResponse::fromArray($data);
 
-        $this->assertInstanceOf(ValidateCouponCodeResponse::class, $response);
         $this->assertSame('success', $response->status);
+        $this->assertSame('Voucher is valid', $response->statusMsg);
+        $this->assertSame('EUR', $response->currency);
+        $this->assertSame(2477, $response->couponId);
+        $this->assertSame(10.0, $response->amountLeft);
+        $this->assertSame(25.0, $response->amountTotal);
+        $this->assertFalse($response->isTestPayment);
         $this->assertTrue($response->isValid());
     }
 
@@ -30,19 +39,13 @@ final class ValidateCouponCodeResponseTest extends TestCase
     {
         $httpResponse = new Response(
             statusCode: 200,
-            data: [
-                'data' => [
-                    'status' => 'success',
-                    'code' => 'SAVE20',
-                ],
-            ],
+            data: ['data' => ['status' => 'success']],
             headers: [],
             rawBody: '',
         );
 
         $response = ValidateCouponCodeResponse::fromResponse($httpResponse);
 
-        $this->assertInstanceOf(ValidateCouponCodeResponse::class, $response);
         $this->assertTrue($response->isValid());
     }
 
