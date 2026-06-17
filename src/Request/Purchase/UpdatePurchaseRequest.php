@@ -30,28 +30,6 @@ final class UpdatePurchaseRequest extends AbstractRequest
     ) {
     }
 
-    public function toArray(): array
-    {
-        $data = [
-            'purchase_id' => $this->purchaseId,
-        ];
-
-        if ($this->trackingParam !== null) {
-            $data['tracking_param'] = $this->trackingParam;
-        }
-        if ($this->custom !== null) {
-            $data['custom'] = $this->custom;
-        }
-        if ($this->unlockInvoices !== null) {
-            $data['unlock_invoices'] = $this->unlockInvoices ? 'Y' : 'N';
-        }
-        if ($this->nextPaymentAt !== null) {
-            $data['next_payment_at'] = $this->nextPaymentAt;
-        }
-
-        return $data;
-    }
-
     public function getEndpoint(): string
     {
         return '/updatePurchase';

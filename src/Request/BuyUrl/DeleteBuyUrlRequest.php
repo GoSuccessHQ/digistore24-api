@@ -34,13 +34,6 @@ final class DeleteBuyUrlRequest extends AbstractRequest
         return HttpMethod::DELETE;
     }
 
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-        ];
-    }
-
     /**
      * @return array<string, array<string>>
      */

@@ -32,11 +32,4 @@ final class ListAccountAccessRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'purchase_id' => $this->purchaseId,
-        ];
-    }
 }

@@ -28,11 +28,4 @@ final class GetEticketRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'order_id' => $this->orderId,
-        ];
-    }
 }

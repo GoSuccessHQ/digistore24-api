@@ -28,11 +28,4 @@ final class DeleteImageRequest extends AbstractRequest
     {
         return HttpMethod::DELETE;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'image_id' => $this->imageId,
-        ];
-    }
 }

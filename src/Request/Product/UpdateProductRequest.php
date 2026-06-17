@@ -8,7 +8,6 @@ use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 use GoSuccess\Digistore24\Api\Enum\ProductApprovalStatus;
 use GoSuccess\Digistore24\Api\Enum\ProductBuyerType;
-use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Request to update an existing product
@@ -59,70 +58,6 @@ final class UpdateProductRequest extends AbstractRequest
         public ?bool $isAddressInputMandatory = null,
         public ?bool $addOrderDataToThankyouPageUrl = null,
     ) {
-    }
-
-    public function toArray(): array
-    {
-        $data = [
-            'product_id' => $this->productId,
-        ];
-
-        if ($this->nameDe !== null) {
-            $data['name_de'] = $this->nameDe;
-        }
-        if ($this->nameEn !== null) {
-            $data['name_en'] = $this->nameEn;
-        }
-        if ($this->nameEs !== null) {
-            $data['name_es'] = $this->nameEs;
-        }
-        if ($this->nameIntern !== null) {
-            $data['name_intern'] = $this->nameIntern;
-        }
-        if ($this->descriptionDe !== null) {
-            $data['description_de'] = $this->descriptionDe;
-        }
-        if ($this->descriptionEn !== null) {
-            $data['description_en'] = $this->descriptionEn;
-        }
-        if ($this->descriptionEs !== null) {
-            $data['description_es'] = $this->descriptionEs;
-        }
-        if ($this->salespageUrl !== null) {
-            $data['salespage_url'] = $this->salespageUrl;
-        }
-        if ($this->upsellSalespageUrl !== null) {
-            $data['upsell_salespage_url'] = $this->upsellSalespageUrl;
-        }
-        if ($this->thankyouUrl !== null) {
-            $data['thankyou_url'] = $this->thankyouUrl;
-        }
-        if ($this->imageUrl !== null) {
-            $data['image_url'] = $this->imageUrl;
-        }
-        if ($this->productTypeId !== null) {
-            $data['product_type_id'] = $this->productTypeId;
-        }
-        if ($this->currency !== null) {
-            $data['currency'] = $this->currency;
-        }
-        if ($this->approvalStatus !== null) {
-            $data['approval_status'] = $this->approvalStatus->value;
-        }
-        if ($this->affiliateCommission !== null) {
-            $data['affiliate_commission'] = $this->affiliateCommission;
-        }
-        if ($this->buyerType !== null) {
-            $data['buyer_type'] = $this->buyerType->value;
-        }
-        if ($this->isAddressInputMandatory !== null) {
-            $data['is_address_input_mandatory'] = TypeConverter::fromBool($this->isAddressInputMandatory);
-        }
-        if ($this->addOrderDataToThankyouPageUrl !== null) {
-            $data['add_order_data_to_thankyou_page_url'] = TypeConverter::fromBool($this->addOrderDataToThankyouPageUrl);
-        }
-
-        return $data;
     }
 
     public function getEndpoint(): string

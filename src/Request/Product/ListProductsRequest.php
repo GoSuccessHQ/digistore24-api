@@ -32,11 +32,4 @@ final class ListProductsRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'sort_by' => $this->sortBy->value,
-        ];
-    }
 }

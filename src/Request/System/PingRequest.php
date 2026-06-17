@@ -31,9 +31,4 @@ final class PingRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [];
-    }
 }

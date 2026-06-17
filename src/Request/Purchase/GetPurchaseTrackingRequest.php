@@ -22,13 +22,6 @@ final class GetPurchaseTrackingRequest extends AbstractRequest
     ) {
     }
 
-    public function toArray(): array
-    {
-        return [
-            'purchase_id' => $this->purchaseId,
-        ];
-    }
-
     public function getEndpoint(): string
     {
         return '/getPurchaseTracking';

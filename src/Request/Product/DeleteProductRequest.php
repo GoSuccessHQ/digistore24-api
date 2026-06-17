@@ -22,13 +22,6 @@ final class DeleteProductRequest extends AbstractRequest
     ) {
     }
 
-    public function toArray(): array
-    {
-        return [
-            'product_id' => $this->productId,
-        ];
-    }
-
     public function getEndpoint(): string
     {
         return '/deleteProduct';

@@ -21,9 +21,4 @@ final class ListVouchersRequest extends AbstractRequest
     {
         return '/listVouchers';
     }
-
-    public function toArray(): array
-    {
-        return [];
-    }
 }

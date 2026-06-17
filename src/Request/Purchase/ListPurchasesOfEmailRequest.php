@@ -24,14 +24,6 @@ final class ListPurchasesOfEmailRequest extends AbstractRequest
     ) {
     }
 
-    public function toArray(): array
-    {
-        return [
-            'email' => $this->email,
-            'limit' => $this->limit,
-        ];
-    }
-
     public function getEndpoint(): string
     {
         return '/listPurchasesOfEmail';

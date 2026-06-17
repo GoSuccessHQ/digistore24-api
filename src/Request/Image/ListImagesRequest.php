@@ -28,15 +28,4 @@ final class ListImagesRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        $data = [];
-
-        if ($this->usageType !== null) {
-            $data['usage_type'] = $this->usageType;
-        }
-
-        return $data;
-    }
 }

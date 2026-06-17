@@ -28,11 +28,4 @@ final class GetImageRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'image_id' => $this->imageId,
-        ];
-    }
 }

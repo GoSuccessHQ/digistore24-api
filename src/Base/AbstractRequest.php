@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Base;
 
+use GoSuccess\Digistore24\Api\Contract\DataTransferObjectInterface;
 use GoSuccess\Digistore24\Api\Contract\RequestInterface;
 use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 use GoSuccess\Digistore24\Api\Util\ArrayHelper;
@@ -31,7 +32,14 @@ abstract class AbstractRequest implements RequestInterface
     }
 
     /**
-     * Convert request to array for API call
+     * Convert request to array for the API call.
+     *
+     * Public properties are serialized automatically: names are converted to
+     * snake_case, null values are skipped, booleans become the Digistore24 'Y'/'N'
+     * format, DateTime values are formatted, enums become their backing value, and
+     * nested requests/DTOs are recursively converted. Subclasses only need to
+     * override this when they wrap fields (e.g. under a `data` key) or read private
+     * promoted properties that this reflection-free pass cannot see.
      *
      * @return array<string, mixed>
      */
@@ -40,29 +48,38 @@ abstract class AbstractRequest implements RequestInterface
         $data = [];
 
         foreach (get_object_vars($this) as $property => $value) {
-            // Skip null values
             if ($value === null) {
                 continue;
             }
 
-            // Convert to API format (snake_case)
-            $key = ArrayHelper::toSnakeCase($property);
-
-            // Handle nested objects
-            if ($value instanceof self) {
-                $data[$key] = $value->toArray();
-            } elseif (is_array($value)) {
-                $data[$key] = $this->convertArray($value);
-            } elseif ($value instanceof \DateTimeInterface) {
-                $data[$key] = $value->format('Y-m-d H:i:s');
-            } elseif ($value instanceof \BackedEnum) {
-                $data[$key] = $value->value;
-            } else {
-                $data[$key] = $value;
-            }
+            $data[ArrayHelper::toSnakeCase($property)] = $this->convertValue($value);
         }
 
         return $data;
+    }
+
+    /**
+     * Convert a single value to its API representation.
+     */
+    private function convertValue(mixed $value): mixed
+    {
+        if ($value instanceof self || $value instanceof DataTransferObjectInterface) {
+            return $value->toArray();
+        }
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d H:i:s');
+        }
+        if ($value instanceof \BackedEnum) {
+            return $value->value;
+        }
+        if (is_bool($value)) {
+            return $value ? 'Y' : 'N';
+        }
+        if (is_array($value)) {
+            return $this->convertArray($value);
+        }
+
+        return $value;
     }
 
     /**
@@ -73,22 +90,7 @@ abstract class AbstractRequest implements RequestInterface
      */
     private function convertArray(array $array): array
     {
-        return array_map(function ($value) {
-            if ($value instanceof self) {
-                return $value->toArray();
-            }
-            if ($value instanceof \DateTimeInterface) {
-                return $value->format('Y-m-d H:i:s');
-            }
-            if ($value instanceof \BackedEnum) {
-                return $value->value;
-            }
-            if (is_array($value)) {
-                return $this->convertArray($value);
-            }
-
-            return $value;
-        }, $array);
+        return array_map(fn ($value) => $this->convertValue($value), $array);
     }
 
     /**

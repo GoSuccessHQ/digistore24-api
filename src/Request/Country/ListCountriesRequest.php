@@ -25,9 +25,4 @@ final class ListCountriesRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [];
-    }
 }

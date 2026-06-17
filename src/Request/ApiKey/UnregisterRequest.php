@@ -28,9 +28,4 @@ final class UnregisterRequest extends AbstractRequest
     {
         return HttpMethod::DELETE;
     }
-
-    public function toArray(): array
-    {
-        return [];
-    }
 }

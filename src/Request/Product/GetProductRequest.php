@@ -28,11 +28,4 @@ final class GetProductRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [
-            'product_id' => $this->productId,
-        ];
-    }
 }

@@ -27,9 +27,4 @@ final class ListShippingCostPoliciesRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [];
-    }
 }

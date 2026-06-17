@@ -21,9 +21,4 @@ final class ListUpgradesRequest extends AbstractRequest
     {
         return '/listUpgrades';
     }
-
-    public function toArray(): array
-    {
-        return [];
-    }
 }

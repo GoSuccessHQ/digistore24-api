@@ -23,14 +23,6 @@ final class AddBalanceToPurchaseRequest extends AbstractRequest
     ) {
     }
 
-    public function toArray(): array
-    {
-        return [
-            'purchase_id' => $this->purchaseId,
-            'amount' => $this->amount,
-        ];
-    }
-
     public function getEndpoint(): string
     {
         return '/addBalanceToPurchase';

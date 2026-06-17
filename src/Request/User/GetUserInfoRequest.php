@@ -27,9 +27,4 @@ final class GetUserInfoRequest extends AbstractRequest
     {
         return HttpMethod::GET;
     }
-
-    public function toArray(): array
-    {
-        return [];
-    }
 }
