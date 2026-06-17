@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Purchase;
 
+use GoSuccess\Digistore24\Api\DTO\UpgradeInfoData;
+use GoSuccess\Digistore24\Api\DTO\UpgradeNewPurchaseData;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\Purchase\CreateUpgradePurchaseResponse;
 use PHPUnit\Framework\TestCase;
@@ -15,24 +17,46 @@ final class CreateUpgradePurchaseResponseTest extends TestCase
         $data = [
             'data' => [
                 'new_purchase' => [
-                    'purchase_id' => 'P123456',
-                    'product_id' => 789,
-                    'status' => 'active',
+                    'id' => 'P123456',
+                    'billing_status' => 'paying',
+                    'paid_amount' => 19.99,
+                    'next_payment_at' => '2024-02-15',
+                    'next_amount' => 29.99,
+                    'currency' => 'EUR',
                 ],
                 'upgrade_info' => [
-                    'old_purchase_id' => 'P111111',
-                    'upgrade_amount' => 49.99,
-                    'currency' => 'EUR',
+                    'upgrade_type' => 'upgrade',
+                    'upgrade_amount_left' => 10.00,
+                    'upgrade_amount_total' => 49.99,
+                    'upgraded_purchase_id' => 'P111111',
                 ],
             ],
         ];
         $response = CreateUpgradePurchaseResponse::fromArray($data);
 
         $this->assertInstanceOf(CreateUpgradePurchaseResponse::class, $response);
+
+        // Typed new_purchase object.
+        $this->assertInstanceOf(UpgradeNewPurchaseData::class, $response->newPurchase);
+        $this->assertSame('P123456', $response->newPurchase->id);
+        $this->assertSame('paying', $response->newPurchase->billingStatus);
+        $this->assertSame(19.99, $response->newPurchase->paidAmount);
+        $this->assertSame('2024-02-15', $response->newPurchase->nextPaymentAt);
+        $this->assertSame(29.99, $response->newPurchase->nextAmount);
+        $this->assertSame('EUR', $response->newPurchase->currency);
+
+        // Typed upgrade_info object.
+        $this->assertInstanceOf(UpgradeInfoData::class, $response->upgradeInfo);
+        $this->assertSame('upgrade', $response->upgradeInfo->upgradeType);
+        $this->assertSame(10.00, $response->upgradeInfo->upgradeAmountLeft);
+        $this->assertSame(49.99, $response->upgradeInfo->upgradeAmountTotal);
+        $this->assertSame('P111111', $response->upgradeInfo->upgradedPurchaseId);
+
+        // Backward-compatible array accessors.
         $newPurchase = $response->getNewPurchase();
-        $this->assertSame('P123456', $newPurchase['purchase_id'] ?? null);
+        $this->assertSame('P123456', $newPurchase['id'] ?? null);
         $upgradeInfo = $response->getUpgradeInfo();
-        $this->assertSame('P111111', $upgradeInfo['old_purchase_id'] ?? null);
+        $this->assertSame('P111111', $upgradeInfo['upgraded_purchase_id'] ?? null);
     }
 
     public function test_can_create_from_response(): void
@@ -43,11 +67,11 @@ final class CreateUpgradePurchaseResponseTest extends TestCase
                 'data' => [
                     'data' => [
                         'new_purchase' => [
-                            'purchase_id' => 'P654321',
-                            'product_id' => 456,
+                            'id' => 'P654321',
+                            'currency' => 'USD',
                         ],
                         'upgrade_info' => [
-                            'upgrade_date' => '2024-01-15',
+                            'upgrade_type' => 'downgrade',
                         ],
                     ],
                 ],
@@ -59,10 +83,10 @@ final class CreateUpgradePurchaseResponseTest extends TestCase
         $response = CreateUpgradePurchaseResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(CreateUpgradePurchaseResponse::class, $response);
-        $newPurchase = $response->getNewPurchase();
-        $this->assertSame('P654321', $newPurchase['purchase_id'] ?? null);
-        $upgradeInfo = $response->getUpgradeInfo();
-        $this->assertSame('2024-01-15', $upgradeInfo['upgrade_date'] ?? null);
+        $this->assertNotNull($response->newPurchase);
+        $this->assertSame('P654321', $response->newPurchase->id);
+        $this->assertNotNull($response->upgradeInfo);
+        $this->assertSame('downgrade', $response->upgradeInfo->upgradeType);
     }
 
     public function test_has_raw_response(): void
@@ -71,7 +95,7 @@ final class CreateUpgradePurchaseResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'new_purchase' => ['purchase_id' => 'P999999'],
+                    'new_purchase' => ['id' => 'P999999'],
                 ],
             ],
             headers: [],

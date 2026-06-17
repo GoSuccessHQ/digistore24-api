@@ -59,6 +59,20 @@ final class CreateProductRequestTest extends TestCase
         $this->assertSame('consumer', $data['buyer_type']);
     }
 
+    public function test_to_array_includes_currency_and_access_instructions(): void
+    {
+        $request = new CreateProductRequest(
+            nameIntern: 'Test Product',
+            accessInstructionsEn: 'Login at example.com',
+            currency: 'USD,EUR',
+        );
+
+        $data = $request->toArray()['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('USD,EUR', $data['currency']);
+        $this->assertSame('Login at example.com', $data['access_instructions_en']);
+    }
+
     public function test_validate_returns_empty_array(): void
     {
         $request = new CreateProductRequest(nameIntern: 'Test Product');

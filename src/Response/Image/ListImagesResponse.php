@@ -10,24 +10,24 @@ use GoSuccess\Digistore24\Api\Http\Response;
 /**
  * List Images Response
  *
- * Response containing a list of images.
+ * Response for listImages. The images are returned under `images`, each exposed
+ * as an {@see ImageListItem}.
+ *
+ * @link https://digistore24.com/api/docs/paths/listImages.yaml
  */
 final class ListImagesResponse extends AbstractResponse
 {
-    /**
-     * Result status
-     */
     public string $result = '';
 
     /**
-     * Array of image list items
+     * The images as typed list items.
      *
-     * @var array<ImageListItem>
+     * @var array<int, ImageListItem>
      */
     public array $images = [];
 
     /**
-     * Total number of images
+     * Number of images returned (convenience count; not a spec field).
      */
     public int $totalCount = 0;
 
@@ -35,15 +35,19 @@ final class ListImagesResponse extends AbstractResponse
     {
         $innerData = self::extractInnerData(data: $data);
 
+        $imagesData = $innerData['images'] ?? [];
+        if (! is_array($imagesData)) {
+            $imagesData = [];
+        }
+
         $images = [];
-        if (isset($innerData['images']) && is_array($innerData['images'])) {
-            foreach ($innerData['images'] as $image) {
-                if (is_array($image)) {
-                    /** @var array<string, mixed> $validatedImage */
-                    $validatedImage = $image;
-                    $images[] = ImageListItem::fromArray($validatedImage);
-                }
+        foreach ($imagesData as $image) {
+            if (! is_array($image)) {
+                continue;
             }
+            /** @var array<string, mixed> $validatedImage */
+            $validatedImage = $image;
+            $images[] = ImageListItem::fromArray($validatedImage);
         }
 
         $response = new self();

@@ -10,17 +10,15 @@ use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 /**
  * List Account Access Request
  *
- * Lists all logged member accesses for a specific purchase.
- * Provides history of when buyers accessed their membership content.
+ * Lists the account access permissions granted by and to the API key owner.
+ * The endpoint takes no parameters.
+ *
+ * @link https://digistore24.com/api/docs/paths/listAccountAccess.yaml
  */
 final class ListAccountAccessRequest extends AbstractRequest
 {
-    /**
-     * @param string $purchaseId The unique identifier of the purchase
-     */
-    public function __construct(
-        public readonly string $purchaseId,
-    ) {
+    public function __construct()
+    {
     }
 
     public function getEndpoint(): string

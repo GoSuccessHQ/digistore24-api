@@ -12,7 +12,7 @@ final class SetReferringAffiliateRequestTest extends TestCase
     public function test_can_create_instance(): void
     {
         $request = new SetReferringAffiliateRequest(
-            purchaseId: 'P12345',
+            referrerId: 'REF123',
             affiliateId: 'AFF123',
         );
 
@@ -22,7 +22,7 @@ final class SetReferringAffiliateRequestTest extends TestCase
     public function test_endpoint_returns_correct_value(): void
     {
         $request = new SetReferringAffiliateRequest(
-            purchaseId: 'P12345',
+            referrerId: 'REF123',
             affiliateId: 'AFF123',
         );
 
@@ -32,19 +32,34 @@ final class SetReferringAffiliateRequestTest extends TestCase
     public function test_to_array_returns_correct_data(): void
     {
         $request = new SetReferringAffiliateRequest(
-            purchaseId: 'P12345',
+            referrerId: 'REF123',
             affiliateId: 'AFF123',
         );
 
         $array = $request->toArray();
-        $this->assertSame('P12345', $array['purchase_id']);
+        $this->assertSame('REF123', $array['referrer_id']);
         $this->assertSame('AFF123', $array['affiliate_id']);
+        $this->assertArrayNotHasKey('commission', $array);
+    }
+
+    public function test_to_array_includes_commission(): void
+    {
+        $request = new SetReferringAffiliateRequest(
+            referrerId: 'REF123',
+            affiliateId: 'AFF123',
+            commission: 25.5,
+        );
+
+        $array = $request->toArray();
+        $this->assertSame('REF123', $array['referrer_id']);
+        $this->assertSame('AFF123', $array['affiliate_id']);
+        $this->assertSame(25.5, $array['commission']);
     }
 
     public function test_validate_returns_empty_array(): void
     {
         $request = new SetReferringAffiliateRequest(
-            purchaseId: 'P12345',
+            referrerId: 'REF123',
             affiliateId: 'AFF123',
         );
 

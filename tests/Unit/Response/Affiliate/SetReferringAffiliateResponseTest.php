@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Affiliate;
 
+use GoSuccess\Digistore24\Api\Enum\ReferringAffiliateAction;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\Affiliate\SetReferringAffiliateResponse;
 use PHPUnit\Framework\TestCase;
@@ -15,10 +16,14 @@ final class SetReferringAffiliateResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'email' => 'customer@example.com',
-                'affiliate_id' => 789,
-                'affiliate_code' => 'AFFILIATE123',
-                'set_at' => '2025-10-15 14:30:00',
+                'action' => 'create',
+                'affiliate_id' => '789',
+                'affiliate_name' => 'affiliate_user',
+                'referrer_id' => '321',
+                'referrer_name' => 'referrer_user',
+                'commission' => 25.5,
+                'created_at' => '2025-10-15 14:30:00',
+                'created_by' => '12',
             ],
         ];
 
@@ -26,10 +31,14 @@ final class SetReferringAffiliateResponseTest extends TestCase
 
         $this->assertInstanceOf(SetReferringAffiliateResponse::class, $response);
         $this->assertSame('success', $response->result);
-        $this->assertSame('customer@example.com', $response->email);
-        $this->assertSame(789, $response->affiliateId);
-        $this->assertSame('AFFILIATE123', $response->affiliateCode);
-        $this->assertInstanceOf(\DateTimeInterface::class, $response->setAt);
+        $this->assertSame(ReferringAffiliateAction::CREATE, $response->action);
+        $this->assertSame('789', $response->affiliateId);
+        $this->assertSame('affiliate_user', $response->affiliateName);
+        $this->assertSame('321', $response->referrerId);
+        $this->assertSame('referrer_user', $response->referrerName);
+        $this->assertSame(25.5, $response->commission);
+        $this->assertInstanceOf(\DateTimeInterface::class, $response->createdAt);
+        $this->assertSame('12', $response->createdBy);
     }
 
     public function test_can_create_from_response(): void
@@ -39,9 +48,10 @@ final class SetReferringAffiliateResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'email' => 'test@example.com',
-                    'affiliate_id' => 456,
-                    'set_at' => '2025-10-15 14:30:00',
+                    'action' => 'update',
+                    'affiliate_id' => '456',
+                    'referrer_id' => '654',
+                    'commission' => 10.0,
                 ],
             ],
             headers: ['Content-Type' => ['application/json']],
@@ -52,8 +62,28 @@ final class SetReferringAffiliateResponseTest extends TestCase
 
         $this->assertInstanceOf(SetReferringAffiliateResponse::class, $response);
         $this->assertSame('success', $response->result);
-        $this->assertSame('test@example.com', $response->email);
-        $this->assertSame(456, $response->affiliateId);
+        $this->assertSame(ReferringAffiliateAction::UPDATE, $response->action);
+        $this->assertSame('456', $response->affiliateId);
+        $this->assertSame('654', $response->referrerId);
+        $this->assertSame(10.0, $response->commission);
+    }
+
+    public function test_handles_no_data(): void
+    {
+        $data = [
+            'result' => 'success',
+            'data' => [],
+        ];
+
+        $response = SetReferringAffiliateResponse::fromArray(data: $data);
+
+        $this->assertInstanceOf(SetReferringAffiliateResponse::class, $response);
+        $this->assertNull($response->action);
+        $this->assertNull($response->affiliateId);
+        $this->assertNull($response->referrerId);
+        $this->assertNull($response->commission);
+        $this->assertNull($response->createdAt);
+        $this->assertNull($response->createdBy);
     }
 
     public function test_has_raw_response(): void
@@ -62,7 +92,7 @@ final class SetReferringAffiliateResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'result' => 'success',
-                'data' => ['email' => 'test@example.com'],
+                'data' => ['affiliate_id' => '123'],
             ],
             headers: ['Content-Type' => ['application/json']],
             rawBody: 'test body',

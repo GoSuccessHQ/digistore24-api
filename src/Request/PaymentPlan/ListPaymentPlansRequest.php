@@ -10,11 +10,16 @@ use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 /**
  * List Payment Plans Request
  *
- * Retrieves a list of all configured payment plans.
+ * Retrieves the list of payment plans configured for a product.
+ *
+ * @link https://digistore24.com/api/docs/paths/listPaymentPlans.yaml
  */
 final class ListPaymentPlansRequest extends AbstractRequest
 {
-    public function __construct()
+    /**
+     * @param int $productId The Digistore24 product ID whose payment plans to list
+     */
+    public function __construct(private int $productId)
     {
     }
 
@@ -26,5 +31,10 @@ final class ListPaymentPlansRequest extends AbstractRequest
     public function getMethod(): HttpMethod
     {
         return HttpMethod::GET;
+    }
+
+    public function toArray(): array
+    {
+        return ['product_id' => $this->productId];
     }
 }

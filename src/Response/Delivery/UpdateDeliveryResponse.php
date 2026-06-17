@@ -6,23 +6,29 @@ namespace GoSuccess\Digistore24\Api\Response\Delivery;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Update Delivery Response
  *
- * Response object for the Delivery API endpoint.
+ * Response confirming an update to a delivery.
+ *
+ * @link https://digistore24.com/api/docs/paths/updateDelivery.yaml
  */
 final class UpdateDeliveryResponse extends AbstractResponse
 {
-    /**
-     * Result status
-     */
     public string $result = '';
+
+    /** Whether the delivery was modified */
+    public ?bool $isModified = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
+        $innerData = self::extractInnerData(data: $data);
+
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
+        $response->isModified = TypeConverter::toBool($innerData['is_modified'] ?? null);
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

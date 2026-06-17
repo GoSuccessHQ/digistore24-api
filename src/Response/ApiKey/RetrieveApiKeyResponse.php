@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Response\ApiKey;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
+use GoSuccess\Digistore24\Api\Enum\ApiRequestStatus;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
- * Retrieve Api Key Response
+ * Retrieve API Key Response
  *
- * Response object for retrieving API key information.
+ * Response object for the retrieveApiKey API endpoint. Mirrors the spec's `data`
+ * object: the new API key (empty string when the token is invalid, too old or
+ * already used), the status of the request and a note explaining the outcome.
+ *
+ * @link https://digistore24.com/api/docs/paths/retrieveApiKey.yaml
  */
 final class RetrieveApiKeyResponse extends AbstractResponse
 {
@@ -21,68 +26,44 @@ final class RetrieveApiKeyResponse extends AbstractResponse
     public string $result = '';
 
     /**
-     * The API key ID
+     * The new API key, or an empty string if the token is invalid, too old or
+     * has already been used.
      */
-    public string $apiKeyId = '';
+    public string $apiKey = '';
 
     /**
-     * API key description
+     * Status of the API key request
      */
-    public ?string $description = null;
+    public ?ApiRequestStatus $requestStatus = null;
 
     /**
-     * Creation timestamp
+     * Cause indication when no API key is returned
      */
-    public ?\DateTimeInterface $createdAt = null;
+    public ?string $note = null;
 
     /**
-     * Last usage timestamp
-     */
-    public ?\DateTimeInterface $lastUsedAt = null;
-
-    /**
-     * Whether the API key is active
-     */
-    public bool $isActive = false;
-
-    /**
-     * API key permissions
+     * The complete payload as returned by the API, so every field is accessible
+     * even when not surfaced as a typed property above.
      *
-     * @var array<string>
+     * @var array<string, mixed>
      */
-    public array $permissions = [];
-
-    /**
-     * Rate limit for this API key
-     */
-    public ?int $rateLimit = null;
-
-    /**
-     * Number of requests made today
-     */
-    public ?int $requestsToday = null;
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
         $innerData = self::extractInnerData(data: $data);
 
-        $response = new self();
-        $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->apiKeyId = is_string($innerData['api_key_id'] ?? null) ? $innerData['api_key_id'] : '';
-        $response->description = is_string($innerData['description'] ?? null) ? $innerData['description'] : null;
-        $response->createdAt = TypeConverter::toDateTime($innerData['created_at'] ?? null);
-        $response->lastUsedAt = TypeConverter::toDateTime($innerData['last_used_at'] ?? null);
-        $response->isActive = (bool)($innerData['is_active'] ?? false);
-
-        $permissions = $innerData['permissions'] ?? [];
-        if (is_array($permissions)) {
-            $response->permissions = array_filter($permissions, 'is_string');
-        } else {
-            $response->permissions = [];
+        $requestStatus = null;
+        if (isset($innerData['request_status']) && is_string($innerData['request_status'])) {
+            $requestStatus = ApiRequestStatus::fromString($innerData['request_status']);
         }
 
-        $response->rateLimit = TypeConverter::toInt($innerData['rate_limit'] ?? null);
-        $response->requestsToday = TypeConverter::toInt($innerData['requests_today'] ?? null);
+        $response = new self();
+        $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
+        $response->apiKey = TypeConverter::toString($innerData['api_key'] ?? null) ?? '';
+        $response->requestStatus = $requestStatus;
+        $response->note = TypeConverter::toString($innerData['note'] ?? null);
+        $response->data = $innerData;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

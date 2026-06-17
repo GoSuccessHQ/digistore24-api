@@ -14,17 +14,20 @@ final class GetOrderformResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'orderform_id' => 'OF123',
-                'name' => 'My Order Form',
-                'product_id' => 456,
-                'status' => 'active',
+                'orderform' => [
+                    'id' => 123,
+                    'name' => 'My Order Form',
+                    'product_id' => 456,
+                    'layout' => 'widget',
+                ],
             ],
         ];
         $response = GetOrderformResponse::fromArray($data);
 
         $this->assertInstanceOf(GetOrderformResponse::class, $response);
-        $this->assertArrayHasKey('orderform_id', $response->data);
-        $this->assertSame('OF123', $response->data['orderform_id']);
+        $this->assertArrayHasKey('id', $response->data);
+        $this->assertSame(123, $response->data['id']);
+        $this->assertSame('My Order Form', $response->data['name']);
     }
 
     public function test_can_create_from_response(): void
@@ -33,8 +36,8 @@ final class GetOrderformResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'data' => [
-                        'orderform_id' => 'OF456',
+                    'orderform' => [
+                        'id' => 456,
                         'name' => 'Premium Form',
                     ],
                 ],

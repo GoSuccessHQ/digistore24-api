@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Marketplace;
 
+use GoSuccess\Digistore24\Api\DTO\MarketplaceEntryData;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\Marketplace\GetMarketplaceEntryResponse;
 use PHPUnit\Framework\TestCase;
@@ -38,6 +39,10 @@ final class GetMarketplaceEntryResponseTest extends TestCase
         $this->assertTrue($response->statsIsValid);
         $this->assertSame(4.5, $response->statsStars);
         $this->assertSame(1234, $response->statsCountOrders);
+        $this->assertInstanceOf(MarketplaceEntryData::class, $response->entry);
+        $this->assertSame(42, $response->entry->id);
+        $this->assertSame([100, 101, 102], $response->entry->allProductIds);
+        $this->assertArrayHasKey('headline', $response->data);
     }
 
     public function test_can_create_from_response(): void

@@ -10,12 +10,17 @@ use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 /**
  * Get E-Ticket Request
  *
- * Retrieves details of a specific e-ticket by its order ID.
+ * Retrieves details of a specific e-ticket by its e-ticket ID (20 digits).
+ *
+ * @link https://digistore24.com/api/docs/paths/getEticket.yaml
  */
 final class GetEticketRequest extends AbstractRequest
 {
+    /**
+     * @param string $eticketId The e-ticket ID (pattern: 20 digits)
+     */
     public function __construct(
-        public readonly string $orderId,
+        public readonly string $eticketId,
     ) {
     }
 
@@ -27,5 +32,10 @@ final class GetEticketRequest extends AbstractRequest
     public function getMethod(): HttpMethod
     {
         return HttpMethod::GET;
+    }
+
+    public function toArray(): array
+    {
+        return ['eticket_id' => $this->eticketId];
     }
 }

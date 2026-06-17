@@ -13,18 +13,23 @@ final class GetEticketSettingsResponseTest extends TestCase
     public function test_can_create_from_array(): void
     {
         $data = [
-            'eticket_enabled' => true,
-            'default_location_id' => 'LOC123',
-            'default_template_id' => 'TPL456',
-            'max_tickets_per_order' => 5,
-            'require_email_validation' => true,
-            'settings' => ['auto_send' => true],
+            'eticket_owners' => [
+                '12345' => 'Owner One',
+            ],
+            'eticket_templates' => [
+                '12345' => ['200' => 'Some seminar'],
+            ],
+            'eticket_locations' => [
+                '12345' => ['300' => 'Berlin'],
+            ],
         ];
         $response = GetEticketSettingsResponse::fromArray($data);
 
         $this->assertInstanceOf(GetEticketSettingsResponse::class, $response);
-        $this->assertTrue($response->eticketEnabled);
-        $this->assertSame(5, $response->maxTicketsPerOrder);
+        $this->assertSame(['12345' => 'Owner One'], $response->eticketOwners);
+        $this->assertSame(['12345' => ['200' => 'Some seminar']], $response->eticketTemplates);
+        $this->assertSame(['12345' => ['300' => 'Berlin']], $response->eticketLocations);
+        $this->assertArrayHasKey('eticket_owners', $response->data);
     }
 
     public function test_can_create_from_response(): void
@@ -32,8 +37,9 @@ final class GetEticketSettingsResponseTest extends TestCase
         $httpResponse = new Response(
             statusCode: 200,
             data: [
-                'eticket_enabled' => true,
-                'max_tickets_per_order' => 10,
+                'eticket_owners' => ['1' => 'Owner'],
+                'eticket_templates' => [],
+                'eticket_locations' => [],
             ],
             headers: [],
             rawBody: '',
@@ -42,7 +48,7 @@ final class GetEticketSettingsResponseTest extends TestCase
         $response = GetEticketSettingsResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(GetEticketSettingsResponse::class, $response);
-        $this->assertTrue($response->eticketEnabled);
+        $this->assertSame(['1' => 'Owner'], $response->eticketOwners);
     }
 
     public function test_has_raw_response(): void

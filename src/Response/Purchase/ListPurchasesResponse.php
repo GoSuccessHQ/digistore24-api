@@ -11,7 +11,10 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
 /**
  * List Purchases Response
  *
- * Response containing a list of purchases.
+ * Response containing a list of purchases. The real API returns the list under
+ * the `purchase_list` key; the legacy `purchases` key is also accepted.
+ *
+ * @link https://digistore24.com/api/docs/paths/listPurchases.yaml
  */
 final class ListPurchasesResponse extends AbstractResponse
 {
@@ -27,8 +30,9 @@ final class ListPurchasesResponse extends AbstractResponse
     {
         $purchases = [];
 
-        if (isset($data['purchases']) && is_array($data['purchases'])) {
-            foreach ($data['purchases'] as $purchase) {
+        $rawList = $data['purchase_list'] ?? $data['purchases'] ?? null;
+        if (is_array($rawList)) {
+            foreach ($rawList as $purchase) {
                 if (! is_array($purchase)) {
                     continue;
                 }

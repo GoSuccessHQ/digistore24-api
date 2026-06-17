@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Statistics;
 
+use GoSuccess\Digistore24\Api\DTO\PeriodAmountData;
+use GoSuccess\Digistore24\Api\Enum\StatsPeriod;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\Statistics\StatsSalesResponse;
 use PHPUnit\Framework\TestCase;
@@ -14,22 +16,24 @@ final class StatsSalesResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'sales' => [
-                    [
-                        'sale_id' => 'SALE001',
-                        'product_id' => '100',
-                        'amount' => 99.99,
-                        'currency' => 'EUR',
-                        'date' => '2024-01-15 10:30:00',
-                        'buyer_email' => 'buyer1@example.com',
+                'from' => '2024-01-01',
+                'to' => '2024-01-31',
+                'period' => 'month',
+                'amounts' => [
+                    'EUR' => [
+                        [
+                            'from' => '2024-01-01',
+                            'to' => '2024-01-31',
+                            'total_brutto_amount' => 99.99,
+                            'vendor_share_amount' => 80.00,
+                        ],
                     ],
-                    [
-                        'sale_id' => 'SALE002',
-                        'product_id' => '200',
-                        'amount' => 149.50,
-                        'currency' => 'USD',
-                        'date' => '2024-01-15 11:45:00',
-                        'buyer_email' => 'buyer2@example.com',
+                    'USD' => [
+                        [
+                            'from' => '2024-01-01',
+                            'to' => '2024-01-31',
+                            'total_brutto_amount' => 149.50,
+                        ],
                     ],
                 ],
             ],
@@ -37,9 +41,15 @@ final class StatsSalesResponseTest extends TestCase
         $response = StatsSalesResponse::fromArray($data);
 
         $this->assertInstanceOf(StatsSalesResponse::class, $response);
-        $sales = $response->sales;
-        $this->assertCount(2, $sales);
-        $this->assertNotEmpty($sales);
+        $this->assertSame('2024-01-01', $response->from);
+        $this->assertSame('2024-01-31', $response->to);
+        $this->assertSame(StatsPeriod::MONTH, $response->period);
+        $this->assertArrayHasKey('EUR', $response->amounts);
+        $this->assertArrayHasKey('USD', $response->amounts);
+        $this->assertCount(1, $response->amounts['EUR']);
+        $this->assertInstanceOf(PeriodAmountData::class, $response->amounts['EUR'][0]);
+        $this->assertSame(99.99, $response->amounts['EUR'][0]->totalBruttoAmount);
+        $this->assertSame(80.00, $response->amounts['EUR'][0]->vendorShareAmount);
     }
 
     public function test_can_create_from_response(): void
@@ -48,11 +58,10 @@ final class StatsSalesResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'sales' => [
-                        [
-                            'sale_id' => 'SALE999',
-                            'amount' => 299.00,
-                            'product_id' => '500',
+                    'period' => 'day',
+                    'amounts' => [
+                        'EUR' => [
+                            ['total_brutto_amount' => 299.00],
                         ],
                     ],
                 ],
@@ -64,7 +73,8 @@ final class StatsSalesResponseTest extends TestCase
         $response = StatsSalesResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(StatsSalesResponse::class, $response);
-        $this->assertCount(1, $response->sales);
+        $this->assertSame(StatsPeriod::DAY, $response->period);
+        $this->assertCount(1, $response->amounts['EUR']);
     }
 
     public function test_has_raw_response(): void

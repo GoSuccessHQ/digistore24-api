@@ -55,13 +55,20 @@ final class PaymentPlanResource extends AbstractResource
     }
 
     /**
-     * List all payment plans with optional filters.
+     * List the payment plans configured for a product.
      *
-     * @param ListPaymentPlansRequest|null $request Optional request with filter criteria
+     * The Digistore24 listPaymentPlans endpoint requires a product ID. Pass the
+     * product ID directly, or supply a pre-built request for full control.
+     *
+     * @param int|ListPaymentPlansRequest $product Product ID or a ready request
      * @return ListPaymentPlansResponse Response with list of payment plans
      */
-    public function list(?ListPaymentPlansRequest $request = null): ListPaymentPlansResponse
+    public function list(int|ListPaymentPlansRequest $product): ListPaymentPlansResponse
     {
-        return $this->executeTyped($request ?? new ListPaymentPlansRequest(), ListPaymentPlansResponse::class);
+        $request = $product instanceof ListPaymentPlansRequest
+            ? $product
+            : new ListPaymentPlansRequest(productId: $product);
+
+        return $this->executeTyped($request, ListPaymentPlansResponse::class);
     }
 }

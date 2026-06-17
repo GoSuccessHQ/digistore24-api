@@ -31,6 +31,14 @@ final class ListMarketplaceEntriesRequestTest extends TestCase
         $this->assertEmpty($array);
     }
 
+    public function test_to_array_includes_sort_by_when_set(): void
+    {
+        $request = new ListMarketplaceEntriesRequest(sortBy: 'stats_stars');
+
+        $array = $request->toArray();
+        $this->assertSame('stats_stars', $array['sort_by']);
+    }
+
     public function test_validate_returns_empty_array(): void
     {
         $request = new ListMarketplaceEntriesRequest();

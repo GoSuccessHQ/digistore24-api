@@ -31,6 +31,34 @@ final class ListCustomFormRecordsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListCustomFormRecordsResponse::class, $response);
         $this->assertCount(1, $response->records);
+
+        $record = $response->records[0];
+        $this->assertSame(1, $record->formId);
+        $this->assertSame(100, $record->id);
+        $this->assertSame('P123', $record->purchaseId);
+        $this->assertSame(10, $record->purchaseItemId);
+        $this->assertSame(12345, $record->productId);
+        $this->assertSame(1, $record->formNo);
+        $this->assertSame(1, $record->formCount);
+        $this->assertSame(['field1' => 'value1'], $record->data);
+        $this->assertSame(['city' => 'Berlin'], $record->address);
+    }
+
+    public function test_get_records_by_purchase_id(): void
+    {
+        $data = [
+            'records' => [
+                ['id' => 1, 'purchase_id' => 'P1'],
+                ['id' => 2, 'purchase_id' => 'P2'],
+                ['id' => 3, 'purchase_id' => 'P1'],
+            ],
+        ];
+        $response = ListCustomFormRecordsResponse::fromArray($data);
+
+        $filtered = $response->getRecordsByPurchaseId('P1');
+        $this->assertCount(2, $filtered);
+        $this->assertSame(1, $filtered[0]->id);
+        $this->assertSame(3, $filtered[1]->id);
     }
 
     public function test_can_create_from_response(): void
@@ -58,6 +86,7 @@ final class ListCustomFormRecordsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListCustomFormRecordsResponse::class, $response);
         $this->assertCount(1, $response->records);
+        $this->assertSame(100, $response->records[0]->id);
     }
 
     public function test_has_raw_response(): void

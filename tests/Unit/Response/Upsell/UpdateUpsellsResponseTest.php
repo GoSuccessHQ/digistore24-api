@@ -14,10 +14,15 @@ final class UpdateUpsellsResponseTest extends TestCase
     {
         $data = [
             'result' => 'success',
+            'data' => [
+                'is_modified' => 'Y',
+            ],
         ];
         $response = UpdateUpsellsResponse::fromArray($data);
 
         $this->assertInstanceOf(UpdateUpsellsResponse::class, $response);
+        $this->assertTrue($response->isModified);
+        $this->assertTrue($response->wasSuccessful());
     }
 
     public function test_can_create_from_response(): void
@@ -26,6 +31,9 @@ final class UpdateUpsellsResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'result' => 'success',
+                'data' => [
+                    'is_modified' => 'N',
+                ],
             ],
             headers: [],
             rawBody: '',
@@ -34,6 +42,7 @@ final class UpdateUpsellsResponseTest extends TestCase
         $response = UpdateUpsellsResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(UpdateUpsellsResponse::class, $response);
+        $this->assertFalse($response->isModified);
     }
 
     public function test_has_raw_response(): void

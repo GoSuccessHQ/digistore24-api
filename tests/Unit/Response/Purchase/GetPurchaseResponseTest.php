@@ -10,49 +10,123 @@ use PHPUnit\Framework\TestCase;
 
 final class GetPurchaseResponseTest extends TestCase
 {
-    public function test_can_create_from_array(): void
+    /**
+     * @return array<string, mixed>
+     */
+    private function samplePurchase(): array
     {
-        $data = [
-            'purchase_id' => 'P123456',
-            'product_id' => '789',
-            'product_name' => 'Premium Course',
-            'buyer_email' => 'buyer@example.com',
-            'payment_status' => 'paid',
-            'billing_status' => 'active',
+        return [
+            'id' => 'P123456',
             'amount' => 99.99,
             'currency' => 'EUR',
+            'other_amounts' => 19.99,
+            'other_vat_amounts' => 3.19,
+            'number_of_installments' => 0,
+            'vat_country' => 'DE',
+            'vat_amount' => 15.97,
+            'vat_rate' => 19.0,
             'created_at' => '2024-01-15 10:30:00',
-            'additional_data' => ['key' => 'value'],
+            'billing_type' => 'subscription',
+            'billing_type_msg' => 'Subscription',
+            'billing_status' => 'paying',
+            'billing_status_msg' => 'Paying',
+            'renew_url' => 'https://www.digistore24.com/renew/P123456',
+            'receipt_url' => 'https://www.digistore24.com/receipt/P123456',
+            'invoice_url' => 'https://www.digistore24.com/invoice/P123456',
+            'has_custom_forms' => 'N',
+            'has_etickets' => 'Y',
+            'cancel_policy' => '12m_3m',
+            'can_cancel_before' => '2025-01-15',
+            'upsell_no' => 1,
+            'upsell_position' => 'ynyynn',
+            'buyer' => [
+                'id' => 42,
+                'email' => 'buyer@example.com',
+                'first_name' => 'Jane',
+                'last_name' => 'Doe',
+                'country' => 'DE',
+            ],
+            'items' => [
+                [
+                    'product_name' => 'Premium Course',
+                    'product_id' => 789,
+                    'quantity' => 1,
+                    'no' => 1,
+                    'count' => 1,
+                    'id' => 5001,
+                ],
+            ],
+            'transaction_list' => [
+                [
+                    'id' => 9001,
+                    'amount' => 99.99,
+                    'currency' => 'EUR',
+                    'purchase_id' => 'P123456',
+                    'pay_method' => 'paypal',
+                    'pay_method_msg' => 'PayPal',
+                    'created_at' => '2024-01-15 10:31:00',
+                    'type' => 'payment',
+                    'type_msg' => 'Payment',
+                ],
+            ],
+            'refund_policy' => [
+                'purchase_id' => 'P123456',
+                'reason_code' => 'consumer',
+                'refund_days' => 14,
+                'is_reminder_allowed' => 'Y',
+                'policy_id' => 7,
+                'product_type_id' => 2,
+                'delivery_type' => 'digital',
+            ],
+            'placeholders' => ['servicename' => 'Coaching'],
         ];
-        $response = GetPurchaseResponse::fromArray($data);
+    }
+
+    public function test_can_create_from_array(): void
+    {
+        $response = GetPurchaseResponse::fromArray($this->samplePurchase());
 
         $this->assertInstanceOf(GetPurchaseResponse::class, $response);
         $this->assertSame('P123456', $response->purchaseId);
-        $this->assertSame('789', $response->productId);
-        $this->assertSame('Premium Course', $response->productName);
-        $this->assertSame('buyer@example.com', $response->buyerEmail);
-        $this->assertSame('paid', $response->paymentStatus);
-        $this->assertSame('active', $response->billingStatus);
         $this->assertSame(99.99, $response->amount);
         $this->assertSame('EUR', $response->currency);
+        $this->assertSame(19.99, $response->otherAmounts);
+        $this->assertSame(0, $response->numberOfInstallments);
+        $this->assertSame('DE', $response->vatCountry);
+        $this->assertSame(19.0, $response->vatRate);
+        $this->assertSame('subscription', $response->billingType);
+        $this->assertSame('paying', $response->billingStatus);
+        $this->assertFalse($response->hasCustomForms);
+        $this->assertTrue($response->hasEtickets);
+        $this->assertSame('12m_3m', $response->cancelPolicy);
+        $this->assertSame(1, $response->upsellNo);
         $this->assertInstanceOf(\DateTimeInterface::class, $response->createdAt);
+
+        $this->assertNotNull($response->buyer);
+        $this->assertSame('buyer@example.com', $response->buyer->email);
+        $this->assertSame('Jane', $response->buyer->firstName);
+
+        $this->assertCount(1, $response->items);
+        $this->assertSame('Premium Course', $response->items[0]->productName);
+        $this->assertSame(789, $response->items[0]->productId);
+
+        $this->assertCount(1, $response->transactionList);
+        $this->assertSame(9001, $response->transactionList[0]->id);
+        $this->assertSame('payment', $response->transactionList[0]->type);
+
+        $this->assertNotNull($response->refundPolicy);
+        $this->assertSame(14, $response->refundPolicy->refundDays);
+        $this->assertTrue($response->refundPolicy->isReminderAllowed);
+
+        $this->assertSame('Coaching', $response->placeholders['servicename']);
+        $this->assertArrayHasKey('id', $response->data);
     }
 
     public function test_can_create_from_response(): void
     {
         $httpResponse = new Response(
             statusCode: 200,
-            data: [
-                'purchase_id' => 'P654321',
-                'product_id' => '456',
-                'product_name' => 'Digital Product',
-                'buyer_email' => 'customer@test.com',
-                'payment_status' => 'pending',
-                'billing_status' => 'pending',
-                'amount' => 49.50,
-                'currency' => 'USD',
-                'created_at' => '2024-02-01 14:00:00',
-            ],
+            data: $this->samplePurchase(),
             headers: [],
             rawBody: '',
         );
@@ -60,26 +134,15 @@ final class GetPurchaseResponseTest extends TestCase
         $response = GetPurchaseResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(GetPurchaseResponse::class, $response);
-        $this->assertSame('P654321', $response->purchaseId);
-        $this->assertSame('Digital Product', $response->productName);
-        $this->assertSame(49.50, $response->amount);
+        $this->assertSame('P123456', $response->purchaseId);
+        $this->assertSame(99.99, $response->amount);
     }
 
     public function test_has_raw_response(): void
     {
         $httpResponse = new Response(
             statusCode: 200,
-            data: [
-                'purchase_id' => 'P999999',
-                'product_id' => '111',
-                'product_name' => 'Test Product',
-                'buyer_email' => 'test@example.com',
-                'payment_status' => 'paid',
-                'billing_status' => 'active',
-                'amount' => 19.99,
-                'currency' => 'EUR',
-                'created_at' => '2024-01-01 00:00:00',
-            ],
+            data: $this->samplePurchase(),
             headers: [],
             rawBody: 'test',
         );

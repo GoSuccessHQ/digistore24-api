@@ -14,10 +14,14 @@ final class UpdateServiceProofRequestResponseTest extends TestCase
     {
         $data = [
             'result' => 'success',
+            'data' => [
+                'is_modified' => 'Y',
+            ],
         ];
         $response = UpdateServiceProofRequestResponse::fromArray($data);
 
         $this->assertInstanceOf(UpdateServiceProofRequestResponse::class, $response);
+        $this->assertTrue($response->isModified);
     }
 
     public function test_can_create_from_response(): void
@@ -26,6 +30,9 @@ final class UpdateServiceProofRequestResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'result' => 'success',
+                'data' => [
+                    'is_modified' => 'N',
+                ],
             ],
             headers: [],
             rawBody: '',
@@ -34,6 +41,7 @@ final class UpdateServiceProofRequestResponseTest extends TestCase
         $response = UpdateServiceProofRequestResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(UpdateServiceProofRequestResponse::class, $response);
+        $this->assertFalse($response->isModified);
     }
 
     public function test_has_raw_response(): void

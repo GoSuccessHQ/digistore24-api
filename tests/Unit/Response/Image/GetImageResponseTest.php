@@ -13,18 +13,23 @@ final class GetImageResponseTest extends TestCase
     public function test_can_create_from_array(): void
     {
         $data = [
-            'image_id' => 'IMG123',
-            'image_url' => 'https://example.com/images/123.jpg',
-            'name' => 'Product Image',
-            'usage_type' => 'product',
-            'alt_tag' => 'Product photo',
-            'created_at' => '2024-01-15',
+            'image' => [
+                'id' => 'IMG123',
+                'url' => 'https://example.com/images/123.jpg',
+                'type' => 'product',
+                'properties' => [
+                    'width' => 100,
+                    'height' => 100,
+                ],
+            ],
         ];
         $response = GetImageResponse::fromArray($data);
 
         $this->assertInstanceOf(GetImageResponse::class, $response);
-        $this->assertSame('IMG123', $response->imageId);
-        $this->assertSame('Product Image', $response->name);
+        $this->assertSame('IMG123', $response->id);
+        $this->assertSame('https://example.com/images/123.jpg', $response->url);
+        $this->assertSame('product', $response->type);
+        $this->assertSame(100, $response->properties['width']);
     }
 
     public function test_can_create_from_response(): void
@@ -32,10 +37,13 @@ final class GetImageResponseTest extends TestCase
         $httpResponse = new Response(
             statusCode: 200,
             data: [
-                'image_id' => 'IMG456',
-                'image_url' => 'https://example.com/images/456.jpg',
-                'name' => 'Banner',
-                'created_at' => '2024-02-01',
+                'data' => [
+                    'image' => [
+                        'id' => 'IMG456',
+                        'url' => 'https://example.com/images/456.jpg',
+                        'type' => 'logo',
+                    ],
+                ],
             ],
             headers: [],
             rawBody: '',
@@ -44,7 +52,8 @@ final class GetImageResponseTest extends TestCase
         $response = GetImageResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(GetImageResponse::class, $response);
-        $this->assertSame('Banner', $response->name);
+        $this->assertSame('IMG456', $response->id);
+        $this->assertSame('logo', $response->type);
     }
 
     public function test_has_raw_response(): void

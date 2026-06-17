@@ -9,7 +9,10 @@ use GoSuccess\Digistore24\Api\Base\AbstractDataTransferObject;
 /**
  * Country Data Transfer Object
  *
- * Represents a country with localized names and VAT information.
+ * Represents a single country as returned by listCountries, which delivers a
+ * map of two-letter ISO codes to localized country names.
+ *
+ * @link https://digistore24.com/api/docs/paths/listCountries.yaml
  */
 final class CountryData extends AbstractDataTransferObject
 {
@@ -25,33 +28,5 @@ final class CountryData extends AbstractDataTransferObject
      */
     public string $name {
         get => $this->name ?? '';
-    }
-
-    /**
-     * Country name in German
-     */
-    public ?string $nameDe {
-        get => $this->nameDe ?? null;
-    }
-
-    /**
-     * Country name in English
-     */
-    public ?string $nameEn {
-        get => $this->nameEn ?? null;
-    }
-
-    /**
-     * Whether country is EU member
-     */
-    public bool $euMember {
-        get => $this->euMember ?? false;
-    }
-
-    /**
-     * VAT rate in percent
-     */
-    public ?float $vatRate {
-        get => $this->vatRate ?? null;
     }
 }

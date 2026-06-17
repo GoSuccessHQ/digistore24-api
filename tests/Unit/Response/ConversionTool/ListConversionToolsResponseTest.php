@@ -14,7 +14,16 @@ final class ListConversionToolsResponseTest extends TestCase
     {
         $data = [
             'smartupgrades' => [
-                ['id' => 1, 'name' => 'Upgrade 1'],
+                [
+                    'id' => 1,
+                    'name' => 'Upgrade auf Komplettversion',
+                    'authkey' => 'R7w4XmVXgIkZ2iGceLhc2AXBh',
+                    'created_at' => '2016-03-17 15:40:50',
+                    'is_custom_css_used' => 'N',
+                    'custom_css' => null,
+                    'upgrade_to_product_id' => 12345,
+                    'product_ids' => '373,20,340',
+                ],
                 ['id' => 2, 'name' => 'Upgrade 2'],
             ],
         ];
@@ -22,6 +31,18 @@ final class ListConversionToolsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListConversionToolsResponse::class, $response);
         $this->assertCount(2, $response->smartupgrades);
+
+        $first = $response->smartupgrades[0];
+        $this->assertSame(1, $first->id);
+        $this->assertSame('Upgrade auf Komplettversion', $first->name);
+        $this->assertSame('R7w4XmVXgIkZ2iGceLhc2AXBh', $first->authkey);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $first->createdAt);
+        $this->assertFalse($first->isCustomCssUsed);
+        $this->assertNull($first->customCss);
+        $this->assertSame(12345, $first->upgradeToProductId);
+        $this->assertSame('373,20,340', $first->productIds);
+
+        $this->assertArrayHasKey('smartupgrades', $response->data);
     }
 
     public function test_can_create_from_response(): void
@@ -41,6 +62,7 @@ final class ListConversionToolsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListConversionToolsResponse::class, $response);
         $this->assertCount(1, $response->smartupgrades);
+        $this->assertSame(1, $response->smartupgrades[0]->id);
     }
 
     public function test_has_raw_response(): void

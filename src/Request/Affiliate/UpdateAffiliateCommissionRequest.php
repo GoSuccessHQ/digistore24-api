@@ -16,13 +16,13 @@ use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 final class UpdateAffiliateCommissionRequest extends AbstractRequest
 {
     /**
-     * @param int $productId The product ID
-     * @param string $affiliateId The affiliate ID
+     * @param string $affiliateId The ID or the name of the affiliate
+     * @param string $productIds Comma-separated list of product IDs for which the commission should be changed, or "all" for all products
      * @param AffiliateCommissionData $commission Commission settings data
      */
     public function __construct(
-        private int $productId,
         private string $affiliateId,
+        private string $productIds,
         private AffiliateCommissionData $commission,
     ) {
     }
@@ -41,8 +41,8 @@ final class UpdateAffiliateCommissionRequest extends AbstractRequest
     {
         return array_merge(
             [
-                'product_id' => $this->productId,
                 'affiliate_id' => $this->affiliateId,
+                'product_ids' => $this->productIds,
             ],
             $this->commission->toArray(),
         );

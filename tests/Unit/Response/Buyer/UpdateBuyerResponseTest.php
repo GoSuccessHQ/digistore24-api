@@ -13,35 +13,31 @@ final class UpdateBuyerResponseTest extends TestCase
     public function test_can_create_from_array_modified(): void
     {
         $data = [
+            'result' => 'success',
             'data' => [
-                'buyer_id' => 123,
-                'email' => 'test@example.com',
-                'first_name' => 'John',
-                'last_name' => 'Doe',
-                'updated_at' => '2024-01-01 12:00:00',
+                'is_modified' => 'Y',
             ],
         ];
 
         $response = UpdateBuyerResponse::fromArray($data);
 
         $this->assertInstanceOf(UpdateBuyerResponse::class, $response);
-        $this->assertSame(123, $response->buyerId);
-        $this->assertSame('test@example.com', $response->email);
+        $this->assertTrue($response->isModified);
+        $this->assertSame('success', $response->result);
     }
 
     public function test_can_create_from_array_not_modified(): void
     {
         $data = [
+            'result' => 'success',
             'data' => [
-                'buyer_id' => 456,
-                'email' => 'other@example.com',
+                'is_modified' => 'N',
             ],
         ];
 
         $response = UpdateBuyerResponse::fromArray($data);
 
-        $this->assertSame(456, $response->buyerId);
-        $this->assertSame('other@example.com', $response->email);
+        $this->assertFalse($response->isModified);
     }
 
     public function test_can_create_from_response(): void
@@ -51,8 +47,7 @@ final class UpdateBuyerResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'buyer_id' => 789,
-                    'email' => 'response@example.com',
+                    'is_modified' => 'Y',
                 ],
             ],
             headers: [],
@@ -62,7 +57,7 @@ final class UpdateBuyerResponseTest extends TestCase
         $response = UpdateBuyerResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(UpdateBuyerResponse::class, $response);
-        $this->assertSame(789, $response->buyerId);
+        $this->assertTrue($response->isModified);
     }
 
     public function test_handles_missing_data(): void
@@ -71,8 +66,7 @@ final class UpdateBuyerResponseTest extends TestCase
 
         $response = UpdateBuyerResponse::fromArray($data);
 
-        $this->assertNull($response->buyerId);
-        $this->assertSame('', $response->email);
+        $this->assertNull($response->isModified);
     }
 
     public function test_has_raw_response(): void

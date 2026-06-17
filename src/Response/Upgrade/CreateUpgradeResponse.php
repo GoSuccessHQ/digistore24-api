@@ -6,24 +6,35 @@ namespace GoSuccess\Digistore24\Api\Response\Upgrade;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Create Upgrade Response
  *
- * Response object for the Upgrade API endpoint.
+ * Response for the createUpgrade endpoint.
+ *
+ * @link https://digistore24.com/api/docs/paths/createUpgrade.yaml
  */
 final class CreateUpgradeResponse extends AbstractResponse
 {
     public string $result = '';
 
-    /** @var array<string, mixed> */
+    /**
+     * The ID of the newly created upgrade.
+     */
+    public ?int $upgradeId = null;
+
+    /**
+     * The complete response payload as returned by the API, so every field is
+     * accessible even when not surfaced as a typed property above.
+     *
+     * @var array<string, mixed>
+     */
     public array $data = [];
 
-    public function getUpgradeId(): ?string
+    public function getUpgradeId(): ?int
     {
-        $value = $this->data['upgrade_id'] ?? null;
-
-        return is_string($value) ? $value : null;
+        return $this->upgradeId;
     }
 
     public function wasSuccessful(): bool
@@ -33,12 +44,13 @@ final class CreateUpgradeResponse extends AbstractResponse
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
-        $responseData = self::extractInnerData($data);
+        $innerData = self::extractInnerData(data: $data);
         /** @var array<string, mixed> $validatedData */
-        $validatedData = $responseData;
+        $validatedData = $innerData;
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
+        $response->upgradeId = TypeConverter::toInt($validatedData['upgrade_id'] ?? null);
         $response->data = $validatedData;
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

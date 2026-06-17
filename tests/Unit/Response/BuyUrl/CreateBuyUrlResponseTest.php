@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\BuyUrl;
 
 use DateTimeImmutable;
+use GoSuccess\Digistore24\Api\Enum\UpgradeStatus;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\BuyUrl\CreateBuyUrlResponse;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +31,8 @@ final class CreateBuyUrlResponseTest extends TestCase
         $this->assertSame('https://www.digistore24.com/buy/12345/abc123', $response->url);
         $this->assertInstanceOf(DateTimeImmutable::class, $response->validUntil);
         $this->assertSame('2024-12-31 23:59:59', $response->validUntil->format('Y-m-d H:i:s'));
-        $this->assertSame('ok', $response->upgradeStatus);
+        $this->assertSame(UpgradeStatus::OK, $response->upgradeStatus);
+        $this->assertSame('BU12345', $response->data['id']);
     }
 
     public function test_can_create_with_upgrade_error(): void
@@ -48,7 +50,7 @@ final class CreateBuyUrlResponseTest extends TestCase
         $response = CreateBuyUrlResponse::fromArray(data: $data);
 
         $this->assertInstanceOf(CreateBuyUrlResponse::class, $response);
-        $this->assertSame('error', $response->upgradeStatus);
+        $this->assertSame(UpgradeStatus::ERROR, $response->upgradeStatus);
     }
 
     public function test_can_create_with_no_upgrade(): void
@@ -65,7 +67,7 @@ final class CreateBuyUrlResponseTest extends TestCase
         $response = CreateBuyUrlResponse::fromArray(data: $data);
 
         $this->assertInstanceOf(CreateBuyUrlResponse::class, $response);
-        $this->assertSame('none', $response->upgradeStatus);
+        $this->assertSame(UpgradeStatus::NONE, $response->upgradeStatus);
         $this->assertNull($response->validUntil);
     }
 
@@ -91,7 +93,7 @@ final class CreateBuyUrlResponseTest extends TestCase
         $this->assertInstanceOf(CreateBuyUrlResponse::class, $response);
         $this->assertSame('BU54321', $response->id);
         $this->assertSame('https://www.digistore24.com/buy/54321/token123', $response->url);
-        $this->assertSame('ok', $response->upgradeStatus);
+        $this->assertSame(UpgradeStatus::OK, $response->upgradeStatus);
     }
 
     public function test_has_raw_response(): void

@@ -16,14 +16,16 @@ final class ListPaymentPlansResponseTest extends TestCase
             'data' => [
                 'payment_plans' => [
                     [
-                        'paymentplan_id' => 'PP001',
+                        'id' => 1,
+                        'product_id' => 100,
                         'name' => 'Monthly Plan',
-                        'price' => 29.99,
+                        'created_at' => '2024-01-01 10:00:00',
+                        'modified_at' => '2024-02-01 10:00:00',
                     ],
                     [
-                        'paymentplan_id' => 'PP002',
+                        'id' => 2,
+                        'product_id' => 100,
                         'name' => 'Yearly Plan',
-                        'price' => 299.99,
                     ],
                 ],
             ],
@@ -32,19 +34,23 @@ final class ListPaymentPlansResponseTest extends TestCase
 
         $this->assertInstanceOf(ListPaymentPlansResponse::class, $response);
         $this->assertCount(2, $response->paymentPlans);
+        $this->assertSame(1, $response->paymentPlans[0]->id);
+        $this->assertSame(100, $response->paymentPlans[0]->productId);
+        $this->assertSame('Monthly Plan', $response->paymentPlans[0]->name);
+        $this->assertSame('2024-01-01 10:00:00', $response->paymentPlans[0]->createdAt?->format('Y-m-d H:i:s'));
+        $this->assertSame('2024-02-01 10:00:00', $response->paymentPlans[0]->modifiedAt?->format('Y-m-d H:i:s'));
     }
 
-    public function test_can_create_from_response(): void
+    public function test_can_create_from_bare_array_payload(): void
     {
         $httpResponse = new Response(
             statusCode: 200,
             data: [
                 'data' => [
-                    'payment_plans' => [
-                        [
-                            'paymentplan_id' => 'PP003',
-                            'name' => 'Lifetime Plan',
-                        ],
+                    [
+                        'id' => 3,
+                        'product_id' => 200,
+                        'name' => 'Lifetime Plan',
                     ],
                 ],
             ],
@@ -56,6 +62,7 @@ final class ListPaymentPlansResponseTest extends TestCase
 
         $this->assertInstanceOf(ListPaymentPlansResponse::class, $response);
         $this->assertCount(1, $response->paymentPlans);
+        $this->assertSame(3, $response->paymentPlans[0]->id);
     }
 
     public function test_has_raw_response(): void

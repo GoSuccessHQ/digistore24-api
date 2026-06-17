@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\ServiceProof;
 
+use GoSuccess\Digistore24\Api\DTO\ServiceProofRequestData;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\ServiceProof\ListServiceProofRequestsResponse;
 use PHPUnit\Framework\TestCase;
@@ -15,8 +16,21 @@ final class ListServiceProofRequestsResponseTest extends TestCase
         $data = [
             'data' => [
                 'service_proof_requests' => [
-                    ['request_id' => 'SPR001', 'status' => 'pending'],
-                    ['request_id' => 'SPR002', 'status' => 'completed'],
+                    [
+                        'id' => 1,
+                        'purchase_id' => 'P001',
+                        'product_id' => 100,
+                        'delivery_type' => 'service',
+                        'approval_status' => 'approved',
+                        'request_status' => 'pending',
+                        'created_at' => '2024-01-15 10:00:00',
+                        'modified_at' => '2024-01-16 12:00:00',
+                    ],
+                    [
+                        'id' => 2,
+                        'purchase_id' => 'P002',
+                        'request_status' => 'proof_provided',
+                    ],
                 ],
             ],
         ];
@@ -24,6 +38,14 @@ final class ListServiceProofRequestsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListServiceProofRequestsResponse::class, $response);
         $this->assertCount(2, $response->serviceProofRequests);
+        $first = $response->serviceProofRequests[0];
+        $this->assertInstanceOf(ServiceProofRequestData::class, $first);
+        $this->assertSame(1, $first->id);
+        $this->assertSame('P001', $first->purchaseId);
+        $this->assertSame(100, $first->productId);
+        $this->assertSame('service', $first->deliveryType);
+        $this->assertSame('approved', $first->approvalStatus);
+        $this->assertSame('pending', $first->requestStatus);
     }
 
     public function test_can_create_from_response(): void
@@ -33,7 +55,7 @@ final class ListServiceProofRequestsResponseTest extends TestCase
             data: [
                 'data' => [
                     'service_proof_requests' => [
-                        ['request_id' => 'SPR999'],
+                        ['id' => 999, 'request_status' => 'exec_refund'],
                     ],
                 ],
             ],
@@ -45,6 +67,7 @@ final class ListServiceProofRequestsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListServiceProofRequestsResponse::class, $response);
         $this->assertCount(1, $response->serviceProofRequests);
+        $this->assertSame(999, $response->serviceProofRequests[0]->id);
     }
 
     public function test_has_raw_response(): void

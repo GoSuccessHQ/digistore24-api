@@ -5,41 +5,50 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Response\Statistics;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
+use GoSuccess\Digistore24\Api\DTO\DailyAmountData;
 use GoSuccess\Digistore24\Api\Http\Response;
 
 /**
  * Stats Daily Amounts Response
  *
- * Response object for the Statistics API endpoint.
+ * Response for statsDailyAmounts. Exposes the daily revenue records under
+ * `amountList` (spec key: data.amount_list) as typed {@see DailyAmountData}.
+ *
+ * @link https://digistore24.com/api/docs/paths/statsDailyAmounts.yaml
  */
 final class StatsDailyAmountsResponse extends AbstractResponse
 {
-    /**
-     * Result status
-     */
     public string $result = '';
 
     /**
-     * Daily amounts data
+     * The daily revenue records as typed DTOs.
      *
-     * @var array<string, mixed>
+     * @var array<int, DailyAmountData>
      */
-    public array $dailyAmounts = [];
+    public array $amountList = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
         $innerData = self::extractInnerData(data: $data);
-        $dailyAmounts = $innerData['daily_amounts'] ?? [];
-
-        if (! is_array($dailyAmounts)) {
-            $dailyAmounts = [];
+        // Spec key is `amount_list`; fall back to the legacy `daily_amounts` shape.
+        $items = $innerData['amount_list'] ?? $innerData['daily_amounts'] ?? [];
+        if (! is_array($items)) {
+            $items = [];
         }
-        /** @var array<string, mixed> $validatedAmounts */
-        $validatedAmounts = $dailyAmounts;
+
+        $amountList = [];
+        foreach ($items as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+            /** @var array<string, mixed> $validatedItem */
+            $validatedItem = $item;
+            $amountList[] = DailyAmountData::fromArray($validatedItem);
+        }
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->dailyAmounts = $validatedAmounts;
+        $response->amountList = $amountList;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

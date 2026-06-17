@@ -15,11 +15,8 @@ final class RequestApiKeyResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'api_key' => 'test-api-key-12345',
-                'created_at' => '2025-10-15 14:30:00',
-                'description' => 'Production Server',
-                'permissions' => ['read', 'write'],
-                'rate_limit' => 1000,
+                'request_url' => 'https://www.digistore24.com/api-key-request/abc123',
+                'request_token' => 'request-token-12345',
             ],
         ];
 
@@ -27,12 +24,10 @@ final class RequestApiKeyResponseTest extends TestCase
 
         $this->assertInstanceOf(RequestApiKeyResponse::class, $response);
         $this->assertSame('success', $response->result);
-        $this->assertSame('test-api-key-12345', $response->apiKey);
-        $this->assertInstanceOf(\DateTimeInterface::class, $response->createdAt);
-        $this->assertSame('Production Server', $response->description);
-        $this->assertContains('read', $response->permissions);
-        $this->assertContains('write', $response->permissions);
-        $this->assertSame(1000, $response->rateLimit);
+        $this->assertSame('https://www.digistore24.com/api-key-request/abc123', $response->requestUrl);
+        $this->assertSame('request-token-12345', $response->requestToken);
+        $this->assertSame('https://www.digistore24.com/api-key-request/abc123', $response->data['request_url']);
+        $this->assertSame('request-token-12345', $response->data['request_token']);
     }
 
     public function test_can_create_from_response(): void
@@ -42,11 +37,8 @@ final class RequestApiKeyResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'api_key' => 'test-api-key-67890',
-                    'created_at' => '2025-10-15 14:30:00',
-                    'description' => 'Test Server',
-                    'permissions' => ['read'],
-                    'rate_limit' => 500,
+                    'request_url' => 'https://www.digistore24.com/api-key-request/xyz789',
+                    'request_token' => 'request-token-67890',
                 ],
             ],
             headers: ['Content-Type' => ['application/json']],
@@ -57,9 +49,8 @@ final class RequestApiKeyResponseTest extends TestCase
 
         $this->assertInstanceOf(RequestApiKeyResponse::class, $response);
         $this->assertSame('success', $response->result);
-        $this->assertSame('test-api-key-67890', $response->apiKey);
-        $this->assertSame('Test Server', $response->description);
-        $this->assertSame(500, $response->rateLimit);
+        $this->assertSame('https://www.digistore24.com/api-key-request/xyz789', $response->requestUrl);
+        $this->assertSame('request-token-67890', $response->requestToken);
     }
 
     public function test_handles_minimal_data(): void
@@ -67,18 +58,15 @@ final class RequestApiKeyResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'api_key' => 'minimal-key',
+                'request_token' => 'minimal-token',
             ],
         ];
 
         $response = RequestApiKeyResponse::fromArray(data: $data);
 
         $this->assertInstanceOf(RequestApiKeyResponse::class, $response);
-        $this->assertSame('minimal-key', $response->apiKey);
-        $this->assertNull($response->description);
-        $this->assertNull($response->createdAt);
-        $this->assertEmpty($response->permissions);
-        $this->assertNull($response->rateLimit);
+        $this->assertSame('minimal-token', $response->requestToken);
+        $this->assertNull($response->requestUrl);
     }
 
     public function test_has_raw_response(): void
@@ -87,7 +75,7 @@ final class RequestApiKeyResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'result' => 'success',
-                'data' => ['api_key' => 'test-key'],
+                'data' => ['request_token' => 'test-token'],
             ],
             headers: ['Content-Type' => ['application/json']],
             rawBody: 'test body',

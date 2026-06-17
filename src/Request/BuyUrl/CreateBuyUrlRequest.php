@@ -6,6 +6,7 @@ namespace GoSuccess\Digistore24\Api\Request\BuyUrl;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\DTO\BuyerData;
+use GoSuccess\Digistore24\Api\DTO\BuyUrlAddonData;
 use GoSuccess\Digistore24\Api\DTO\PaymentPlanData;
 use GoSuccess\Digistore24\Api\DTO\SettingsData;
 use GoSuccess\Digistore24\Api\DTO\TrackingData;
@@ -30,22 +31,36 @@ final class CreateBuyUrlRequest extends AbstractRequest
         }
     }
 
+    /** Prefilled buyer data shown on (and optionally locked on) the order form */
     public ?BuyerData $buyer = null;
 
+    /** Custom pricing/payment configuration overriding the product defaults */
     public ?PaymentPlanData $paymentPlan = null;
 
+    /** Affiliate and campaign tracking identifiers */
     public ?TrackingData $tracking = null;
 
+    /** Link expiration, e.g. "24h", "7d" or an absolute date (default "24h") */
     public string $validUntil = '24h';
 
+    /** Custom redirect URLs (thank-you, fallback, upgrade-error) */
     public ?UrlsData $urls = null;
 
-    /** @var array<string, mixed>|null */
+    /**
+     * Product title/description substitutions used on the order form
+     *
+     * @var array<string, mixed>|null
+     */
     public ?array $placeholders = null;
 
+    /** Additional order-form configuration (order form, voucher, payment methods) */
     public ?SettingsData $settings = null;
 
-    /** @var array<string, mixed>|null */
+    /**
+     * Additional products offered alongside the main product
+     *
+     * @var array<int, BuyUrlAddonData>|null
+     */
     public ?array $addons = null;
 
     public function getEndpoint(): string

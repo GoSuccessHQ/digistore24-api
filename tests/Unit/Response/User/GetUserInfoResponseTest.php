@@ -14,20 +14,34 @@ final class GetUserInfoResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'user_id' => '12345',
-                'email' => 'vendor@example.com',
-                'first_name' => 'John',
-                'last_name' => 'Vendor',
-                'company_name' => 'Vendor Corp',
-                'account_type' => 'premium',
+                'user_id' => 12345,
+                'user_name' => 'john.vendor',
+                'granted_roles' => 'user,affiliate,merchant',
+                'granted_roles_msg' => 'User,Affiliate,Vendor',
             ],
         ];
         $response = GetUserInfoResponse::fromArray($data);
 
         $this->assertInstanceOf(GetUserInfoResponse::class, $response);
-        $this->assertSame('12345', $response->userInfo['user_id']);
-        $this->assertSame('vendor@example.com', $response->userInfo['email']);
-        $this->assertSame('premium', $response->userInfo['account_type']);
+        $this->assertSame(12345, $response->userId);
+        $this->assertSame('john.vendor', $response->userName);
+        $this->assertSame('user,affiliate,merchant', $response->grantedRoles);
+        $this->assertSame('User,Affiliate,Vendor', $response->grantedRolesMsg);
+        $this->assertSame(12345, $response->userInfo['user_id']);
+    }
+
+    public function test_coerces_string_user_id(): void
+    {
+        $data = [
+            'data' => [
+                'user_id' => '67890',
+                'user_name' => 'jane.vendor',
+            ],
+        ];
+        $response = GetUserInfoResponse::fromArray($data);
+
+        $this->assertSame(67890, $response->userId);
+        $this->assertSame('jane.vendor', $response->userName);
     }
 
     public function test_can_create_from_response(): void
@@ -36,9 +50,8 @@ final class GetUserInfoResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'user_id' => '67890',
-                    'email' => 'test@vendor.com',
-                    'first_name' => 'Jane',
+                    'user_id' => 67890,
+                    'user_name' => 'jane.vendor',
                 ],
             ],
             headers: [],
@@ -48,8 +61,8 @@ final class GetUserInfoResponseTest extends TestCase
         $response = GetUserInfoResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(GetUserInfoResponse::class, $response);
-        $this->assertSame('67890', $response->userInfo['user_id']);
-        $this->assertSame('Jane', $response->userInfo['first_name']);
+        $this->assertSame(67890, $response->userId);
+        $this->assertSame('jane.vendor', $response->userName);
     }
 
     public function test_has_raw_response(): void
@@ -58,7 +71,7 @@ final class GetUserInfoResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'user_id' => '11111',
+                    'user_id' => 11111,
                 ],
             ],
             headers: [],

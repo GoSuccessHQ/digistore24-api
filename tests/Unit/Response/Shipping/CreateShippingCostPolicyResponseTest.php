@@ -15,16 +15,14 @@ final class CreateShippingCostPolicyResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'shipping_cost_policy_id' => 'SCP123',
-                'name' => 'EU Standard Shipping',
-                'cost' => 5.99,
-                'currency' => 'EUR',
+                'policy_id' => 123,
             ],
         ];
         $response = CreateShippingCostPolicyResponse::fromArray($data);
 
         $this->assertInstanceOf(CreateShippingCostPolicyResponse::class, $response);
-        $this->assertSame('SCP123', $response->getShippingCostPolicyId());
+        $this->assertSame(123, $response->policyId);
+        $this->assertSame(123, $response->data['policy_id']);
     }
 
     public function test_can_create_from_response(): void
@@ -34,7 +32,7 @@ final class CreateShippingCostPolicyResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'shipping_cost_policy_id' => 'SCP999',
+                    'policy_id' => 999,
                 ],
             ],
             headers: [],
@@ -44,6 +42,7 @@ final class CreateShippingCostPolicyResponseTest extends TestCase
         $response = CreateShippingCostPolicyResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(CreateShippingCostPolicyResponse::class, $response);
+        $this->assertSame(999, $response->policyId);
     }
 
     public function test_has_raw_response(): void

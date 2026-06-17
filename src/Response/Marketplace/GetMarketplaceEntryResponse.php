@@ -6,6 +6,7 @@ namespace GoSuccess\Digistore24\Api\Response\Marketplace;
 
 use DateTimeImmutable;
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
+use GoSuccess\Digistore24\Api\DTO\MarketplaceEntryData;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
@@ -80,6 +81,17 @@ final class GetMarketplaceEntryResponse extends AbstractResponse
 
     public ?int $statsCountOrders = null;
 
+    /** The marketplace entry as a typed DTO */
+    public ?MarketplaceEntryData $entry = null;
+
+    /**
+     * The complete data payload as returned by the API, so every field is
+     * accessible even when not surfaced as a typed property above.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
+
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
         $d = self::extractInnerData(data: $data);
@@ -126,6 +138,8 @@ final class GetMarketplaceEntryResponse extends AbstractResponse
         $response->statsCountAffiliatesWithSales = TypeConverter::toInt($d['stats_count_affiliates_with_sales'] ?? null);
         $response->statsConversionRate = TypeConverter::toFloat($d['stats_conversion_rate'] ?? null);
         $response->statsCountOrders = TypeConverter::toInt($d['stats_count_orders'] ?? null);
+        $response->entry = $d === [] ? null : MarketplaceEntryData::fromArray($d);
+        $response->data = $d;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

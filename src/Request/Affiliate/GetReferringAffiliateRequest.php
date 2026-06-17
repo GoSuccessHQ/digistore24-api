@@ -10,15 +10,15 @@ use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 /**
  * Get Referring Affiliate Request
  *
- * Retrieves the referring affiliate for a specific purchase.
+ * Retrieves the referring partner (referrer) for a given affiliate.
  */
 final class GetReferringAffiliateRequest extends AbstractRequest
 {
     /**
-     * @param string $purchaseId The purchase ID
+     * @param string $affiliateId ID of the affiliate to check for a referral
      */
     public function __construct(
-        private string $purchaseId,
+        private string $affiliateId,
     ) {
     }
 
@@ -34,6 +34,6 @@ final class GetReferringAffiliateRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return ['purchase_id' => $this->purchaseId];
+        return ['affiliate_id' => $this->affiliateId];
     }
 }

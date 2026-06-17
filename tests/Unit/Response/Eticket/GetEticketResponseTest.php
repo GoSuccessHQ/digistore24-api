@@ -11,126 +11,94 @@ use PHPUnit\Framework\TestCase;
 
 final class GetEticketResponseTest extends TestCase
 {
+    /** @return array<string, mixed> */
+    private function sampleEticket(): array
+    {
+        return [
+            'id' => 42,
+            'download_url' => 'https://example.com/ticket/42.pdf',
+            'duration' => '1 day',
+            'date_id' => 7,
+            'date' => '2024-06-15',
+            'hint' => '09:00 - 17:00',
+            'location_id' => 1001,
+            'template_id' => 2002,
+            'purchase_item_id' => 3003,
+            'no' => 1,
+            'count' => 2,
+            'email' => 'buyer@example.com',
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'salutation' => 'M',
+            'title' => 'Dr.',
+            'language' => 'en',
+            'used_at' => null,
+            'is_blocked' => 'N',
+            'note' => 'VIP',
+            'product_id' => 12345,
+        ];
+    }
+
     public function test_can_create_from_array(): void
     {
-        $data = [
-            'order_id' => 'ORDER123',
-            'ticket_id' => 'TICKET456',
-            'product_id' => '12345',
-            'product_name' => 'Conference 2024',
-            'location_id' => 'LOC001',
-            'location_name' => 'Convention Center',
-            'template_id' => 'TPL001',
-            'event_date' => '2024-06-15',
-            'days' => 2,
-            'note' => '09:00 - 17:00',
-            'buyer_email' => 'buyer@example.com',
-            'buyer_first_name' => 'John',
-            'buyer_last_name' => 'Doe',
-            'is_validated' => false,
-            'validated_at' => null,
-            'created_at' => '2024-01-15 10:30:00',
-        ];
+        $response = GetEticketResponse::fromArray(['eticket' => $this->sampleEticket()]);
 
-        $response = GetEticketResponse::fromArray($data);
-
-        $this->assertInstanceOf(EticketDetail::class, $response->ticket);
-        $this->assertSame('ORDER123', $response->ticket->orderId);
-        $this->assertSame('TICKET456', $response->ticket->ticketId);
-        $this->assertSame('Conference 2024', $response->ticket->productName);
+        $this->assertInstanceOf(EticketDetail::class, $response->eticket);
+        $this->assertSame(42, $response->eticket->id);
+        $this->assertSame('https://example.com/ticket/42.pdf', $response->eticket->downloadUrl);
+        $this->assertSame(1001, $response->eticket->locationId);
+        $this->assertSame('John', $response->eticket->firstName);
+        $this->assertSame(12345, $response->eticket->productId);
+        $this->assertArrayHasKey('hint', $response->data);
     }
 
     public function test_can_create_from_response(): void
     {
         $httpResponse = new Response(
             200,
-            ['data' => [
-                'order_id' => 'ORDER789',
-                'ticket_id' => 'TICKET999',
-                'product_id' => '67890',
-                'product_name' => 'Workshop 2024',
-                'location_id' => 'LOC002',
-                'location_name' => 'Training Room',
-                'template_id' => 'TPL002',
-                'event_date' => '2024-07-20',
-                'days' => 1,
-                'note' => null,
-                'buyer_email' => 'jane@example.com',
-                'buyer_first_name' => 'Jane',
-                'buyer_last_name' => 'Smith',
-                'is_validated' => true,
-                'validated_at' => '2024-07-20 09:15:00',
-                'created_at' => '2024-02-01 14:20:00',
-            ]],
+            ['data' => ['eticket' => [
+                'id' => 99,
+                'download_url' => 'https://example.com/ticket/99.pdf',
+                'location_id' => 2,
+                'template_id' => 3,
+                'date' => '2024-07-20',
+                'used_at' => '2024-07-20 09:15:00',
+                'is_blocked' => 'Y',
+                'product_id' => 67890,
+            ]]],
         );
 
         $response = GetEticketResponse::fromResponse($httpResponse);
 
-        $this->assertSame('ORDER789', $response->ticket->orderId);
-        $this->assertSame('Workshop 2024', $response->ticket->productName);
-        $this->assertTrue($response->ticket->isValidated);
-        $this->assertInstanceOf(\DateTimeInterface::class, $response->ticket->validatedAt);
+        $this->assertSame(99, $response->eticket->id);
+        $this->assertTrue($response->eticket->isBlocked);
+        $this->assertInstanceOf(\DateTimeInterface::class, $response->eticket->usedAt);
+        $this->assertInstanceOf(\DateTimeInterface::class, $response->eticket->date);
     }
 
     public function test_eticket_detail_from_array(): void
     {
-        $data = [
-            'order_id' => 'ORDER111',
-            'ticket_id' => 'TICKET222',
-            'product_id' => '11111',
-            'product_name' => 'Seminar',
-            'location_id' => 'LOC003',
-            'location_name' => 'Online',
-            'template_id' => 'TPL003',
-            'event_date' => '2024-08-10',
-            'days' => 3,
-            'note' => 'Zoom link will be sent',
-            'buyer_email' => 'test@example.com',
-            'buyer_first_name' => 'Test',
-            'buyer_last_name' => 'User',
-            'is_validated' => false,
-            'validated_at' => null,
-            'created_at' => '2024-03-01 12:00:00',
-        ];
+        $detail = EticketDetail::fromArray($this->sampleEticket());
 
-        $detail = EticketDetail::fromArray($data);
-
-        $this->assertSame('ORDER111', $detail->orderId);
-        $this->assertSame('TICKET222', $detail->ticketId);
-        $this->assertSame('Seminar', $detail->productName);
-        $this->assertSame(3, $detail->days);
-        $this->assertSame('Zoom link will be sent', $detail->note);
-        $this->assertFalse($detail->isValidated);
-        $this->assertNull($detail->validatedAt);
-        $this->assertInstanceOf(\DateTimeInterface::class, $detail->eventDate);
-        $this->assertInstanceOf(\DateTimeInterface::class, $detail->createdAt);
+        $this->assertSame(42, $detail->id);
+        $this->assertSame('1 day', $detail->duration);
+        $this->assertSame('VIP', $detail->note);
+        $this->assertSame('Dr.', $detail->title);
+        $this->assertFalse($detail->isBlocked);
+        $this->assertNull($detail->usedAt);
+        $this->assertInstanceOf(\DateTimeInterface::class, $detail->date);
     }
 
-    public function test_handles_validated_ticket(): void
+    public function test_handles_used_ticket(): void
     {
-        $data = [
-            'order_id' => 'ORDER333',
-            'ticket_id' => 'TICKET444',
-            'product_id' => '33333',
-            'product_name' => 'Event',
-            'location_id' => 'LOC004',
-            'location_name' => 'Arena',
-            'template_id' => 'TPL004',
-            'event_date' => '2024-09-01',
-            'days' => 1,
-            'note' => 'Gate A',
-            'buyer_email' => 'buyer2@example.com',
-            'buyer_first_name' => 'Bob',
-            'buyer_last_name' => 'Johnson',
-            'is_validated' => true,
-            'validated_at' => '2024-09-01 18:30:00',
-            'created_at' => '2024-04-01 10:00:00',
-        ];
+        $data = $this->sampleEticket();
+        $data['used_at'] = '2024-09-01 18:30:00';
+        $data['is_blocked'] = 'Y';
 
         $detail = EticketDetail::fromArray($data);
 
-        $this->assertTrue($detail->isValidated);
-        $this->assertInstanceOf(\DateTimeInterface::class, $detail->validatedAt);
-        $this->assertSame('2024-09-01 18:30:00', $detail->validatedAt->format('Y-m-d H:i:s'));
+        $this->assertTrue($detail->isBlocked);
+        $this->assertInstanceOf(\DateTimeInterface::class, $detail->usedAt);
+        $this->assertSame('2024-09-01 18:30:00', $detail->usedAt->format('Y-m-d H:i:s'));
     }
 }

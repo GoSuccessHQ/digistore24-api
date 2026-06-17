@@ -9,9 +9,13 @@ use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
- * Request Api Key Response
+ * Request API Key Response
  *
- * Response object for the requestApiKey API endpoint.
+ * Response object for the requestApiKey API endpoint. Mirrors the spec's `data`
+ * object: the URL the user must visit to confirm the new key and the token used
+ * later to retrieve the key via retrieveApiKey.
+ *
+ * @link https://digistore24.com/api/docs/paths/requestApiKey.yaml
  */
 final class RequestApiKeyResponse extends AbstractResponse
 {
@@ -21,31 +25,22 @@ final class RequestApiKeyResponse extends AbstractResponse
     public string $result = '';
 
     /**
-     * The generated API key
+     * URL to direct the user to in order to create the API key
      */
-    public string $apiKey = '';
+    public ?string $requestUrl = null;
 
     /**
-     * Creation timestamp
+     * Token to save for later retrieval of the API key via retrieveApiKey
      */
-    public ?\DateTimeInterface $createdAt = null;
+    public ?string $requestToken = null;
 
     /**
-     * API key description
-     */
-    public ?string $description = null;
-
-    /**
-     * API key permissions
+     * The complete payload as returned by the API, so every field is accessible
+     * even when not surfaced as a typed property above.
      *
-     * @var array<string>
+     * @var array<string, mixed>
      */
-    public array $permissions = [];
-
-    /**
-     * Rate limit for this API key
-     */
-    public ?int $rateLimit = null;
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
@@ -53,18 +48,9 @@ final class RequestApiKeyResponse extends AbstractResponse
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->apiKey = is_string($innerData['api_key'] ?? null) ? $innerData['api_key'] : '';
-        $response->createdAt = TypeConverter::toDateTime($innerData['created_at'] ?? null);
-        $response->description = is_string($innerData['description'] ?? null) ? $innerData['description'] : null;
-
-        $permissions = $innerData['permissions'] ?? [];
-        if (is_array($permissions)) {
-            $response->permissions = array_filter($permissions, 'is_string');
-        } else {
-            $response->permissions = [];
-        }
-
-        $response->rateLimit = TypeConverter::toInt($innerData['rate_limit'] ?? null);
+        $response->requestUrl = TypeConverter::toString($innerData['request_url'] ?? null);
+        $response->requestToken = TypeConverter::toString($innerData['request_token'] ?? null);
+        $response->data = $innerData;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

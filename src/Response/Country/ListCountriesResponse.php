@@ -12,7 +12,11 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
 /**
  * List Countries Response
  *
- * Contains array of countries with localized names and VAT information.
+ * The API returns the countries set up in Digistore24 as a map of two-letter
+ * ISO codes to localized country names. They are exposed here both as a typed
+ * {@see CountryData} list and as the raw `code => name` map.
+ *
+ * @link https://digistore24.com/api/docs/paths/listCountries.yaml
  */
 final class ListCountriesResponse extends AbstractResponse
 {
@@ -22,14 +26,21 @@ final class ListCountriesResponse extends AbstractResponse
     public string $result = '';
 
     /**
-     * Array of countries
+     * Countries as a typed list
      *
      * @var array<int, CountryData>
      */
     public array $countries = [];
 
     /**
-     * Total number of countries
+     * Raw map of ISO country code to localized country name
+     *
+     * @var array<string, string>
+     */
+    public array $countryMap = [];
+
+    /**
+     * Total number of countries returned
      */
     public int $total = 0;
 
@@ -37,30 +48,38 @@ final class ListCountriesResponse extends AbstractResponse
     {
         $innerData = self::extractInnerData(data: $data);
 
-        $countriesData = $innerData['countries'] ?? [];
-        if (! is_array($countriesData)) {
-            $countriesData = [];
-        }
+        $countries = [];
+        $countryMap = [];
 
-        /** @var array<int, CountryData> $countries */
-        $countries = array_values(array_map(
-            function (mixed $item): CountryData {
-                if (! is_array($item)) {
-                    return new CountryData();
-                }
+        foreach ($innerData as $code => $value) {
+            // Skip envelope/meta keys that may travel alongside the map.
+            if (in_array($code, ['result', 'api_version', 'current_time', 'runtime_seconds'], true)) {
+                continue;
+            }
 
+            // The live API delivers a flat `code => name` map, but tolerate a
+            // list of objects ({code, name}) as well for forward compatibility.
+            if (is_array($value)) {
                 /** @var array<string, mixed> $itemData */
-                $itemData = $item;
+                $itemData = $value;
+                $country = CountryData::fromArray($itemData);
+                $countries[] = $country;
+                $countryMap[$country->code] = $country->name;
 
-                return CountryData::fromArray($itemData);
-            },
-            $countriesData,
-        ));
+                continue;
+            }
+
+            $codeString = (string)$code;
+            $name = TypeConverter::toString($value) ?? '';
+            $countryMap[$codeString] = $name;
+            $countries[] = CountryData::fromArray(['code' => $codeString, 'name' => $name]);
+        }
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
         $response->countries = $countries;
-        $response->total = TypeConverter::toInt($innerData['total'] ?? null) ?? 0;
+        $response->countryMap = $countryMap;
+        $response->total = count($countries);
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

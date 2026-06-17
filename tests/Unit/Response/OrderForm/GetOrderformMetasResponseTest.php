@@ -14,16 +14,24 @@ final class GetOrderformMetasResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'meta_key_1' => 'value1',
-                'meta_key_2' => 'value2',
-                'custom_field' => 'custom value',
+                'placeholders' => [
+                    'images' => ['logo' => 'Logo'],
+                    'other' => ['name' => 'Name'],
+                ],
+                'options' => [
+                    'background_style' => ['white' => 'White', 'blue' => 'Blue'],
+                    'step_count' => ['1' => 'One', '2' => 'Two', '3' => 'Three'],
+                ],
+                'form_metas' => ['extra' => 'value'],
             ],
         ];
         $response = GetOrderformMetasResponse::fromArray($data);
 
         $this->assertInstanceOf(GetOrderformMetasResponse::class, $response);
-        $this->assertArrayHasKey('meta_key_1', $response->data);
-        $this->assertSame('value1', $response->data['meta_key_1']);
+        $this->assertArrayHasKey('images', $response->placeholders);
+        $this->assertArrayHasKey('background_style', $response->options);
+        $this->assertSame('value', $response->formMetas['extra']);
+        $this->assertArrayHasKey('placeholders', $response->data);
     }
 
     public function test_can_create_from_response(): void
@@ -33,8 +41,9 @@ final class GetOrderformMetasResponseTest extends TestCase
             data: [
                 'data' => [
                     'data' => [
-                        'title' => 'Order Form Title',
-                        'description' => 'Form description',
+                        'placeholders' => ['other' => ['name' => 'Name']],
+                        'options' => ['tab_style' => ['bigtabs' => 'Big Tabs']],
+                        'form_metas' => [],
                     ],
                 ],
             ],
@@ -45,7 +54,7 @@ final class GetOrderformMetasResponseTest extends TestCase
         $response = GetOrderformMetasResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(GetOrderformMetasResponse::class, $response);
-        $this->assertSame('Order Form Title', $response->data['title']);
+        $this->assertArrayHasKey('tab_style', $response->options);
     }
 
     public function test_has_raw_response(): void

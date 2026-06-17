@@ -14,16 +14,35 @@ final class StatsExpectedPayoutsResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'total_expected' => 5000.00,
-                'payout_count' => 15,
-                'next_payout_date' => '2024-02-01',
+                'total_earnings' => ['EUR' => 5000.00, 'USD' => 1200.00],
+                'paidout_amount' => ['EUR' => 3000.00],
+                'pending_amount' => ['EUR' => 2000.00],
+                'future_amounts' => [
+                    '2024-02-01' => [
+                        'amount' => 2000.00,
+                        'can_payout' => 'Y',
+                        'treshold' => 50.0,
+                        'note' => '',
+                    ],
+                ],
+                'by_reseller' => [
+                    ['reseller_id' => 1, 'reseller_name' => 'Digistore24'],
+                ],
+                'note' => ['message' => 'All good', 'reasons' => []],
+                'call_duration_ms' => ['total' => 12.5],
             ],
         ];
         $response = StatsExpectedPayoutsResponse::fromArray($data);
 
         $this->assertInstanceOf(StatsExpectedPayoutsResponse::class, $response);
-        $this->assertArrayHasKey('total_expected', $response->data);
-        $this->assertSame(5000.00, $response->data['total_expected']);
+        $this->assertSame(5000.00, $response->totalEarnings['EUR']);
+        $this->assertSame(3000.00, $response->paidoutAmount['EUR']);
+        $this->assertSame(2000.00, $response->pendingAmount['EUR']);
+        $this->assertArrayHasKey('2024-02-01', $response->futureAmounts);
+        $this->assertCount(1, $response->byReseller);
+        $this->assertSame('All good', $response->note['message']);
+        $this->assertSame(12.5, $response->callDurationMs['total']);
+        $this->assertArrayHasKey('total_earnings', $response->data);
     }
 
     public function test_can_create_from_response(): void
@@ -32,8 +51,7 @@ final class StatsExpectedPayoutsResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'total_expected' => 7500.00,
-                    'payout_count' => 20,
+                    'total_earnings' => ['EUR' => 7500.00],
                 ],
             ],
             headers: [],
@@ -43,7 +61,7 @@ final class StatsExpectedPayoutsResponseTest extends TestCase
         $response = StatsExpectedPayoutsResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(StatsExpectedPayoutsResponse::class, $response);
-        $this->assertSame(7500.00, $response->data['total_expected']);
+        $this->assertSame(7500.00, $response->totalEarnings['EUR']);
     }
 
     public function test_has_raw_response(): void

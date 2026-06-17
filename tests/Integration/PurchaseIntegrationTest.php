@@ -42,8 +42,14 @@ final class PurchaseIntegrationTest extends IntegrationTestCase
 
         $this->assertInstanceOf(GetPurchaseResponse::class, $response);
         $this->assertNotEmpty($response->purchaseId);
-        $this->assertNotEmpty($response->productId);
-        $this->assertNotEmpty($response->buyerEmail);
+
+        // Product details now live on the typed line items.
+        $this->assertNotEmpty($response->items);
+        $this->assertNotNull($response->items[0]->productId);
+
+        // Buyer details now live on the typed buyer object.
+        $this->assertNotNull($response->buyer);
+        $this->assertNotEmpty($response->buyer->email);
     }
 
     /**

@@ -11,7 +11,9 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
 /**
  * Get Referring Affiliate Response
  *
- * Response object for retrieving referring affiliate information.
+ * Response object describing the referring partner (referrer) of an affiliate.
+ *
+ * @link https://digistore24.com/api/docs/paths/getReferringAffiliate.yaml
  */
 final class GetReferringAffiliateResponse extends AbstractResponse
 {
@@ -21,34 +23,47 @@ final class GetReferringAffiliateResponse extends AbstractResponse
     public string $result = '';
 
     /**
-     * Affiliate ID
+     * ID of the referred affiliate
      */
     public ?int $affiliateId = null;
 
     /**
-     * Affiliate code
-     */
-    public ?string $affiliateCode = null;
-
-    /**
-     * Affiliate email
-     */
-    public ?string $affiliateEmail = null;
-
-    /**
-     * Affiliate name
+     * Username of the referred affiliate
      */
     public ?string $affiliateName = null;
 
     /**
-     * Referral date
+     * ID of the referring partner
      */
-    public ?\DateTimeInterface $referralDate = null;
+    public ?int $referrerId = null;
 
     /**
-     * Commission earned
+     * Username of the referring partner
      */
-    public ?float $commissionEarned = null;
+    public ?string $referrerName = null;
+
+    /**
+     * Commission percentage
+     */
+    public ?float $commission = null;
+
+    /**
+     * When the referral was created
+     */
+    public ?\DateTimeInterface $createdAt = null;
+
+    /**
+     * ID of the user who created the referral
+     */
+    public ?int $createdBy = null;
+
+    /**
+     * The complete referral payload as returned by the API, so every field is
+     * accessible even when not surfaced as a typed property above.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
@@ -57,11 +72,13 @@ final class GetReferringAffiliateResponse extends AbstractResponse
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
         $response->affiliateId = TypeConverter::toInt($innerData['affiliate_id'] ?? null);
-        $response->affiliateCode = is_string($innerData['affiliate_code'] ?? null) ? $innerData['affiliate_code'] : null;
-        $response->affiliateEmail = is_string($innerData['affiliate_email'] ?? null) ? $innerData['affiliate_email'] : null;
-        $response->affiliateName = is_string($innerData['affiliate_name'] ?? null) ? $innerData['affiliate_name'] : null;
-        $response->referralDate = TypeConverter::toDateTime($innerData['referral_date'] ?? null);
-        $response->commissionEarned = TypeConverter::toFloat($innerData['commission_earned'] ?? null);
+        $response->affiliateName = TypeConverter::toString($innerData['affiliate_name'] ?? null);
+        $response->referrerId = TypeConverter::toInt($innerData['referrer_id'] ?? null);
+        $response->referrerName = TypeConverter::toString($innerData['referrer_name'] ?? null);
+        $response->commission = TypeConverter::toFloat($innerData['commission'] ?? null);
+        $response->createdAt = TypeConverter::toDateTime($innerData['created_at'] ?? null);
+        $response->createdBy = TypeConverter::toInt($innerData['created_by'] ?? null);
+        $response->data = $innerData;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

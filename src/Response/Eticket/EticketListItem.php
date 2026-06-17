@@ -4,66 +4,98 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Response\Eticket;
 
+use DateTimeInterface;
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * E-Ticket List Item
  *
- * Represents a summary of an e-ticket in a list.
+ * Represents a single e-ticket in the listEtickets result. Carries the same
+ * field set as a full e-ticket record; field names mirror the API snake_case
+ * keys.
+ *
+ * @link https://digistore24.com/api/docs/paths/listEtickets.yaml
  */
 final class EticketListItem
 {
+    /** E-ticket ID */
+    public int $id { get => TypeConverter::toInt($this->data['id'] ?? null, 0) ?? 0; }
+
+    /** PDF download URL */
+    public string $downloadUrl { get => TypeConverter::toString($this->data['download_url'] ?? null, '') ?? ''; }
+
+    /** Event duration description (nullable) */
+    public ?string $duration { get => isset($this->data['duration']) ? TypeConverter::toString($this->data['duration']) : null; }
+
+    /** Date ID */
+    public int $dateId { get => TypeConverter::toInt($this->data['date_id'] ?? null, 0) ?? 0; }
+
+    /** Event date (Y-m-d) */
+    public ?DateTimeInterface $date { get => TypeConverter::toDateTime($this->data['date'] ?? null); }
+
+    /** Hint / time reference */
+    public string $hint { get => TypeConverter::toString($this->data['hint'] ?? null, '') ?? ''; }
+
+    /** Location ID */
+    public int $locationId { get => TypeConverter::toInt($this->data['location_id'] ?? null, 0) ?? 0; }
+
+    /** Template ID */
+    public int $templateId { get => TypeConverter::toInt($this->data['template_id'] ?? null, 0) ?? 0; }
+
+    /** Purchase item ID */
+    public int $purchaseItemId { get => TypeConverter::toInt($this->data['purchase_item_id'] ?? null, 0) ?? 0; }
+
+    /** Sequence number of the ticket within the purchase item */
+    public int $no { get => TypeConverter::toInt($this->data['no'] ?? null, 0) ?? 0; }
+
+    /** Number of admissions covered by this ticket */
+    public int $count { get => TypeConverter::toInt($this->data['count'] ?? null, 0) ?? 0; }
+
+    /** Buyer email */
+    public string $email { get => TypeConverter::toString($this->data['email'] ?? null, '') ?? ''; }
+
+    /** Buyer first name */
+    public string $firstName { get => TypeConverter::toString($this->data['first_name'] ?? null, '') ?? ''; }
+
+    /** Buyer last name */
+    public string $lastName { get => TypeConverter::toString($this->data['last_name'] ?? null, '') ?? ''; }
+
+    /** Salutation (M or F) */
+    public string $salutation { get => TypeConverter::toString($this->data['salutation'] ?? null, '') ?? ''; }
+
+    /** Title (nullable) */
+    public ?string $title { get => isset($this->data['title']) ? TypeConverter::toString($this->data['title']) : null; }
+
+    /** Language code */
+    public string $language { get => TypeConverter::toString($this->data['language'] ?? null, '') ?? ''; }
+
+    /** Timestamp when the ticket was scanned/used (nullable) */
+    public ?DateTimeInterface $usedAt { get => ! empty($this->data['used_at']) ? TypeConverter::toDateTime($this->data['used_at']) : null; }
+
+    /** Whether the ticket is blocked */
+    public bool $isBlocked { get => TypeConverter::toBool($this->data['is_blocked'] ?? null, false) ?? false; }
+
+    /** Note (nullable) */
+    public ?string $note { get => isset($this->data['note']) ? TypeConverter::toString($this->data['note']) : null; }
+
+    /** Product ID */
+    public int $productId { get => TypeConverter::toInt($this->data['product_id'] ?? null, 0) ?? 0; }
+
+    /**
+     * @param array<string, mixed> $data Raw e-ticket record from the API
+     */
     public function __construct(
-        public readonly string $orderId,
-        public readonly string $ticketId,
-        public readonly string $productId,
-        public readonly string $productName,
-        public readonly string $locationId,
-        public readonly string $locationName,
-        public readonly \DateTimeInterface $eventDate,
-        public readonly int $days,
-        public readonly string $buyerEmail,
-        public readonly string $buyerFirstName,
-        public readonly string $buyerLastName,
-        public readonly bool $isValidated,
-        public readonly ?\DateTimeInterface $validatedAt,
-        public readonly \DateTimeInterface $createdAt,
+        public readonly array $data,
     ) {
     }
 
-    /** @param array<string, mixed> $data */
+    /**
+     * @param array<string, mixed> $data
+     * @return static
+     */
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
-        $orderId = $data['order_id'] ?? '';
-        $ticketId = $data['ticket_id'] ?? '';
-        $productId = $data['product_id'] ?? '';
-        $productName = $data['product_name'] ?? '';
-        $locationId = $data['location_id'] ?? '';
-        $locationName = $data['location_name'] ?? '';
-        $eventDate = $data['event_date'] ?? 'now';
-        $days = $data['days'] ?? 1;
-        $buyerEmail = $data['buyer_email'] ?? '';
-        $buyerFirstName = $data['buyer_first_name'] ?? '';
-        $buyerLastName = $data['buyer_last_name'] ?? '';
-        $isValidated = $data['is_validated'] ?? false;
-        $validatedAt = $data['validated_at'] ?? null;
-        $createdAt = $data['created_at'] ?? 'now';
-
-        return new self(
-            orderId: is_string($orderId) ? $orderId : '',
-            ticketId: is_string($ticketId) ? $ticketId : '',
-            productId: is_string($productId) ? $productId : '',
-            productName: is_string($productName) ? $productName : '',
-            locationId: is_string($locationId) ? $locationId : '',
-            locationName: is_string($locationName) ? $locationName : '',
-            eventDate: new \DateTimeImmutable(is_string($eventDate) ? $eventDate : 'now'),
-            days: is_int($days) ? $days : 1,
-            buyerEmail: is_string($buyerEmail) ? $buyerEmail : '',
-            buyerFirstName: is_string($buyerFirstName) ? $buyerFirstName : '',
-            buyerLastName: is_string($buyerLastName) ? $buyerLastName : '',
-            isValidated: is_bool($isValidated) ? $isValidated : false,
-            validatedAt: $validatedAt !== null && is_string($validatedAt) ? new \DateTimeImmutable($validatedAt) : null,
-            createdAt: new \DateTimeImmutable(is_string($createdAt) ? $createdAt : 'now'),
-        );
+        return new self($data);
     }
 }

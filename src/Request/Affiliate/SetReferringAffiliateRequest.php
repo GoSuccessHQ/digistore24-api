@@ -9,17 +9,20 @@ use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 /**
  * Set Referring Affiliate Request
  *
- * Assigns a referring affiliate to a specific purchase.
+ * Assigns a referring partner (referrer) to an affiliate. The referrer earns a
+ * share of the affiliate's commission.
  */
 final class SetReferringAffiliateRequest extends AbstractRequest
 {
     /**
-     * @param string $purchaseId The purchase ID
-     * @param string $affiliateId The affiliate ID to assign
+     * @param string $referrerId The partner bringing affiliates
+     * @param string $affiliateId The affiliate possibly referred by the partner
+     * @param float|null $commission The percentage of the affiliate commission the vendor will pay to the referring partner
      */
     public function __construct(
-        private string $purchaseId,
+        private string $referrerId,
         private string $affiliateId,
+        private ?float $commission = null,
     ) {
     }
 
@@ -30,9 +33,15 @@ final class SetReferringAffiliateRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return [
-            'purchase_id' => $this->purchaseId,
+        $data = [
+            'referrer_id' => $this->referrerId,
             'affiliate_id' => $this->affiliateId,
         ];
+
+        if ($this->commission !== null) {
+            $data['commission'] = $this->commission;
+        }
+
+        return $data;
     }
 }

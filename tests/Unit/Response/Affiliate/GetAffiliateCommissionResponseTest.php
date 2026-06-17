@@ -16,7 +16,7 @@ final class GetAffiliateCommissionResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'affiliations' => [
+                'commissions' => [
                     [
                         'commission_rate' => '10.00',
                         'commission_currency' => 'EUR',
@@ -54,24 +54,24 @@ final class GetAffiliateCommissionResponseTest extends TestCase
         $this->assertInstanceOf(GetAffiliateCommissionResponse::class, $response);
         $this->assertSame('918', $response->affiliateId);
         $this->assertSame('GoSuccess', $response->affiliateName);
-        $this->assertCount(2, $response->affiliations);
+        $this->assertCount(2, $response->commissions);
 
-        $firstAffiliation = $response->affiliations[0];
-        $this->assertInstanceOf(AffiliationData::class, $firstAffiliation);
-        $this->assertSame('10.00', $firstAffiliation->commissionRate);
-        $this->assertSame('EUR', $firstAffiliation->commissionCurrency);
-        $this->assertSame('14137', $firstAffiliation->productId);
-        $this->assertFalse($firstAffiliation->productIsActive);
-        $this->assertFalse($firstAffiliation->isOnFirstPmntOnly);
-        $this->assertSame(AffiliateApprovalStatus::APPROVED, $firstAffiliation->approvalStatus);
-        $this->assertSame('Genehmigt', $firstAffiliation->approvalStatusMsg);
+        $firstCommission = $response->commissions[0];
+        $this->assertInstanceOf(AffiliationData::class, $firstCommission);
+        $this->assertSame('10.00', $firstCommission->commissionRate);
+        $this->assertSame('EUR', $firstCommission->commissionCurrency);
+        $this->assertSame('14137', $firstCommission->productId);
+        $this->assertFalse($firstCommission->productIsActive);
+        $this->assertFalse($firstCommission->isOnFirstPmntOnly);
+        $this->assertSame(AffiliateApprovalStatus::APPROVED, $firstCommission->approvalStatus);
+        $this->assertSame('Genehmigt', $firstCommission->approvalStatusMsg);
 
-        $secondAffiliation = $response->affiliations[1];
-        $this->assertSame('50.00', $secondAffiliation->commissionRate);
-        $this->assertSame('406040', $secondAffiliation->productId);
-        $this->assertTrue($secondAffiliation->productIsActive);
-        $this->assertTrue($secondAffiliation->isOnFirstPmntOnly);
-        $this->assertSame(AffiliateApprovalStatus::PENDING, $secondAffiliation->approvalStatus);
+        $secondCommission = $response->commissions[1];
+        $this->assertSame('50.00', $secondCommission->commissionRate);
+        $this->assertSame('406040', $secondCommission->productId);
+        $this->assertTrue($secondCommission->productIsActive);
+        $this->assertTrue($secondCommission->isOnFirstPmntOnly);
+        $this->assertSame(AffiliateApprovalStatus::PENDING, $secondCommission->approvalStatus);
     }
 
     public function test_can_create_from_response(): void
@@ -80,7 +80,7 @@ final class GetAffiliateCommissionResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'affiliations' => [
+                    'commissions' => [
                         [
                             'commission_rate' => '20.00',
                             'commission_currency' => 'USD',
@@ -108,7 +108,7 @@ final class GetAffiliateCommissionResponseTest extends TestCase
         $this->assertInstanceOf(GetAffiliateCommissionResponse::class, $response);
         $this->assertSame('123', $response->affiliateId);
         $this->assertSame('Test Affiliate', $response->affiliateName);
-        $this->assertCount(1, $response->affiliations);
+        $this->assertCount(1, $response->commissions);
     }
 
     public function test_has_raw_response(): void
@@ -117,7 +117,7 @@ final class GetAffiliateCommissionResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'affiliations' => [],
+                    'commissions' => [],
                     'affiliate_id' => '999',
                     'affiliate_name' => 'Test',
                 ],
@@ -131,11 +131,11 @@ final class GetAffiliateCommissionResponseTest extends TestCase
         $this->assertInstanceOf(Response::class, $response->rawResponse);
     }
 
-    public function test_handles_empty_affiliations(): void
+    public function test_handles_empty_commissions(): void
     {
         $data = [
             'data' => [
-                'affiliations' => [],
+                'commissions' => [],
                 'affiliate_id' => '456',
                 'affiliate_name' => 'Empty Affiliate',
             ],
@@ -145,14 +145,14 @@ final class GetAffiliateCommissionResponseTest extends TestCase
 
         $this->assertSame('456', $response->affiliateId);
         $this->assertSame('Empty Affiliate', $response->affiliateName);
-        $this->assertCount(0, $response->affiliations);
+        $this->assertCount(0, $response->commissions);
     }
 
     public function test_handles_missing_data(): void
     {
         $data = [
             'data' => [
-                'affiliations' => [],
+                'commissions' => [],
             ],
         ];
 
@@ -160,6 +160,6 @@ final class GetAffiliateCommissionResponseTest extends TestCase
 
         $this->assertSame('', $response->affiliateId);
         $this->assertSame('', $response->affiliateName);
-        $this->assertCount(0, $response->affiliations);
+        $this->assertCount(0, $response->commissions);
     }
 }

@@ -9,19 +9,19 @@ use PHPUnit\Framework\TestCase;
 
 final class GetEticketRequestTest extends TestCase
 {
-    public function test_can_create_with_order_id(): void
+    public function test_can_create_with_eticket_id(): void
     {
         $request = new GetEticketRequest(
-            orderId: 'ORDER123',
+            eticketId: '12345678901234567890',
         );
 
-        $this->assertSame('ORDER123', $request->orderId);
+        $this->assertSame('12345678901234567890', $request->eticketId);
     }
 
     public function test_endpoint_returns_correct_value(): void
     {
         $request = new GetEticketRequest(
-            orderId: 'ORDER123',
+            eticketId: '12345678901234567890',
         );
 
         $this->assertSame('/getEticket', $request->getEndpoint());
@@ -30,17 +30,17 @@ final class GetEticketRequestTest extends TestCase
     public function test_to_array_converts_correctly(): void
     {
         $request = new GetEticketRequest(
-            orderId: 'ORDER123',
+            eticketId: '12345678901234567890',
         );
 
         $array = $request->toArray();
-        $this->assertSame('ORDER123', $array['order_id']);
+        $this->assertSame('12345678901234567890', $array['eticket_id']);
     }
 
     public function test_validation_passes_for_valid_data(): void
     {
         $request = new GetEticketRequest(
-            orderId: 'ORDER123',
+            eticketId: '12345678901234567890',
         );
 
         $errors = $request->validate();

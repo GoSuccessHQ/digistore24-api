@@ -15,13 +15,28 @@ final class CreatePaymentplanResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'paymentplan_id' => 'PP123456',
+                'paymentplan_id' => 123456,
+                'rendered_texts' => [
+                    'headline' => 'Pay in installments',
+                    'description' => '12 monthly payments',
+                    'footnote' => 'Terms apply',
+                ],
+                'plan' => [
+                    'id' => 123456,
+                    'first_amount' => 49.99,
+                ],
             ],
         ];
         $response = CreatePaymentplanResponse::fromArray($data);
 
         $this->assertInstanceOf(CreatePaymentplanResponse::class, $response);
-        $this->assertSame('PP123456', $response->getPaymentplanId());
+        $this->assertSame(123456, $response->paymentplanId);
+        $this->assertSame('123456', $response->getPaymentplanId());
+        $this->assertNotNull($response->renderedTexts);
+        $this->assertSame('Pay in installments', $response->renderedTexts->headline);
+        $this->assertSame('12 monthly payments', $response->renderedTexts->description);
+        $this->assertSame('Terms apply', $response->renderedTexts->footnote);
+        $this->assertSame(49.99, $response->plan['first_amount']);
     }
 
     public function test_can_create_from_response(): void
@@ -31,7 +46,7 @@ final class CreatePaymentplanResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'paymentplan_id' => 'PP789012',
+                    'paymentplan_id' => 789012,
                 ],
             ],
             headers: [],
@@ -41,7 +56,8 @@ final class CreatePaymentplanResponseTest extends TestCase
         $response = CreatePaymentplanResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(CreatePaymentplanResponse::class, $response);
-        $this->assertSame('PP789012', $response->getPaymentplanId());
+        $this->assertSame(789012, $response->paymentplanId);
+        $this->assertSame('789012', $response->getPaymentplanId());
     }
 
     public function test_has_raw_response(): void

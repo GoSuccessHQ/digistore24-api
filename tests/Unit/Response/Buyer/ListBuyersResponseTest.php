@@ -15,8 +15,11 @@ final class ListBuyersResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'total' => 2,
-                'buyers' => [
+                'page_no' => 1,
+                'page_size' => 100,
+                'item_count' => 2,
+                'page_count' => 1,
+                'items' => [
                     [
                         'id' => 20,
                         'address_id' => 25,
@@ -61,13 +64,16 @@ final class ListBuyersResponseTest extends TestCase
 
         $response = ListBuyersResponse::fromArray($data);
 
-        $this->assertSame(2, $response->total);
-        $this->assertCount(2, $response->buyers);
-        $this->assertInstanceOf(BuyerData::class, $response->buyers[0]);
-        $this->assertSame(20, $response->buyers[0]->id);
-        $this->assertSame('buyer1@example.com', $response->buyers[0]->email);
-        $this->assertSame('John', $response->buyers[0]->firstName);
-        $this->assertSame('Jane', $response->buyers[1]->firstName);
+        $this->assertSame(2, $response->itemCount);
+        $this->assertSame(1, $response->pageNo);
+        $this->assertSame(100, $response->pageSize);
+        $this->assertSame(1, $response->pageCount);
+        $this->assertCount(2, $response->items);
+        $this->assertInstanceOf(BuyerData::class, $response->items[0]);
+        $this->assertSame(20, $response->items[0]->id);
+        $this->assertSame('buyer1@example.com', $response->items[0]->email);
+        $this->assertSame('John', $response->items[0]->firstName);
+        $this->assertSame('Jane', $response->items[1]->firstName);
     }
 
     public function test_can_create_from_response(): void
@@ -76,8 +82,8 @@ final class ListBuyersResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'total' => 1,
-                    'buyers' => [
+                    'item_count' => 1,
+                    'items' => [
                         [
                             'id' => 100,
                             'address_id' => 150,
@@ -100,23 +106,23 @@ final class ListBuyersResponseTest extends TestCase
 
         $response = ListBuyersResponse::fromResponse($httpResponse);
 
-        $this->assertCount(1, $response->buyers);
-        $this->assertSame(100, $response->buyers[0]->id);
+        $this->assertCount(1, $response->items);
+        $this->assertSame(100, $response->items[0]->id);
     }
 
     public function test_handles_empty_items(): void
     {
         $data = [
             'data' => [
-                'total' => 0,
-                'buyers' => [],
+                'item_count' => 0,
+                'items' => [],
             ],
         ];
 
         $response = ListBuyersResponse::fromArray($data);
 
-        $this->assertCount(0, $response->buyers);
-        $this->assertSame(0, $response->total);
+        $this->assertCount(0, $response->items);
+        $this->assertSame(0, $response->itemCount);
     }
 
     public function test_handles_missing_data(): void
@@ -125,14 +131,14 @@ final class ListBuyersResponseTest extends TestCase
 
         $response = ListBuyersResponse::fromArray($data);
 
-        $this->assertCount(0, $response->buyers);
+        $this->assertCount(0, $response->items);
     }
 
     public function test_has_raw_response(): void
     {
         $httpResponse = new Response(
             statusCode: 200,
-            data: ['data' => ['buyers' => []]],
+            data: ['data' => ['items' => []]],
             headers: [],
             rawBody: 'test',
         );

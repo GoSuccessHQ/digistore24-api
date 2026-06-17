@@ -13,20 +13,23 @@ final class ListEticketsRequestTest extends TestCase
     {
         $request = new ListEticketsRequest();
 
-        $this->assertNull($request->productId);
+        $this->assertNull($request->ownerId);
+        $this->assertNull($request->purchaseId);
+        $this->assertNull($request->firstName);
+        $this->assertNull($request->lastName);
+        $this->assertNull($request->email);
+        $this->assertNull($request->templateId);
         $this->assertNull($request->locationId);
-        $this->assertNull($request->fromDate);
-        $this->assertNull($request->toDate);
-        $this->assertNull($request->onlyValidated);
+        $this->assertNull($request->date);
     }
 
-    public function test_can_create_with_product_filter(): void
+    public function test_can_create_with_purchase_filter(): void
     {
         $request = new ListEticketsRequest(
-            productId: '12345',
+            purchaseId: '12345',
         );
 
-        $this->assertSame('12345', $request->productId);
+        $this->assertSame('12345', $request->purchaseId);
     }
 
     public function test_can_create_with_location_filter(): void
@@ -38,47 +41,40 @@ final class ListEticketsRequestTest extends TestCase
         $this->assertSame('LOC001', $request->locationId);
     }
 
-    public function test_can_create_with_date_filters(): void
+    public function test_can_create_with_date_filter(): void
     {
-        $fromDate = new \DateTimeImmutable('2024-01-01');
-        $toDate = new \DateTimeImmutable('2024-12-31');
+        $date = new \DateTimeImmutable('2024-01-01');
 
         $request = new ListEticketsRequest(
-            fromDate: $fromDate,
-            toDate: $toDate,
+            date: $date,
         );
 
-        $this->assertSame($fromDate, $request->fromDate);
-        $this->assertSame($toDate, $request->toDate);
-    }
-
-    public function test_can_create_with_validated_filter(): void
-    {
-        $request = new ListEticketsRequest(
-            onlyValidated: true,
-        );
-
-        $this->assertTrue($request->onlyValidated);
+        $this->assertSame($date, $request->date);
     }
 
     public function test_can_create_with_all_filters(): void
     {
-        $fromDate = new \DateTimeImmutable('2024-06-01');
-        $toDate = new \DateTimeImmutable('2024-06-30');
+        $date = new \DateTimeImmutable('2024-06-01');
 
         $request = new ListEticketsRequest(
-            productId: '12345',
+            ownerId: 'OWN1',
+            purchaseId: '12345',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john@example.com',
+            templateId: 'TPL1',
             locationId: 'LOC001',
-            fromDate: $fromDate,
-            toDate: $toDate,
-            onlyValidated: false,
+            date: $date,
         );
 
-        $this->assertSame('12345', $request->productId);
+        $this->assertSame('OWN1', $request->ownerId);
+        $this->assertSame('12345', $request->purchaseId);
+        $this->assertSame('John', $request->firstName);
+        $this->assertSame('Doe', $request->lastName);
+        $this->assertSame('john@example.com', $request->email);
+        $this->assertSame('TPL1', $request->templateId);
         $this->assertSame('LOC001', $request->locationId);
-        $this->assertSame($fromDate, $request->fromDate);
-        $this->assertSame($toDate, $request->toDate);
-        $this->assertFalse($request->onlyValidated);
+        $this->assertSame($date, $request->date);
     }
 
     public function test_endpoint_returns_correct_value(): void
@@ -96,59 +92,40 @@ final class ListEticketsRequestTest extends TestCase
         $this->assertEmpty($array);
     }
 
-    public function test_to_array_with_product_id(): void
+    public function test_to_array_wraps_filters_in_search(): void
     {
         $request = new ListEticketsRequest(
-            productId: '12345',
+            purchaseId: '12345',
+            locationId: 'LOC001',
         );
 
         $array = $request->toArray();
 
-        $this->assertSame('12345', $array['product_id']);
+        $this->assertArrayHasKey('search', $array);
+        $search = $array['search'];
+        $this->assertIsArray($search);
+        $this->assertSame('12345', $search['purchase_id']);
+        $this->assertSame('LOC001', $search['location_id']);
     }
 
-    public function test_to_array_with_date_filters(): void
+    public function test_to_array_with_date_filter(): void
     {
-        $fromDate = new \DateTimeImmutable('2024-01-15');
-        $toDate = new \DateTimeImmutable('2024-02-20');
+        $date = new \DateTimeImmutable('2024-01-15');
 
         $request = new ListEticketsRequest(
-            fromDate: $fromDate,
-            toDate: $toDate,
+            date: $date,
         );
 
         $array = $request->toArray();
-
-        $this->assertSame('2024-01-15', $array['from_date']);
-        $this->assertSame('2024-02-20', $array['to_date']);
-    }
-
-    public function test_to_array_with_validated_filter_true(): void
-    {
-        $request = new ListEticketsRequest(
-            onlyValidated: true,
-        );
-
-        $array = $request->toArray();
-
-        $this->assertSame('y', $array['only_validated']);
-    }
-
-    public function test_to_array_with_validated_filter_false(): void
-    {
-        $request = new ListEticketsRequest(
-            onlyValidated: false,
-        );
-
-        $array = $request->toArray();
-
-        $this->assertSame('n', $array['only_validated']);
+        $search = $array['search'];
+        $this->assertIsArray($search);
+        $this->assertSame('2024-01-15', $search['date']);
     }
 
     public function test_validation_passes_for_valid_data(): void
     {
         $request = new ListEticketsRequest(
-            productId: '12345',
+            purchaseId: '12345',
         );
 
         $errors = $request->validate();

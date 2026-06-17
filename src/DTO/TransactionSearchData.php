@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\DTO;
 
 use GoSuccess\Digistore24\Api\Base\AbstractDataTransferObject;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Transaction Search Criteria Data
  *
- * Search filter criteria for transaction list queries.
+ * Search filter criteria for transaction list queries. Used as the `search`
+ * object of the listTransactions request.
+ *
+ * @link https://digistore24.com/api/docs/paths/listTransactions.yaml
  */
 final class TransactionSearchData extends AbstractDataTransferObject
 {
@@ -63,7 +67,7 @@ final class TransactionSearchData extends AbstractDataTransferObject
             $data['email'] = $this->email;
         }
         if ($this->hasAffiliate !== null) {
-            $data['has_affiliate'] = $this->hasAffiliate;
+            $data['has_affiliate'] = TypeConverter::fromBool($this->hasAffiliate);
         }
         if ($this->affiliateName !== null) {
             $data['affiliate_name'] = $this->affiliateName;

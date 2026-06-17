@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Image;
 
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Response\Image\ImageListItem;
 use GoSuccess\Digistore24\Api\Response\Image\ListImagesResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -15,27 +16,40 @@ final class ListImagesResponseTest extends TestCase
         $data = [
             'images' => [
                 [
-                    'image_id' => 'IMG123',
-                    'image_url' => 'https://example.com/images/123.jpg',
+                    'id' => '05CZEP6G',
+                    'url' => 'https://cdn.example.com/merchant_1/image/product/05CZEP6G',
+                    'file_extension' => 'png',
                     'name' => 'Product 1',
+                    'approval_status' => 'approved',
                     'usage_type' => 'product',
-                    'created_at' => '2024-01-15',
+                    'alt_tag' => 'A product',
+                    'width' => 100,
+                    'height' => 80,
                 ],
                 [
-                    'image_id' => 'IMG456',
-                    'image_url' => 'https://example.com/images/456.jpg',
+                    'id' => '071VX0KZ',
+                    'url' => 'https://cdn.example.com/merchant_1/image/product/071VX0KZ',
+                    'file_extension' => 'jpg',
                     'name' => 'Banner 2',
-                    'usage_type' => 'banner',
-                    'created_at' => '2024-02-01',
+                    'approval_status' => 'approved',
+                    'usage_type' => 'product',
+                    'alt_tag' => null,
+                    'width' => 200,
+                    'height' => 100,
                 ],
             ],
-            'total_count' => 2,
         ];
         $response = ListImagesResponse::fromArray($data);
 
         $this->assertInstanceOf(ListImagesResponse::class, $response);
         $this->assertCount(2, $response->images);
         $this->assertSame(2, $response->totalCount);
+        $this->assertInstanceOf(ImageListItem::class, $response->images[0]);
+        $this->assertSame('05CZEP6G', $response->images[0]->id);
+        $this->assertSame('png', $response->images[0]->fileExtension);
+        $this->assertSame('product', $response->images[0]->usageType);
+        $this->assertSame(100, $response->images[0]->width);
+        $this->assertNull($response->images[1]->altTag);
     }
 
     public function test_can_create_from_response(): void
@@ -43,15 +57,17 @@ final class ListImagesResponseTest extends TestCase
         $httpResponse = new Response(
             statusCode: 200,
             data: [
-                'images' => [
-                    [
-                        'image_id' => 'IMG789',
-                        'image_url' => 'https://example.com/images/789.jpg',
-                        'name' => 'Logo',
-                        'created_at' => '2024-03-01',
+                'data' => [
+                    'images' => [
+                        [
+                            'id' => 'LOGO01',
+                            'url' => 'https://cdn.example.com/logo.png',
+                            'file_extension' => 'png',
+                            'name' => 'Logo',
+                            'usage_type' => 'logo',
+                        ],
                     ],
                 ],
-                'total_count' => 1,
             ],
             headers: [],
             rawBody: '',
@@ -61,6 +77,7 @@ final class ListImagesResponseTest extends TestCase
 
         $this->assertInstanceOf(ListImagesResponse::class, $response);
         $this->assertCount(1, $response->images);
+        $this->assertSame('LOGO01', $response->images[0]->id);
     }
 
     public function test_has_raw_response(): void

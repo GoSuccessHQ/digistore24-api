@@ -37,6 +37,14 @@ final class ListCurrenciesResponseTest extends TestCase
 
         $this->assertInstanceOf(ListCurrenciesResponse::class, $response);
         $this->assertCount(2, $response->currencies);
+
+        $first = $response->currencies[0];
+        $this->assertSame(1, $first->id);
+        $this->assertSame('EUR', $first->code);
+        $this->assertSame('€', $first->symbol);
+        $this->assertSame(1.00, $first->minPrice);
+        $this->assertSame(9999.99, $first->maxPrice);
+        $this->assertSame('Euro', $first->name);
     }
 
     public function test_can_create_from_response(): void

@@ -12,18 +12,19 @@ final class UpdateDeliveryResponseTest extends TestCase
 {
     public function test_can_create_from_array(): void
     {
-        $data = ['result' => 'success'];
+        $data = ['result' => 'success', 'data' => ['is_modified' => 'Y']];
         $response = UpdateDeliveryResponse::fromArray($data);
 
         $this->assertInstanceOf(UpdateDeliveryResponse::class, $response);
         $this->assertSame('success', $response->result);
+        $this->assertTrue($response->isModified);
     }
 
     public function test_can_create_from_response(): void
     {
         $httpResponse = new Response(
             statusCode: 200,
-            data: ['result' => 'success'],
+            data: ['result' => 'success', 'data' => ['is_modified' => 'N']],
             headers: [],
             rawBody: '',
         );
@@ -32,6 +33,7 @@ final class UpdateDeliveryResponseTest extends TestCase
 
         $this->assertInstanceOf(UpdateDeliveryResponse::class, $response);
         $this->assertSame('success', $response->result);
+        $this->assertFalse($response->isModified);
     }
 
     public function test_has_raw_response(): void

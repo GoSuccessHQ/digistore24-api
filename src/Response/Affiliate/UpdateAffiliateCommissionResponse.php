@@ -6,12 +6,15 @@ namespace GoSuccess\Digistore24\Api\Response\Affiliate;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
 use GoSuccess\Digistore24\Api\Http\Response;
-use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Update Affiliate Commission Response
  *
- * Response object for updating affiliate commission settings.
+ * Response object for updating affiliate commission settings. The spec returns
+ * an empty `data` object on success, so only the result status and the raw data
+ * net are exposed.
+ *
+ * @link https://digistore24.com/api/docs/paths/updateAffiliateCommission.yaml
  */
 final class UpdateAffiliateCommissionResponse extends AbstractResponse
 {
@@ -21,34 +24,12 @@ final class UpdateAffiliateCommissionResponse extends AbstractResponse
     public string $result = '';
 
     /**
-     * Product ID
+     * The complete payload as returned by the API. Empty on success per the
+     * spec, but retained so any future fields remain accessible.
+     *
+     * @var array<string, mixed>
      */
-    public int $productId = 0;
-
-    /**
-     * Commission rate (percentage)
-     */
-    public ?float $commissionRate = null;
-
-    /**
-     * First level commission rate
-     */
-    public ?float $firstLevelCommission = null;
-
-    /**
-     * Second level commission rate
-     */
-    public ?float $secondLevelCommission = null;
-
-    /**
-     * Whether affiliate program is enabled
-     */
-    public bool $isAffiliateEnabled = false;
-
-    /**
-     * Update timestamp
-     */
-    public ?\DateTimeInterface $updatedAt = null;
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
@@ -56,12 +37,7 @@ final class UpdateAffiliateCommissionResponse extends AbstractResponse
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->productId = TypeConverter::toInt($innerData['product_id'] ?? null) ?? 0;
-        $response->commissionRate = TypeConverter::toFloat($innerData['commission_rate'] ?? null);
-        $response->firstLevelCommission = TypeConverter::toFloat($innerData['first_level_commission'] ?? null);
-        $response->secondLevelCommission = TypeConverter::toFloat($innerData['second_level_commission'] ?? null);
-        $response->isAffiliateEnabled = (bool)($innerData['is_affiliate_enabled'] ?? false);
-        $response->updatedAt = TypeConverter::toDateTime($innerData['updated_at'] ?? null);
+        $response->data = $innerData;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

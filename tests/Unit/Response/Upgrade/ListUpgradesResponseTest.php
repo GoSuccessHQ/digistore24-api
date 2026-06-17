@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Upgrade;
 
+use GoSuccess\Digistore24\Api\DTO\UpgradeItemData;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\Upgrade\ListUpgradesResponse;
 use PHPUnit\Framework\TestCase;
@@ -16,16 +17,18 @@ final class ListUpgradesResponseTest extends TestCase
             'data' => [
                 'upgrades' => [
                     [
-                        'upgrade_id' => 'UPG001',
-                        'from_product_id' => '100',
-                        'to_product_id' => '200',
-                        'price_difference' => 30.00,
+                        'id' => 1,
+                        'name' => 'Upgrade A',
+                        'to_product_id' => 200,
+                        'is_active' => 'Y',
+                        'upgrade_types' => ['100' => 'upgrade'],
                     ],
                     [
-                        'upgrade_id' => 'UPG002',
-                        'from_product_id' => '200',
-                        'to_product_id' => '300',
-                        'price_difference' => 50.00,
+                        'id' => 2,
+                        'name' => 'Upgrade B',
+                        'to_product_id' => 300,
+                        'is_active' => 'N',
+                        'upgrade_types' => ['200' => 'downgrade'],
                     ],
                 ],
             ],
@@ -35,7 +38,12 @@ final class ListUpgradesResponseTest extends TestCase
         $this->assertInstanceOf(ListUpgradesResponse::class, $response);
         $upgrades = $response->upgrades;
         $this->assertCount(2, $upgrades);
-        $this->assertNotEmpty($upgrades);
+        $this->assertInstanceOf(UpgradeItemData::class, $upgrades[0]);
+        $this->assertSame(1, $upgrades[0]->id);
+        $this->assertSame('Upgrade A', $upgrades[0]->name);
+        $this->assertSame(200, $upgrades[0]->toProductId);
+        $this->assertTrue($upgrades[0]->isActive);
+        $this->assertFalse($upgrades[1]->isActive);
     }
 
     public function test_can_create_from_response(): void
@@ -45,7 +53,7 @@ final class ListUpgradesResponseTest extends TestCase
             data: [
                 'data' => [
                     'upgrades' => [
-                        ['upgrade_id' => 'UPG999'],
+                        ['id' => 999, 'name' => 'Upgrade'],
                     ],
                 ],
             ],
@@ -57,6 +65,7 @@ final class ListUpgradesResponseTest extends TestCase
 
         $this->assertInstanceOf(ListUpgradesResponse::class, $response);
         $this->assertCount(1, $response->upgrades);
+        $this->assertSame(999, $response->upgrades[0]->id);
     }
 
     public function test_has_raw_response(): void

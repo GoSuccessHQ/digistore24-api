@@ -29,6 +29,22 @@ final class StopRebillingRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame('P12345', $array['purchase_id']);
+        $this->assertArrayNotHasKey('force', $array);
+        $this->assertArrayNotHasKey('ignore_refund_possibility', $array);
+    }
+
+    public function test_to_array_includes_flags_when_set(): void
+    {
+        $request = new StopRebillingRequest(
+            purchaseId: 'P12345',
+            force: true,
+            ignoreRefundPossibility: false,
+        );
+
+        $array = $request->toArray();
+        $this->assertSame('P12345', $array['purchase_id']);
+        $this->assertSame('Y', $array['force']);
+        $this->assertSame('N', $array['ignore_refund_possibility']);
     }
 
     public function test_validate_returns_empty_array(): void

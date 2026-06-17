@@ -53,6 +53,19 @@ final class UpdateProductRequestTest extends TestCase
         $this->assertSame('business', $array['buyer_type']);
     }
 
+    public function test_to_array_includes_currency_and_access_instructions(): void
+    {
+        $request = new UpdateProductRequest(
+            productId: 12345,
+            currency: 'USD,EUR',
+            accessInstructionsDe: 'Zugang unter example.com',
+        );
+
+        $array = $request->toArray();
+        $this->assertSame('USD,EUR', $array['currency']);
+        $this->assertSame('Zugang unter example.com', $array['access_instructions_de']);
+    }
+
     public function test_validate_returns_empty_array(): void
     {
         $request = new UpdateProductRequest(productId: 12345);

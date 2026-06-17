@@ -15,12 +15,25 @@ final class IpnInfoResponseTest extends TestCase
         $data = [
             'data' => [
                 'url' => 'https://example.com/webhook',
+                'name' => 'My Platform',
+                'product_ids' => 'all',
+                'domain_id' => 'my-platform',
+                'transactions' => 'payment,refund',
+                'timing' => 'before_thankyou',
+                'newsletter_send_policy' => 'send_always',
             ],
         ];
         $response = IpnInfoResponse::fromArray($data);
 
         $this->assertInstanceOf(IpnInfoResponse::class, $response);
         $this->assertSame('https://example.com/webhook', $response->url);
+        $this->assertSame('My Platform', $response->name);
+        $this->assertSame('all', $response->productIds);
+        $this->assertSame('my-platform', $response->domainId);
+        $this->assertSame('payment,refund', $response->transactions);
+        $this->assertSame('before_thankyou', $response->timing);
+        $this->assertSame('send_always', $response->newsletterSendPolicy);
+        $this->assertArrayHasKey('url', $response->data);
     }
 
     public function test_can_create_from_response(): void

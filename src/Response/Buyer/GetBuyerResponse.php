@@ -11,7 +11,10 @@ use GoSuccess\Digistore24\Api\Http\Response;
 /**
  * Get Buyer Response
  *
- * Response object for the Buyer API endpoint.
+ * Response for the getBuyer endpoint. Mirrors the spec's `data` object, which
+ * wraps the full buyer record under the `buyer` key.
+ *
+ * @link https://digistore24.com/api/docs/paths/getBuyer.yaml
  */
 final class GetBuyerResponse extends AbstractResponse
 {
@@ -24,6 +27,13 @@ final class GetBuyerResponse extends AbstractResponse
      * Buyer data
      */
     public ?BuyerData $buyer = null;
+
+    /**
+     * The complete inner payload as returned by the API.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
@@ -41,6 +51,7 @@ final class GetBuyerResponse extends AbstractResponse
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
         $response->buyer = BuyerData::fromArray($validBuyerData);
+        $response->data = $innerData;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

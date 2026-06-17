@@ -9,17 +9,18 @@ use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 /**
  * Retrieve API Key Request
  *
- * Retrieves the API key using the email and verification token.
+ * Retrieves the API key for a request token previously obtained from
+ * requestApiKey, once the user has confirmed the key creation.
+ *
+ * @link https://digistore24.com/api/docs/paths/retrieveApiKey.yaml
  */
 final class RetrieveApiKeyRequest extends AbstractRequest
 {
     /**
-     * @param string $email The vendor email address
-     * @param string $token The verification token received via email
+     * @param string $token The request token returned by requestApiKey
      */
     public function __construct(
-        private string $email,
-        private string $token,
+        public string $token,
     ) {
     }
 
@@ -30,9 +31,6 @@ final class RetrieveApiKeyRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return [
-            'email' => $this->email,
-            'token' => $this->token,
-        ];
+        return ['token' => $this->token];
     }
 }

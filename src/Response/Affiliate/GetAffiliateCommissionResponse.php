@@ -12,7 +12,12 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
 /**
  * Get Affiliate Commission Response
  *
- * Response object for retrieving affiliate commission settings.
+ * Response object for retrieving affiliate commission settings. Mirrors the
+ * spec's `commissions` array; every commission entry exposes at least the
+ * spec fields (commission_rate, commission_fix, commission_currency,
+ * approval_status) and the additional fields the live API returns.
+ *
+ * @link https://digistore24.com/api/docs/paths/getAffiliateCommission.yaml
  */
 final class GetAffiliateCommissionResponse extends AbstractResponse
 {
@@ -22,45 +27,54 @@ final class GetAffiliateCommissionResponse extends AbstractResponse
     public string $result = '';
 
     /**
-     * Array of affiliation commission data
+     * Commission entries, one per product (spec key: `commissions`)
      *
-     * @var array<AffiliationData>
+     * @var array<int, AffiliationData>
      */
-    public array $affiliations = [];
+    public array $commissions = [];
 
     /**
-     * Affiliate ID
+     * Affiliate ID (returned by the live API alongside the commissions)
      */
     public string $affiliateId = '';
 
     /**
-     * Affiliate name
+     * Affiliate name (returned by the live API alongside the commissions)
      */
     public string $affiliateName = '';
+
+    /**
+     * The complete payload as returned by the API, so every field is accessible
+     * even when not surfaced as a typed property above.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
         $innerData = self::extractInnerData(data: $data);
 
-        $affiliationsData = $innerData['affiliations'] ?? [];
-        $affiliations = [];
+        $commissionsData = $innerData['commissions'] ?? [];
+        $commissions = [];
 
-        if (is_array($affiliationsData)) {
-            foreach ($affiliationsData as $affiliationItem) {
-                if (! is_array($affiliationItem)) {
+        if (is_array($commissionsData)) {
+            foreach ($commissionsData as $commissionItem) {
+                if (! is_array($commissionItem)) {
                     continue;
                 }
-                /** @var array<string, mixed> $validAffiliationItem */
-                $validAffiliationItem = $affiliationItem;
-                $affiliations[] = AffiliationData::fromArray(data: $validAffiliationItem);
+                /** @var array<string, mixed> $validCommissionItem */
+                $validCommissionItem = $commissionItem;
+                $commissions[] = AffiliationData::fromArray(data: $validCommissionItem);
             }
         }
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->affiliations = $affiliations;
+        $response->commissions = $commissions;
         $response->affiliateId = TypeConverter::toString($innerData['affiliate_id'] ?? null) ?? '';
         $response->affiliateName = TypeConverter::toString($innerData['affiliate_name'] ?? null) ?? '';
+        $response->data = $innerData;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

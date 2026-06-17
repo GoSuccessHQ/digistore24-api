@@ -12,14 +12,16 @@ use GoSuccess\Digistore24\Api\Enum\HttpMethod;
  * Update Service Proof Request Request
  *
  * Updates an existing service proof request's status or information.
+ *
+ * @link https://digistore24.com/api/docs/paths/updateServiceProofRequest.yaml
  */
 final class UpdateServiceProofRequestRequest extends AbstractRequest
 {
     /**
-     * @param string $serviceProofRequestId The unique identifier of the service proof request
+     * @param int $serviceProofId The numeric ID of the service proof request to update
      * @param ServiceProofRequestUpdateData $proofData The updated service proof request data
      */
-    public function __construct(private string $serviceProofRequestId, private ServiceProofRequestUpdateData $proofData)
+    public function __construct(private int $serviceProofId, private ServiceProofRequestUpdateData $proofData)
     {
     }
 
@@ -35,6 +37,6 @@ final class UpdateServiceProofRequestRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return array_merge(['service_proof_id' => $this->serviceProofRequestId], $this->proofData->toArray());
+        return array_merge(['service_proof_id' => $this->serviceProofId], $this->proofData->toArray());
     }
 }

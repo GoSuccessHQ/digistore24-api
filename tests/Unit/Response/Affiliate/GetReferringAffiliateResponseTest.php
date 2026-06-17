@@ -16,11 +16,12 @@ final class GetReferringAffiliateResponseTest extends TestCase
             'result' => 'success',
             'data' => [
                 'affiliate_id' => 789,
-                'affiliate_code' => 'AFFILIATE123',
-                'affiliate_email' => 'affiliate@example.com',
                 'affiliate_name' => 'John Doe',
-                'referral_date' => '2025-10-15 10:30:00',
-                'commission_earned' => 50.00,
+                'referrer_id' => 321,
+                'referrer_name' => 'Referring Partner',
+                'commission' => 50.0,
+                'created_at' => '2025-10-15 10:30:00',
+                'created_by' => 12,
             ],
         ];
 
@@ -29,11 +30,12 @@ final class GetReferringAffiliateResponseTest extends TestCase
         $this->assertInstanceOf(GetReferringAffiliateResponse::class, $response);
         $this->assertSame('success', $response->result);
         $this->assertSame(789, $response->affiliateId);
-        $this->assertSame('AFFILIATE123', $response->affiliateCode);
-        $this->assertSame('affiliate@example.com', $response->affiliateEmail);
         $this->assertSame('John Doe', $response->affiliateName);
-        $this->assertInstanceOf(\DateTimeInterface::class, $response->referralDate);
-        $this->assertSame(50.00, $response->commissionEarned);
+        $this->assertSame(321, $response->referrerId);
+        $this->assertSame('Referring Partner', $response->referrerName);
+        $this->assertSame(50.0, $response->commission);
+        $this->assertInstanceOf(\DateTimeInterface::class, $response->createdAt);
+        $this->assertSame(12, $response->createdBy);
     }
 
     public function test_can_create_from_response(): void
@@ -44,9 +46,10 @@ final class GetReferringAffiliateResponseTest extends TestCase
                 'result' => 'success',
                 'data' => [
                     'affiliate_id' => 456,
-                    'affiliate_code' => 'REF456',
                     'affiliate_name' => 'Jane Smith',
-                    'commission_earned' => 25.50,
+                    'referrer_id' => 654,
+                    'referrer_name' => 'Partner Inc',
+                    'commission' => 25.5,
                 ],
             ],
             headers: ['Content-Type' => ['application/json']],
@@ -57,8 +60,9 @@ final class GetReferringAffiliateResponseTest extends TestCase
 
         $this->assertInstanceOf(GetReferringAffiliateResponse::class, $response);
         $this->assertSame(456, $response->affiliateId);
-        $this->assertSame('REF456', $response->affiliateCode);
-        $this->assertSame(25.50, $response->commissionEarned);
+        $this->assertSame('Jane Smith', $response->affiliateName);
+        $this->assertSame(654, $response->referrerId);
+        $this->assertSame(25.5, $response->commission);
     }
 
     public function test_handles_no_affiliate(): void
@@ -72,11 +76,12 @@ final class GetReferringAffiliateResponseTest extends TestCase
 
         $this->assertInstanceOf(GetReferringAffiliateResponse::class, $response);
         $this->assertNull($response->affiliateId);
-        $this->assertNull($response->affiliateCode);
-        $this->assertNull($response->affiliateEmail);
         $this->assertNull($response->affiliateName);
-        $this->assertNull($response->referralDate);
-        $this->assertNull($response->commissionEarned);
+        $this->assertNull($response->referrerId);
+        $this->assertNull($response->referrerName);
+        $this->assertNull($response->commission);
+        $this->assertNull($response->createdAt);
+        $this->assertNull($response->createdBy);
     }
 
     public function test_has_raw_response(): void

@@ -11,36 +11,52 @@ use PHPUnit\Framework\TestCase;
 
 final class ListEticketsResponseTest extends TestCase
 {
-    public function test_can_create_from_array_with_tickets(): void
+    /**
+     * @param int $id
+     * @param string $firstName
+     * @return array<string, mixed>
+     */
+    private function ticket(int $id, string $firstName): array
+    {
+        return [
+            'id' => $id,
+            'download_url' => "https://example.com/ticket/{$id}.pdf",
+            'duration' => null,
+            'date_id' => 7,
+            'date' => '2024-06-15',
+            'hint' => '09:00',
+            'location_id' => 1001,
+            'template_id' => 2002,
+            'purchase_item_id' => 3003,
+            'no' => 1,
+            'count' => 1,
+            'email' => 'buyer@example.com',
+            'first_name' => $firstName,
+            'last_name' => 'Doe',
+            'salutation' => 'M',
+            'title' => null,
+            'language' => 'en',
+            'used_at' => null,
+            'is_blocked' => 'N',
+            'note' => null,
+            'product_id' => 12345,
+        ];
+    }
+
+    public function test_can_create_from_array_with_etickets(): void
     {
         $data = [
-            'tickets' => [
-                [
-                    'order_id' => 'ORDER123',
-                    'ticket_id' => 'TICKET456',
-                    'product_id' => '12345',
-                    'product_name' => 'Conference 2024',
-                    'location_id' => 'LOC001',
-                    'location_name' => 'Convention Center',
-                    'event_date' => '2024-06-15',
-                    'days' => 2,
-                    'buyer_email' => 'buyer@example.com',
-                    'buyer_first_name' => 'John',
-                    'buyer_last_name' => 'Doe',
-                    'is_validated' => false,
-                    'validated_at' => null,
-                    'created_at' => '2024-01-15 10:30:00',
-                ],
+            'etickets' => [
+                $this->ticket(1, 'John'),
             ],
-            'total_count' => 1,
         ];
 
         $response = ListEticketsResponse::fromArray($data);
 
-        $this->assertCount(1, $response->tickets);
-        $this->assertSame(1, $response->totalCount);
-        $this->assertInstanceOf(EticketListItem::class, $response->tickets[0]);
-        $this->assertSame('ORDER123', $response->tickets[0]->orderId);
+        $this->assertCount(1, $response->etickets);
+        $this->assertInstanceOf(EticketListItem::class, $response->etickets[0]);
+        $this->assertSame(1, $response->etickets[0]->id);
+        $this->assertSame('John', $response->etickets[0]->firstName);
     }
 
     public function test_can_create_from_response(): void
@@ -48,165 +64,58 @@ final class ListEticketsResponseTest extends TestCase
         $httpResponse = new Response(
             200,
             ['data' => [
-                'tickets' => [
-                    [
-                        'order_id' => 'ORDER789',
-                        'ticket_id' => 'TICKET999',
-                        'product_id' => '67890',
-                        'product_name' => 'Workshop 2024',
-                        'location_id' => 'LOC002',
-                        'location_name' => 'Training Room',
-                        'event_date' => '2024-07-20',
-                        'days' => 1,
-                        'buyer_email' => 'jane@example.com',
-                        'buyer_first_name' => 'Jane',
-                        'buyer_last_name' => 'Smith',
-                        'is_validated' => true,
-                        'validated_at' => '2024-07-20 09:15:00',
-                        'created_at' => '2024-02-01 14:20:00',
-                    ],
+                'etickets' => [
+                    $this->ticket(99, 'Jane'),
                 ],
-                'total_count' => 10,
             ]],
         );
 
         $response = ListEticketsResponse::fromResponse($httpResponse);
 
-        $this->assertCount(1, $response->tickets);
-        $this->assertSame(10, $response->totalCount);
-        $this->assertSame('Workshop 2024', $response->tickets[0]->productName);
-        $this->assertTrue($response->tickets[0]->isValidated);
+        $this->assertCount(1, $response->etickets);
+        $this->assertSame('Jane', $response->etickets[0]->firstName);
+        $this->assertSame(99, $response->etickets[0]->id);
     }
 
-    public function test_handles_empty_tickets_array(): void
+    public function test_handles_empty_etickets_array(): void
     {
-        $data = [
-            'tickets' => [],
-            'total_count' => 0,
-        ];
+        $response = ListEticketsResponse::fromArray(['etickets' => []]);
 
-        $response = ListEticketsResponse::fromArray($data);
-
-        $this->assertCount(0, $response->tickets);
-        $this->assertSame(0, $response->totalCount);
+        $this->assertCount(0, $response->etickets);
     }
 
-    public function test_handles_missing_tickets_key(): void
+    public function test_handles_missing_etickets_key(): void
     {
-        $data = [];
+        $response = ListEticketsResponse::fromArray([]);
 
-        $response = ListEticketsResponse::fromArray($data);
-
-        $this->assertCount(0, $response->tickets);
-        $this->assertSame(0, $response->totalCount);
-    }
-
-    public function test_total_count_defaults_to_array_count(): void
-    {
-        $data = [
-            'tickets' => [
-                [
-                    'order_id' => 'ORDER111',
-                    'ticket_id' => 'TICKET222',
-                    'product_id' => '11111',
-                    'product_name' => 'Event',
-                    'location_id' => 'LOC003',
-                    'location_name' => 'Arena',
-                    'event_date' => '2024-08-10',
-                    'days' => 1,
-                    'buyer_email' => 'test@example.com',
-                    'buyer_first_name' => 'Test',
-                    'buyer_last_name' => 'User',
-                    'is_validated' => false,
-                    'validated_at' => null,
-                    'created_at' => '2024-03-01 12:00:00',
-                ],
-            ],
-            // No total_count provided
-        ];
-
-        $response = ListEticketsResponse::fromArray($data);
-
-        $this->assertSame(1, $response->totalCount);
+        $this->assertCount(0, $response->etickets);
     }
 
     public function test_eticket_list_item_from_array(): void
     {
-        $data = [
-            'order_id' => 'ORDER333',
-            'ticket_id' => 'TICKET444',
-            'product_id' => '33333',
-            'product_name' => 'Seminar',
-            'location_id' => 'LOC004',
-            'location_name' => 'Online',
-            'event_date' => '2024-09-01',
-            'days' => 3,
-            'buyer_email' => 'buyer2@example.com',
-            'buyer_first_name' => 'Bob',
-            'buyer_last_name' => 'Johnson',
-            'is_validated' => false,
-            'validated_at' => null,
-            'created_at' => '2024-04-01 10:00:00',
-        ];
+        $item = EticketListItem::fromArray($this->ticket(333, 'Bob'));
 
-        $item = EticketListItem::fromArray($data);
-
-        $this->assertSame('ORDER333', $item->orderId);
-        $this->assertSame('TICKET444', $item->ticketId);
-        $this->assertSame('Seminar', $item->productName);
-        $this->assertSame(3, $item->days);
-        $this->assertFalse($item->isValidated);
-        $this->assertNull($item->validatedAt);
-        $this->assertInstanceOf(\DateTimeInterface::class, $item->eventDate);
+        $this->assertSame(333, $item->id);
+        $this->assertSame('Bob', $item->firstName);
+        $this->assertNull($item->duration);
+        $this->assertFalse($item->isBlocked);
+        $this->assertNull($item->usedAt);
+        $this->assertInstanceOf(\DateTimeInterface::class, $item->date);
     }
 
-    public function test_handles_multiple_tickets(): void
+    public function test_handles_multiple_etickets(): void
     {
         $data = [
-            'tickets' => [
-                [
-                    'order_id' => 'ORDER001',
-                    'ticket_id' => 'TICKET001',
-                    'product_id' => '111',
-                    'product_name' => 'Event A',
-                    'location_id' => 'LOC001',
-                    'location_name' => 'Hall A',
-                    'event_date' => '2024-10-01',
-                    'days' => 1,
-                    'buyer_email' => 'buyer1@example.com',
-                    'buyer_first_name' => 'Alice',
-                    'buyer_last_name' => 'Brown',
-                    'is_validated' => true,
-                    'validated_at' => '2024-10-01 10:00:00',
-                    'created_at' => '2024-05-01 12:00:00',
-                ],
-                [
-                    'order_id' => 'ORDER002',
-                    'ticket_id' => 'TICKET002',
-                    'product_id' => '222',
-                    'product_name' => 'Event B',
-                    'location_id' => 'LOC002',
-                    'location_name' => 'Hall B',
-                    'event_date' => '2024-11-01',
-                    'days' => 2,
-                    'buyer_email' => 'buyer2@example.com',
-                    'buyer_first_name' => 'Charlie',
-                    'buyer_last_name' => 'Davis',
-                    'is_validated' => false,
-                    'validated_at' => null,
-                    'created_at' => '2024-06-01 14:00:00',
-                ],
+            'etickets' => [
+                $this->ticket(1, 'Alice'),
+                $this->ticket(2, 'Charlie'),
             ],
-            'total_count' => 25,
         ];
 
         $response = ListEticketsResponse::fromArray($data);
 
-        $this->assertCount(2, $response->tickets);
-        $this->assertSame(25, $response->totalCount);
-        $this->assertSame('Event A', $response->tickets[0]->productName);
-        $this->assertSame('Event B', $response->tickets[1]->productName);
-        $this->assertTrue($response->tickets[0]->isValidated);
-        $this->assertFalse($response->tickets[1]->isValidated);
+        $this->assertCount(2, $response->etickets);
+        $this->assertSame('Alice', $response->etickets[0]->firstName);
+        $this->assertSame('Charlie', $response->etickets[1]->firstName);
     }
 }

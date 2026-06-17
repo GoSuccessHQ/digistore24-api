@@ -28,9 +28,9 @@ use GoSuccess\Digistore24\Api\Response\Affiliate\ValidateAffiliateResponse;
 final class AffiliateResource extends AbstractResource
 {
     /**
-     * Get affiliate commission settings for a product.
+     * Get affiliate commission settings for one or more products.
      *
-     * @param GetAffiliateCommissionRequest $request Request containing product ID
+     * @param GetAffiliateCommissionRequest $request Request containing the affiliate and product IDs
      * @return GetAffiliateCommissionResponse Response with commission settings
      */
     public function getCommission(GetAffiliateCommissionRequest $request): GetAffiliateCommissionResponse
@@ -39,9 +39,9 @@ final class AffiliateResource extends AbstractResource
     }
 
     /**
-     * Update affiliate commission settings for a product.
+     * Update affiliate commission settings for one or more products.
      *
-     * @param UpdateAffiliateCommissionRequest $request Request with updated commission settings
+     * @param UpdateAffiliateCommissionRequest $request Request with the affiliate, product IDs and updated commission settings
      * @return UpdateAffiliateCommissionResponse Response confirming the update
      */
     public function updateCommission(UpdateAffiliateCommissionRequest $request): UpdateAffiliateCommissionResponse
@@ -72,9 +72,9 @@ final class AffiliateResource extends AbstractResource
     }
 
     /**
-     * Get referring affiliate information for a purchase.
+     * Get the referring partner for an affiliate.
      *
-     * @param GetReferringAffiliateRequest $request Request containing purchase ID
+     * @param GetReferringAffiliateRequest $request Request containing the affiliate ID
      * @return GetReferringAffiliateResponse Response with referring affiliate details
      */
     public function getReferring(GetReferringAffiliateRequest $request): GetReferringAffiliateResponse
@@ -83,9 +83,9 @@ final class AffiliateResource extends AbstractResource
     }
 
     /**
-     * Set referring affiliate for a purchase.
+     * Set the referring partner for an affiliate.
      *
-     * @param SetReferringAffiliateRequest $request Request with purchase ID and affiliate ID
+     * @param SetReferringAffiliateRequest $request Request with the referrer ID and affiliate ID
      * @return SetReferringAffiliateResponse Response confirming the assignment
      */
     public function setReferring(SetReferringAffiliateRequest $request): SetReferringAffiliateResponse

@@ -13,7 +13,7 @@ final class SetAffiliateForEmailRequestTest extends TestCase
     {
         $request = new SetAffiliateForEmailRequest(
             email: 'test@example.com',
-            affiliateId: 'AFF123',
+            affiliate: 'AFF123',
         );
 
         $this->assertInstanceOf(SetAffiliateForEmailRequest::class, $request);
@@ -23,7 +23,7 @@ final class SetAffiliateForEmailRequestTest extends TestCase
     {
         $request = new SetAffiliateForEmailRequest(
             email: 'test@example.com',
-            affiliateId: 'AFF123',
+            affiliate: 'AFF123',
         );
 
         $this->assertSame('/setAffiliateForEmail', $request->getEndpoint());
@@ -33,19 +33,40 @@ final class SetAffiliateForEmailRequestTest extends TestCase
     {
         $request = new SetAffiliateForEmailRequest(
             email: 'test@example.com',
-            affiliateId: 'AFF123',
+            affiliate: 'AFF123',
         );
 
         $array = $request->toArray();
         $this->assertSame('test@example.com', $array['email']);
-        $this->assertSame('AFF123', $array['affiliate_id']);
+        $this->assertSame('AFF123', $array['affiliate']);
+        $this->assertArrayNotHasKey('campaignkey', $array);
+        $this->assertArrayNotHasKey('trackingkey', $array);
+        $this->assertArrayNotHasKey('click_id', $array);
+    }
+
+    public function test_to_array_includes_optional_parameters(): void
+    {
+        $request = new SetAffiliateForEmailRequest(
+            email: 'test@example.com',
+            affiliate: 'AFF123',
+            campaignkey: 'campaign-1',
+            trackingkey: 'tracking-1',
+            clickId: 'click-1',
+        );
+
+        $array = $request->toArray();
+        $this->assertSame('test@example.com', $array['email']);
+        $this->assertSame('AFF123', $array['affiliate']);
+        $this->assertSame('campaign-1', $array['campaignkey']);
+        $this->assertSame('tracking-1', $array['trackingkey']);
+        $this->assertSame('click-1', $array['click_id']);
     }
 
     public function test_validate_returns_empty_array(): void
     {
         $request = new SetAffiliateForEmailRequest(
             email: 'test@example.com',
-            affiliateId: 'AFF123',
+            affiliate: 'AFF123',
         );
 
         $errors = $request->validate();

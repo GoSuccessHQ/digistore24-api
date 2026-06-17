@@ -10,19 +10,23 @@ use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 /**
  * Stats Affiliate Toplist Request
  *
- * Retrieves a ranked list of top-performing affiliates for a date range.
+ * Retrieves a ranked list of top-performing affiliates for a month range.
+ *
+ * @link https://digistore24.com/api/docs/paths/statsAffiliateToplist.yaml
  */
 final class StatsAffiliateToplistRequest extends AbstractRequest
 {
     /**
-     * @param string|null $from Start date for statistics (format: YYYY-MM-DD)
-     * @param string|null $to End date for statistics (format: YYYY-MM-DD)
-     * @param int|null $limit Maximum number of affiliates to return
+     * @param string|null $from Start month for the report, format YYYY-MM (e.g. 2015-01). Required by the API.
+     * @param string|null $to End month for the report, format YYYY-MM (e.g. 2015-12). Required by the API.
+     * @param string|null $affiliate Digistore identifier of a particular affiliate to filter by
+     * @param string|null $currency Currency code for revenue display (USD, EUR, GBP, CHF, PLN)
      */
     public function __construct(
         private ?string $from = null,
         private ?string $to = null,
-        private ?int $limit = null,
+        private ?string $affiliate = null,
+        private ?string $currency = null,
     ) {
     }
 
@@ -45,8 +49,11 @@ final class StatsAffiliateToplistRequest extends AbstractRequest
         if ($this->to !== null) {
             $params['to'] = $this->to;
         }
-        if ($this->limit !== null) {
-            $params['limit'] = $this->limit;
+        if ($this->affiliate !== null) {
+            $params['affiliate'] = $this->affiliate;
+        }
+        if ($this->currency !== null) {
+            $params['currency'] = $this->currency;
         }
 
         return $params;

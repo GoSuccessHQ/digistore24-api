@@ -6,61 +6,75 @@ namespace GoSuccess\Digistore24\Api\Response\Image;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Get Image Response
  *
- * Response containing image details.
+ * Response for getImage. The image details are returned under the `image`
+ * wrapper as `id`, `url`, `type` and a free-form `properties` map.
+ *
+ * @link https://digistore24.com/api/docs/paths/getImage.yaml
  */
 final class GetImageResponse extends AbstractResponse
 {
-    /**
-     * Result status
-     */
     public string $result = '';
 
     /**
-     * Image ID
+     * Image ID (spec key: image.id).
      */
-    public string $imageId = '';
+    public ?string $id = null;
 
     /**
-     * Image URL
+     * URL to access the image (spec key: image.url).
      */
-    public string $imageUrl = '';
+    public ?string $url = null;
 
     /**
-     * Image name
+     * Type of image (spec key: image.type).
      */
-    public string $name = '';
+    public ?string $type = null;
 
     /**
-     * Usage type
+     * Additional image properties (free-form map).
+     *
+     * @var array<string, mixed>
      */
-    public ?string $usageType = null;
+    public array $properties = [];
 
     /**
-     * Alt tag
+     * The complete image payload as returned by the API, so every field is
+     * accessible even when not surfaced as a typed property above.
+     *
+     * @var array<string, mixed>
      */
-    public ?string $altTag = null;
-
-    /**
-     * Creation timestamp
-     */
-    public ?\DateTimeInterface $createdAt = null;
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
         $innerData = self::extractInnerData(data: $data);
+        // The image details live under the `image` wrapper; fall back to the
+        // inner data itself for payloads that are already unwrapped.
+        $imageData = $innerData['image'] ?? $innerData;
+        if (! is_array($imageData)) {
+            $imageData = [];
+        }
+        /** @var array<string, mixed> $validatedImage */
+        $validatedImage = $imageData;
+
+        $properties = $validatedImage['properties'] ?? [];
+        if (! is_array($properties)) {
+            $properties = [];
+        }
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->imageId = is_string($innerData['image_id'] ?? null) ? $innerData['image_id'] : '';
-        $response->imageUrl = is_string($innerData['image_url'] ?? null) ? $innerData['image_url'] : '';
-        $response->name = is_string($innerData['name'] ?? null) ? $innerData['name'] : '';
-        $response->usageType = isset($innerData['usage_type']) && is_string($innerData['usage_type']) ? $innerData['usage_type'] : null;
-        $response->altTag = isset($innerData['alt_tag']) && is_string($innerData['alt_tag']) ? $innerData['alt_tag'] : null;
-        $response->createdAt = isset($innerData['created_at']) ? new \DateTimeImmutable(is_string($innerData['created_at']) ? $innerData['created_at'] : 'now') : null;
+        $response->id = TypeConverter::toString($validatedImage['id'] ?? null);
+        $response->url = TypeConverter::toString($validatedImage['url'] ?? null);
+        $response->type = TypeConverter::toString($validatedImage['type'] ?? null);
+        /** @var array<string, mixed> $properties */
+        $response->properties = $properties;
+        $response->data = $validatedImage;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

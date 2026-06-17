@@ -15,13 +15,14 @@ final class CreateProductGroupResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'product_group_id' => 'PG123456',
+                'product_group_id' => 123456,
             ],
         ];
         $response = CreateProductGroupResponse::fromArray($data);
 
         $this->assertInstanceOf(CreateProductGroupResponse::class, $response);
-        $this->assertSame('PG123456', $response->getProductGroupId());
+        $this->assertSame(123456, $response->productGroupId);
+        $this->assertSame('123456', $response->getProductGroupId());
     }
 
     public function test_can_create_from_response(): void
@@ -31,7 +32,7 @@ final class CreateProductGroupResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'product_group_id' => 'PG789012',
+                    'product_group_id' => 789012,
                 ],
             ],
             headers: [],
@@ -41,7 +42,8 @@ final class CreateProductGroupResponseTest extends TestCase
         $response = CreateProductGroupResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(CreateProductGroupResponse::class, $response);
-        $this->assertSame('PG789012', $response->getProductGroupId());
+        $this->assertSame(789012, $response->productGroupId);
+        $this->assertSame('789012', $response->getProductGroupId());
     }
 
     public function test_has_raw_response(): void

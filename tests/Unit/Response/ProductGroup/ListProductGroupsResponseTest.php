@@ -16,14 +16,14 @@ final class ListProductGroupsResponseTest extends TestCase
             'data' => [
                 'product_groups' => [
                     [
-                        'group_id' => 'PG01',
+                        'id' => 101,
                         'name' => 'Group A',
-                        'product_count' => 3,
+                        'created_at' => '2024-01-01 10:00:00',
+                        'modified_at' => '2024-01-02 11:00:00',
                     ],
                     [
-                        'group_id' => 'PG02',
+                        'id' => 102,
                         'name' => 'Group B',
-                        'product_count' => 5,
                     ],
                 ],
             ],
@@ -32,19 +32,21 @@ final class ListProductGroupsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListProductGroupsResponse::class, $response);
         $this->assertCount(2, $response->productGroups);
+        $this->assertSame(101, $response->productGroups[0]->id);
+        $this->assertSame('Group A', $response->productGroups[0]->name);
+        $this->assertSame('2024-01-01 10:00:00', $response->productGroups[0]->createdAt?->format('Y-m-d H:i:s'));
+        $this->assertSame('2024-01-02 11:00:00', $response->productGroups[0]->modifiedAt?->format('Y-m-d H:i:s'));
     }
 
-    public function test_can_create_from_response(): void
+    public function test_can_create_from_bare_array_payload(): void
     {
         $httpResponse = new Response(
             statusCode: 200,
             data: [
                 'data' => [
-                    'product_groups' => [
-                        [
-                            'group_id' => 'PG03',
-                            'name' => 'Group C',
-                        ],
+                    [
+                        'id' => 201,
+                        'name' => 'Group C',
                     ],
                 ],
             ],
@@ -56,6 +58,7 @@ final class ListProductGroupsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListProductGroupsResponse::class, $response);
         $this->assertCount(1, $response->productGroups);
+        $this->assertSame(201, $response->productGroups[0]->id);
     }
 
     public function test_has_raw_response(): void

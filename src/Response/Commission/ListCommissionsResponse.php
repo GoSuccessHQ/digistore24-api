@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Response\Commission;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
+use GoSuccess\Digistore24\Api\DTO\CommissionData;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Response containing list of affiliate commissions.
  *
- * @see https://digistore24.com/api/docs/paths/listCommissions.yaml
+ * Each entry exposes the full spec field set via {@see CommissionData}.
+ *
+ * @link https://digistore24.com/api/docs/paths/listCommissions.yaml
  */
 final class ListCommissionsResponse extends AbstractResponse
 {
@@ -41,9 +44,9 @@ final class ListCommissionsResponse extends AbstractResponse
     public int $pageCount = 0;
 
     /**
-     * Commission items
+     * Commission items (spec key: `items`)
      *
-     * @var array<int, object{id: int, created_at: string, amount: float, currency: string, reason: string, schedule_payout_at: string, transaction_id: int, purchase_id: string}>
+     * @var array<int, CommissionData>
      */
     public array $items = [];
 
@@ -56,13 +59,13 @@ final class ListCommissionsResponse extends AbstractResponse
     }
 
     /**
-     * Get total commission amount.
+     * Get total commission amount across the returned items.
      */
     public function getTotalAmount(): float
     {
         return array_reduce(
             $this->items,
-            fn ($sum, $item) => $sum + $item->amount,
+            static fn (float $sum, CommissionData $item): float => $sum + ($item->amount ?? 0.0),
             0.0,
         );
     }
@@ -78,26 +81,9 @@ final class ListCommissionsResponse extends AbstractResponse
                 if (! is_array($item)) {
                     continue;
                 }
-
-                $id = $item['id'] ?? 0;
-                $createdAt = $item['created_at'] ?? '';
-                $amount = $item['amount'] ?? 0.0;
-                $currency = $item['currency'] ?? '';
-                $reason = $item['reason'] ?? '';
-                $schedulePayoutAt = $item['schedule_payout_at'] ?? '';
-                $transactionId = $item['transaction_id'] ?? 0;
-                $purchaseId = $item['purchase_id'] ?? '';
-
-                $items[] = (object)[
-                    'id' => TypeConverter::toInt($id) ?? 0,
-                    'created_at' => TypeConverter::toString($createdAt) ?? '',
-                    'amount' => TypeConverter::toFloat($amount) ?? 0.0,
-                    'currency' => TypeConverter::toString($currency) ?? '',
-                    'reason' => TypeConverter::toString($reason) ?? '',
-                    'schedule_payout_at' => TypeConverter::toString($schedulePayoutAt) ?? '',
-                    'transaction_id' => TypeConverter::toInt($transactionId) ?? 0,
-                    'purchase_id' => TypeConverter::toString($purchaseId) ?? '',
-                ];
+                /** @var array<string, mixed> $validatedItem */
+                $validatedItem = $item;
+                $items[] = CommissionData::fromArray($validatedItem);
             }
         }
 

@@ -16,7 +16,7 @@ final class UpdateServiceProofRequestRequestTest extends TestCase
         $proof->requestStatus = 'proof_provided';
 
         $request = new UpdateServiceProofRequestRequest(
-            serviceProofRequestId: 'SPR123',
+            serviceProofId: 12345,
             proofData: $proof,
         );
 
@@ -29,7 +29,7 @@ final class UpdateServiceProofRequestRequestTest extends TestCase
         $proof->requestStatus = 'proof_provided';
 
         $request = new UpdateServiceProofRequestRequest(
-            serviceProofRequestId: 'SPR123',
+            serviceProofId: 12345,
             proofData: $proof,
         );
 
@@ -43,28 +43,28 @@ final class UpdateServiceProofRequestRequestTest extends TestCase
         $proof->message = 'Looks good';
 
         $request = new UpdateServiceProofRequestRequest(
-            serviceProofRequestId: 'SPR123',
+            serviceProofId: 12345,
             proofData: $proof,
         );
 
         $array = $request->toArray();
 
-        $this->assertSame('SPR123', $array['service_proof_id']);
+        $this->assertSame(12345, $array['service_proof_id']);
         $data = $array['data'] ?? null;
         $this->assertIsArray($data);
         /** @var array<string, mixed> $validatedData */
         $validatedData = $data;
         $this->assertSame('proof_provided', $validatedData['request_status']);
+        $this->assertSame('Looks good', $validatedData['message']);
     }
 
     public function test_validate_returns_empty_array(): void
     {
-        $proof = ServiceProofRequestUpdateData::fromArray([
-            'data' => ['request_status' => 'proof_provided'],
-        ]);
+        $proof = new ServiceProofRequestUpdateData();
+        $proof->requestStatus = 'proof_provided';
 
         $request = new UpdateServiceProofRequestRequest(
-            serviceProofRequestId: 'SPR123',
+            serviceProofId: 12345,
             proofData: $proof,
         );
 

@@ -6,54 +6,80 @@ namespace GoSuccess\Digistore24\Api\Response\Eticket;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
 use GoSuccess\Digistore24\Api\Http\Response;
-use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Get E-Ticket Settings Response
  *
- * Response containing e-ticket configuration settings.
+ * Response containing the e-ticket configuration available to the account:
+ * the owners that grant e-ticket access, and the templates and locations
+ * grouped by owner ID.
+ *
+ * @link https://digistore24.com/api/docs/paths/getEticketSettings.yaml
  */
 final class GetEticketSettingsResponse extends AbstractResponse
 {
     public string $result = '';
 
-    public bool $eticketEnabled = false;
+    /**
+     * Maps Digistore24 account IDs to owner names.
+     *
+     * @var array<string, mixed>
+     */
+    public array $eticketOwners = [];
 
-    public ?string $defaultLocationId = null;
+    /**
+     * Templates grouped by owner ID: owner_id => (template_id => template_name).
+     *
+     * @var array<string, mixed>
+     */
+    public array $eticketTemplates = [];
 
-    public ?string $defaultTemplateId = null;
+    /**
+     * Locations grouped by owner ID: owner_id => (location_id => location_name).
+     *
+     * @var array<string, mixed>
+     */
+    public array $eticketLocations = [];
 
-    public int $maxTicketsPerOrder = 10;
-
-    public bool $requireEmailValidation = false;
-
-    /** @var array<string, mixed> */
-    public array $settings = [];
+    /**
+     * The complete settings payload as returned by the API.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
-        $defaultLocationId = $data['default_location_id'] ?? null;
-        $defaultTemplateId = $data['default_template_id'] ?? null;
-        $maxTicketsPerOrder = $data['max_tickets_per_order'] ?? 10;
-        $settings = $data['settings'] ?? [];
-        if (! is_array($settings)) {
-            $settings = [];
-        }
-        /** @var array<string, mixed> $validatedSettings */
-        $validatedSettings = $settings;
+        $inner = self::extractInnerData(data: $data);
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->eticketEnabled = TypeConverter::toBool($data['eticket_enabled'] ?? false) ?? false;
-        $response->defaultLocationId = $defaultLocationId !== null ? TypeConverter::toString($defaultLocationId) : null;
-        $response->defaultTemplateId = $defaultTemplateId !== null ? TypeConverter::toString($defaultTemplateId) : null;
-        $response->maxTicketsPerOrder = TypeConverter::toInt($maxTicketsPerOrder) ?? 10;
-        $response->requireEmailValidation = TypeConverter::toBool($data['require_email_validation'] ?? false) ?? false;
-        $response->settings = $validatedSettings;
+        $response->eticketOwners = self::toStringKeyedArray($inner['eticket_owners'] ?? null);
+        $response->eticketTemplates = self::toStringKeyedArray($inner['eticket_templates'] ?? null);
+        $response->eticketLocations = self::toStringKeyedArray($inner['eticket_locations'] ?? null);
+        $response->data = $inner;
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;
         }
 
         return $response;
+    }
+
+    /**
+     * @param mixed $value
+     * @return array<string, mixed>
+     */
+    private static function toStringKeyedArray(mixed $value): array
+    {
+        if (! is_array($value)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($value as $key => $item) {
+            $result[(string)$key] = $item;
+        }
+
+        return $result;
     }
 }

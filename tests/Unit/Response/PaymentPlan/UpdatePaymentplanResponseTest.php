@@ -14,11 +14,24 @@ final class UpdatePaymentplanResponseTest extends TestCase
     {
         $data = [
             'result' => 'success',
+            'data' => [
+                'modified' => 'Y',
+                'rendered_texts' => [
+                    'headline' => 'Updated headline',
+                ],
+                'plan' => [
+                    'id' => 555,
+                ],
+            ],
         ];
         $response = UpdatePaymentplanResponse::fromArray($data);
 
         $this->assertInstanceOf(UpdatePaymentplanResponse::class, $response);
         $this->assertSame('success', $response->result);
+        $this->assertTrue($response->modified);
+        $this->assertNotNull($response->renderedTexts);
+        $this->assertSame('Updated headline', $response->renderedTexts->headline);
+        $this->assertSame(555, $response->plan['id']);
     }
 
     public function test_can_create_from_response(): void
@@ -27,6 +40,9 @@ final class UpdatePaymentplanResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'result' => 'success',
+                'data' => [
+                    'modified' => 'N',
+                ],
             ],
             headers: [],
             rawBody: '',
@@ -35,6 +51,7 @@ final class UpdatePaymentplanResponseTest extends TestCase
         $response = UpdatePaymentplanResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(UpdatePaymentplanResponse::class, $response);
+        $this->assertFalse($response->modified);
     }
 
     public function test_has_raw_response(): void

@@ -15,16 +15,15 @@ final class CreateUpgradeResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'upgrade_id' => 'UPG123456',
-                'from_product_id' => '100',
-                'to_product_id' => '200',
-                'price_difference' => 50.00,
+                'upgrade_id' => 123456,
             ],
         ];
         $response = CreateUpgradeResponse::fromArray($data);
 
         $this->assertInstanceOf(CreateUpgradeResponse::class, $response);
-        $this->assertSame('UPG123456', $response->getUpgradeId());
+        $this->assertSame(123456, $response->getUpgradeId());
+        $this->assertTrue($response->wasSuccessful());
+        $this->assertSame(123456, $response->data['upgrade_id']);
     }
 
     public function test_can_create_from_response(): void

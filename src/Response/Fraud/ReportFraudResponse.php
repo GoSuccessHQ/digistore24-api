@@ -6,6 +6,7 @@ namespace GoSuccess\Digistore24\Api\Response\Fraud;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Response from reporting fraud.
@@ -55,12 +56,12 @@ final class ReportFraudResponse extends AbstractResponse
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->buyerStatus = is_string($innerData['buyer_status'] ?? null) ? $innerData['buyer_status'] : '';
-        $response->buyerMessage = is_string($innerData['buyer_message'] ?? null) ? $innerData['buyer_message'] : '';
-        $response->buyerCode = is_string($innerData['buyer_code'] ?? null) ? $innerData['buyer_code'] : '';
-        $response->affiliateStatus = is_string($innerData['affiliate_status'] ?? null) ? $innerData['affiliate_status'] : '';
-        $response->affiliateMessage = is_string($innerData['affiliate_message'] ?? null) ? $innerData['affiliate_message'] : '';
-        $response->affiliateCode = is_string($innerData['affiliate_code'] ?? null) ? $innerData['affiliate_code'] : '';
+        $response->buyerStatus = TypeConverter::toString($innerData['buyer_status'] ?? null) ?? '';
+        $response->buyerMessage = TypeConverter::toString($innerData['buyer_message'] ?? null) ?? '';
+        $response->buyerCode = TypeConverter::toString($innerData['buyer_code'] ?? null) ?? '';
+        $response->affiliateStatus = TypeConverter::toString($innerData['affiliate_status'] ?? null) ?? '';
+        $response->affiliateMessage = TypeConverter::toString($innerData['affiliate_message'] ?? null) ?? '';
+        $response->affiliateCode = TypeConverter::toString($innerData['affiliate_code'] ?? null) ?? '';
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

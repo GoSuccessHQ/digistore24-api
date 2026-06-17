@@ -25,12 +25,18 @@ final class StatsAffiliateToplistRequestTest extends TestCase
 
     public function test_to_array_with_parameters(): void
     {
-        $request = new StatsAffiliateToplistRequest(from: '2024-01-01', to: '2024-12-31', limit: 10);
+        $request = new StatsAffiliateToplistRequest(
+            from: '2024-01',
+            to: '2024-12',
+            affiliate: 'john_doe',
+            currency: 'EUR',
+        );
 
         $array = $request->toArray();
-        $this->assertSame('2024-01-01', $array['from']);
-        $this->assertSame('2024-12-31', $array['to']);
-        $this->assertSame(10, $array['limit']);
+        $this->assertSame('2024-01', $array['from']);
+        $this->assertSame('2024-12', $array['to']);
+        $this->assertSame('john_doe', $array['affiliate']);
+        $this->assertSame('EUR', $array['currency']);
     }
 
     public function test_validate_returns_empty_array(): void

@@ -29,6 +29,16 @@ final class GetUpgradeRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame('UPG123', $array['upgrade_id']);
+        $this->assertArrayNotHasKey('order_ids', $array);
+    }
+
+    public function test_to_array_includes_order_ids_when_set(): void
+    {
+        $request = new GetUpgradeRequest(upgradeId: 'UPG123', orderIds: 'A1,B2');
+
+        $array = $request->toArray();
+        $this->assertSame('UPG123', $array['upgrade_id']);
+        $this->assertSame('A1,B2', $array['order_ids']);
     }
 
     public function test_validate_returns_empty_array(): void

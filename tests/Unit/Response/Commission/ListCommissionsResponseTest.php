@@ -20,7 +20,7 @@ final class ListCommissionsResponseTest extends TestCase
             'items' => [
                 [
                     'id' => 1,
-                    'created_at' => '2024-01-01',
+                    'created_at' => '2024-01-01 10:00:00',
                     'amount' => 50.00,
                     'currency' => 'EUR',
                     'reason' => 'Sale commission',
@@ -28,14 +28,34 @@ final class ListCommissionsResponseTest extends TestCase
                     'transaction_id' => 100,
                     'purchase_id' => 'P123',
                 ],
+                [
+                    'id' => 2,
+                    'amount' => 25.50,
+                    'currency' => 'EUR',
+                ],
             ],
         ];
         $response = ListCommissionsResponse::fromArray($data);
 
         $this->assertInstanceOf(ListCommissionsResponse::class, $response);
         $this->assertSame(1, $response->pageNo);
-        $this->assertCount(1, $response->items);
+        $this->assertSame(10, $response->pageSize);
+        $this->assertSame(25, $response->itemCount);
+        $this->assertSame(3, $response->pageCount);
+        $this->assertCount(2, $response->items);
         $this->assertTrue($response->hasMorePages());
+
+        $first = $response->items[0];
+        $this->assertSame(1, $first->id);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $first->createdAt);
+        $this->assertSame(50.00, $first->amount);
+        $this->assertSame('EUR', $first->currency);
+        $this->assertSame('Sale commission', $first->reason);
+        $this->assertSame('2024-02-01', $first->schedulePayoutAt);
+        $this->assertSame(100, $first->transactionId);
+        $this->assertSame('P123', $first->purchaseId);
+
+        $this->assertSame(75.50, $response->getTotalAmount());
     }
 
     public function test_can_create_from_response(): void
@@ -57,6 +77,7 @@ final class ListCommissionsResponseTest extends TestCase
 
         $this->assertInstanceOf(ListCommissionsResponse::class, $response);
         $this->assertSame(1, $response->pageNo);
+        $this->assertCount(0, $response->items);
     }
 
     public function test_has_raw_response(): void

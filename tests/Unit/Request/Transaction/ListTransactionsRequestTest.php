@@ -44,6 +44,7 @@ final class ListTransactionsRequestTest extends TestCase
         $search = new TransactionSearchData(
             email: 'test@example.com',
             productId: '12345',
+            hasAffiliate: true,
         );
 
         $request = new ListTransactionsRequest(
@@ -63,6 +64,7 @@ final class ListTransactionsRequestTest extends TestCase
         $this->assertIsArray($array['search']);
         $this->assertSame('test@example.com', $array['search']['email']);
         $this->assertSame('12345', $array['search']['product_id']);
+        $this->assertSame('Y', $array['search']['has_affiliate']);
         $this->assertSame('earning', $array['sort_by']);
         $this->assertSame('desc', $array['sort_order']);
         $this->assertSame(2, $array['page_no']);

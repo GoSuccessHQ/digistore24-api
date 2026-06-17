@@ -13,6 +13,8 @@ use GoSuccess\Digistore24\Api\Enum\TransactionSortBy;
  * List Transactions Request
  *
  * Retrieves a paginated and filterable list of transactions.
+ *
+ * @link https://digistore24.com/api/docs/paths/listTransactions.yaml
  */
 final class ListTransactionsRequest extends AbstractRequest
 {

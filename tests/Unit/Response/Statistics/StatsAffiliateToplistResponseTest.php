@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Statistics;
 
+use GoSuccess\Digistore24\Api\DTO\AffiliateToplistItemData;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\Statistics\StatsAffiliateToplistResponse;
 use PHPUnit\Framework\TestCase;
@@ -14,20 +15,21 @@ final class StatsAffiliateToplistResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'toplist' => [
+                'top_list' => [
                     [
-                        'affiliate_id' => 'AFF001',
-                        'name' => 'Top Affiliate',
-                        'sales_count' => 150,
-                        'total_revenue' => 15000.00,
-                        'rank' => 1,
+                        'affiliate_id' => 1,
+                        'affiliate_name' => 'Top Affiliate',
+                        'currency' => 'EUR',
+                        'brutto_amount' => 15000.00,
+                        'netto_amount' => 12500.00,
+                        'affiliate_amount' => 3000.00,
+                        'refund_quota' => 2.5,
                     ],
                     [
-                        'affiliate_id' => 'AFF002',
-                        'name' => 'Second Affiliate',
-                        'sales_count' => 120,
-                        'total_revenue' => 12000.00,
-                        'rank' => 2,
+                        'affiliate_id' => 2,
+                        'affiliate_name' => 'Second Affiliate',
+                        'currency' => 'EUR',
+                        'brutto_amount' => 12000.00,
                     ],
                 ],
             ],
@@ -35,9 +37,12 @@ final class StatsAffiliateToplistResponseTest extends TestCase
         $response = StatsAffiliateToplistResponse::fromArray($data);
 
         $this->assertInstanceOf(StatsAffiliateToplistResponse::class, $response);
-        $toplist = $response->toplist;
-        $this->assertCount(2, $toplist);
-        $this->assertNotEmpty($toplist);
+        $this->assertCount(2, $response->topList);
+        $this->assertInstanceOf(AffiliateToplistItemData::class, $response->topList[0]);
+        $this->assertSame(1, $response->topList[0]->affiliateId);
+        $this->assertSame('Top Affiliate', $response->topList[0]->affiliateName);
+        $this->assertSame(15000.00, $response->topList[0]->bruttoAmount);
+        $this->assertSame(2.5, $response->topList[0]->refundQuota);
     }
 
     public function test_can_create_from_response(): void
@@ -46,11 +51,10 @@ final class StatsAffiliateToplistResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'toplist' => [
+                    'top_list' => [
                         [
-                            'affiliate_id' => 'AFF999',
-                            'rank' => 1,
-                            'sales_count' => 200,
+                            'affiliate_id' => 999,
+                            'affiliate_name' => 'Solo',
                         ],
                     ],
                 ],
@@ -62,7 +66,8 @@ final class StatsAffiliateToplistResponseTest extends TestCase
         $response = StatsAffiliateToplistResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(StatsAffiliateToplistResponse::class, $response);
-        $this->assertCount(1, $response->toplist);
+        $this->assertCount(1, $response->topList);
+        $this->assertSame(999, $response->topList[0]->affiliateId);
     }
 
     public function test_has_raw_response(): void

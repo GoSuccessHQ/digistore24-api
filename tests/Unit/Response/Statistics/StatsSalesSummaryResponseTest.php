@@ -14,23 +14,43 @@ final class StatsSalesSummaryResponseTest extends TestCase
     {
         $data = [
             'data' => [
-                'summary' => [
-                    'total_sales' => 450,
-                    'total_revenue' => 45000.50,
-                    'currency' => 'EUR',
-                    'period_start' => '2024-01-01',
-                    'period_end' => '2024-01-31',
-                    'average_order_value' => 100.00,
+                'for' => [
+                    'all' => [
+                        'from' => '2010-01-01',
+                        'to' => '2024-01-31',
+                        'amounts' => [
+                            'EUR' => [
+                                'total_brutto_amount' => 45000.50,
+                                'total_netto_amount' => 38000.00,
+                            ],
+                        ],
+                    ],
+                    'month' => [
+                        'from' => '2024-01-01',
+                        'to' => '2024-01-31',
+                        'amounts' => [
+                            'EUR' => [
+                                'total_brutto_amount' => 5000.00,
+                            ],
+                        ],
+                    ],
+                ],
+                'call_duration_ms' => [
+                    'amount_for_all' => 12.5,
+                    'total_call' => 30.0,
                 ],
             ],
         ];
         $response = StatsSalesSummaryResponse::fromArray($data);
 
         $this->assertInstanceOf(StatsSalesSummaryResponse::class, $response);
-        $summary = $response->summary;
-        $this->assertSame(450, $summary['total_sales']);
-        $this->assertSame(45000.50, $summary['total_revenue']);
-        $this->assertSame('EUR', $summary['currency']);
+        $this->assertArrayHasKey('all', $response->for);
+        $this->assertArrayHasKey('month', $response->for);
+        $this->assertSame(30.0, $response->callDurationMs['total_call']);
+
+        $all = $response->for['all'];
+        $this->assertIsArray($all);
+        $this->assertSame('2010-01-01', $all['from']);
     }
 
     public function test_can_create_from_response(): void
@@ -39,10 +59,12 @@ final class StatsSalesSummaryResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
-                    'summary' => [
-                        'total_sales' => 100,
-                        'total_revenue' => 10000.00,
-                        'currency' => 'USD',
+                    'for' => [
+                        'day' => [
+                            'from' => '2024-01-31',
+                            'to' => '2024-01-31',
+                            'amounts' => ['USD' => ['total_brutto_amount' => 100.00]],
+                        ],
                     ],
                 ],
             ],
@@ -53,8 +75,7 @@ final class StatsSalesSummaryResponseTest extends TestCase
         $response = StatsSalesSummaryResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(StatsSalesSummaryResponse::class, $response);
-        $summary = $response->summary;
-        $this->assertSame(100, $summary['total_sales']);
+        $this->assertArrayHasKey('day', $response->for);
     }
 
     public function test_has_raw_response(): void

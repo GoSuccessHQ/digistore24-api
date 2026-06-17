@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Affiliate;
 
+use GoSuccess\Digistore24\Api\Enum\AffiliationStatus;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\Affiliate\ValidateAffiliateResponse;
 use PHPUnit\Framework\TestCase;
@@ -15,12 +16,13 @@ final class ValidateAffiliateResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'valid' => true,
-                'affiliate_id' => 789,
-                'affiliate_code' => 'AFFILIATE123',
-                'is_active' => true,
-                'email' => 'affiliate@example.com',
-                'name' => 'John Doe',
+                'have_affiliation' => 'Y',
+                'affiliation_status' => 'approved',
+                'invalid_affiliate_name' => false,
+                'affiliation_status_msg' => 'Affiliation approved',
+                'invite_url' => 'https://www.digistore24.com/invite/123',
+                'valid_product_ids' => '11,22,33',
+                'invalid_product_ids' => '',
             ],
         ];
 
@@ -28,12 +30,13 @@ final class ValidateAffiliateResponseTest extends TestCase
 
         $this->assertInstanceOf(ValidateAffiliateResponse::class, $response);
         $this->assertSame('success', $response->result);
-        $this->assertTrue($response->valid);
-        $this->assertSame(789, $response->affiliateId);
-        $this->assertSame('AFFILIATE123', $response->affiliateCode);
-        $this->assertTrue($response->isActive);
-        $this->assertSame('affiliate@example.com', $response->email);
-        $this->assertSame('John Doe', $response->name);
+        $this->assertTrue($response->haveAffiliation);
+        $this->assertSame(AffiliationStatus::APPROVED, $response->affiliationStatus);
+        $this->assertFalse($response->invalidAffiliateName);
+        $this->assertSame('Affiliation approved', $response->affiliationStatusMsg);
+        $this->assertSame('https://www.digistore24.com/invite/123', $response->inviteUrl);
+        $this->assertSame('11,22,33', $response->validProductIds);
+        $this->assertSame('', $response->invalidProductIds);
     }
 
     public function test_can_create_from_response(): void
@@ -43,12 +46,11 @@ final class ValidateAffiliateResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'valid' => true,
-                    'affiliate_id' => 456,
-                    'affiliate_code' => 'AFF456',
-                    'is_active' => false,
-                    'email' => 'test@example.com',
-                    'name' => 'Jane Smith',
+                    'have_affiliation' => 'N',
+                    'affiliation_status' => 'wait_for_approval',
+                    'invalid_affiliate_name' => false,
+                    'valid_product_ids' => '11',
+                    'invalid_product_ids' => '22',
                 ],
             ],
             headers: ['Content-Type' => ['application/json']],
@@ -58,10 +60,10 @@ final class ValidateAffiliateResponseTest extends TestCase
         $response = ValidateAffiliateResponse::fromResponse(response: $httpResponse);
 
         $this->assertInstanceOf(ValidateAffiliateResponse::class, $response);
-        $this->assertTrue($response->valid);
-        $this->assertSame(456, $response->affiliateId);
-        $this->assertFalse($response->isActive);
-        $this->assertSame('Jane Smith', $response->name);
+        $this->assertFalse($response->haveAffiliation);
+        $this->assertSame(AffiliationStatus::WAIT_FOR_APPROVAL, $response->affiliationStatus);
+        $this->assertSame('11', $response->validProductIds);
+        $this->assertSame('22', $response->invalidProductIds);
     }
 
     public function test_handles_invalid_affiliate(): void
@@ -69,19 +71,21 @@ final class ValidateAffiliateResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'valid' => false,
+                'have_affiliation' => 'N',
+                'affiliation_status' => 'no_affiliation',
+                'invalid_affiliate_name' => true,
             ],
         ];
 
         $response = ValidateAffiliateResponse::fromArray(data: $data);
 
         $this->assertInstanceOf(ValidateAffiliateResponse::class, $response);
-        $this->assertFalse($response->valid);
-        $this->assertFalse($response->isActive);
-        $this->assertNull($response->affiliateId);
-        $this->assertNull($response->affiliateCode);
-        $this->assertNull($response->email);
-        $this->assertNull($response->name);
+        $this->assertFalse($response->haveAffiliation);
+        $this->assertSame(AffiliationStatus::NO_AFFILIATION, $response->affiliationStatus);
+        $this->assertTrue($response->invalidAffiliateName);
+        $this->assertNull($response->inviteUrl);
+        $this->assertNull($response->validProductIds);
+        $this->assertNull($response->invalidProductIds);
     }
 
     public function test_has_raw_response(): void
@@ -90,7 +94,7 @@ final class ValidateAffiliateResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'result' => 'success',
-                'data' => ['valid' => true, 'affiliate_id' => 123],
+                'data' => ['have_affiliation' => 'Y'],
             ],
             headers: ['Content-Type' => ['application/json']],
             rawBody: 'test body',

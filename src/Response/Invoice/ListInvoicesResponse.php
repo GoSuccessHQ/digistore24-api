@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Response\Invoice;
 
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
+use GoSuccess\Digistore24\Api\DTO\InvoiceData;
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * List Invoices Response
  *
- * Response object for the Invoice API endpoint.
+ * Contains all invoices for a purchase. Each entry exposes the full spec field
+ * set via {@see InvoiceData}.
+ *
+ * @link https://digistore24.com/api/docs/paths/listInvoices.yaml
  */
 final class ListInvoicesResponse extends AbstractResponse
 {
@@ -20,14 +25,14 @@ final class ListInvoicesResponse extends AbstractResponse
     public string $result = '';
 
     /**
-     * Purchase ID
+     * Digistore24 order ID
      */
     public string $purchaseId = '';
 
     /**
-     * Invoice list
+     * Invoice records (spec key: `invoice_list`)
      *
-     * @var array<string, mixed>
+     * @var array<int, InvoiceData>
      */
     public array $invoiceList = [];
 
@@ -35,17 +40,24 @@ final class ListInvoicesResponse extends AbstractResponse
     {
         $innerData = self::extractInnerData(data: $data);
 
-        $invoiceList = $innerData['invoice_list'] ?? [];
-        if (! is_array($invoiceList)) {
-            $invoiceList = [];
+        $invoiceListData = $innerData['invoice_list'] ?? [];
+        $invoiceList = [];
+
+        if (is_array($invoiceListData)) {
+            foreach ($invoiceListData as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+                /** @var array<string, mixed> $validatedItem */
+                $validatedItem = $item;
+                $invoiceList[] = InvoiceData::fromArray($validatedItem);
+            }
         }
-        /** @var array<string, mixed> $validatedInvoiceList */
-        $validatedInvoiceList = $invoiceList;
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->purchaseId = is_string($innerData['purchase_id'] ?? null) ? $innerData['purchase_id'] : '';
-        $response->invoiceList = $validatedInvoiceList;
+        $response->purchaseId = TypeConverter::toString($innerData['purchase_id'] ?? null) ?? '';
+        $response->invoiceList = $invoiceList;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

@@ -14,28 +14,26 @@ final class GetUpsellsResponseTest extends TestCase
     {
         $data = [
             'data' => [
+                'product_id' => 100,
                 'upsells' => [
-                    [
-                        'upsell_id' => 'UPS001',
-                        'product_id' => '100',
-                        'target_product_id' => '200',
-                        'type' => 'one_time',
-                    ],
-                    [
-                        'upsell_id' => 'UPS002',
-                        'product_id' => '200',
-                        'target_product_id' => '300',
-                        'type' => 'recurring',
-                    ],
+                    'y' => 200,
+                    'yn' => 300,
+                    'yy' => 400,
+                ],
+                'product_options' => [
+                    '200' => ['orderform_id' => 5],
                 ],
             ],
         ];
         $response = GetUpsellsResponse::fromArray($data);
 
         $this->assertInstanceOf(GetUpsellsResponse::class, $response);
-        $upsells = $response->upsells;
-        $this->assertCount(2, $upsells);
-        $this->assertNotEmpty($upsells);
+        $this->assertSame(100, $response->productId);
+        $this->assertCount(3, $response->upsells);
+        $this->assertSame(200, $response->upsells['y']);
+        $this->assertSame(300, $response->upsells['yn']);
+        $this->assertArrayHasKey('200', $response->productOptions);
+        $this->assertArrayHasKey('upsells', $response->data);
     }
 
     public function test_can_create_from_response(): void
@@ -44,8 +42,9 @@ final class GetUpsellsResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'data' => [
+                    'product_id' => 999,
                     'upsells' => [
-                        ['upsell_id' => 'UPS999'],
+                        'y' => 1000,
                     ],
                 ],
             ],
@@ -56,6 +55,7 @@ final class GetUpsellsResponseTest extends TestCase
         $response = GetUpsellsResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(GetUpsellsResponse::class, $response);
+        $this->assertSame(999, $response->productId);
         $this->assertCount(1, $response->upsells);
     }
 

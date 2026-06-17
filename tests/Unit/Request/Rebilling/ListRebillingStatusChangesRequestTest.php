@@ -30,6 +30,21 @@ final class ListRebillingStatusChangesRequestTest extends TestCase
         $array = $request->toArray();
         $this->assertSame('2024-01-01', $array['from']);
         $this->assertSame('2024-12-31', $array['to']);
+        $this->assertArrayNotHasKey('page_no', $array);
+    }
+
+    public function test_to_array_with_pagination(): void
+    {
+        $request = new ListRebillingStatusChangesRequest(
+            from: '2024-01-01',
+            to: '2024-12-31',
+            pageNo: 2,
+            pageSize: 50,
+        );
+
+        $array = $request->toArray();
+        $this->assertSame(2, $array['page_no']);
+        $this->assertSame(50, $array['page_size']);
     }
 
     public function test_validate_returns_empty_array(): void

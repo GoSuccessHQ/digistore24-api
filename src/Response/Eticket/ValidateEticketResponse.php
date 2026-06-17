@@ -4,59 +4,68 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Response\Eticket;
 
+use DateTimeInterface;
 use GoSuccess\Digistore24\Api\Base\AbstractResponse;
 use GoSuccess\Digistore24\Api\Http\Response;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
  * Validate E-Ticket Response
  *
- * Response after validating an e-ticket.
+ * Response after validating an e-ticket against a template/location and date.
+ *
+ * @link https://digistore24.com/api/docs/paths/validateEticket.yaml
  */
 final class ValidateEticketResponse extends AbstractResponse
 {
     public string $result = '';
 
-    public bool $success = true;
+    /** Validation status: "success" or "error" */
+    public string $status = '';
 
-    public string $ticketId = '';
+    /** Human-readable status message */
+    public string $msg = '';
 
-    public string $orderId = '';
+    /** The e-ticket's associated location ID */
+    public int $eticketLocationId = 0;
 
-    public string $productName = '';
+    /** The e-ticket's associated template ID */
+    public int $eticketTemplateId = 0;
 
-    public string $buyerName = '';
+    /** The e-ticket's date */
+    public ?DateTimeInterface $eticketDate = null;
 
-    public \DateTimeInterface $validatedAt;
+    /** Whether the e-ticket is valid for a different event */
+    public bool $isEticketValidForDifferentEvent = false;
 
-    public bool $wasAlreadyValidated = false;
+    /** Number of valid tickets matching the criteria */
+    public int $validTicketCount = 0;
 
-    public ?string $message = null;
+    /** Number of used tickets matching the criteria */
+    public int $usedTicketCount = 0;
+
+    /**
+     * The complete validation payload as returned by the API.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
-        // Support both direct and nested data structures
-        $ticketData = $data['data'] ?? $data;
-        if (! is_array($ticketData)) {
-            $ticketData = [];
-        }
-
-        $ticketId = $ticketData['ticket_id'] ?? '';
-        $orderId = $ticketData['order_id'] ?? '';
-        $productName = $ticketData['product_name'] ?? '';
-        $buyerName = $ticketData['buyer_name'] ?? '';
-        $validatedAt = $ticketData['validated_at'] ?? 'now';
-        $message = $ticketData['message'] ?? null;
+        $inner = self::extractInnerData(data: $data);
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
-        $response->success = (bool)($ticketData['success'] ?? true);
-        $response->ticketId = is_string($ticketId) ? $ticketId : '';
-        $response->orderId = is_string($orderId) ? $orderId : '';
-        $response->productName = is_string($productName) ? $productName : '';
-        $response->buyerName = is_string($buyerName) ? $buyerName : '';
-        $response->validatedAt = new \DateTimeImmutable(is_string($validatedAt) ? $validatedAt : 'now');
-        $response->wasAlreadyValidated = (bool)($ticketData['was_already_validated'] ?? false);
-        $response->message = $message !== null && is_string($message) ? $message : null;
+        $response->status = TypeConverter::toString($inner['status'] ?? null, '') ?? '';
+        $response->msg = TypeConverter::toString($inner['msg'] ?? null, '') ?? '';
+        $response->eticketLocationId = TypeConverter::toInt($inner['eticket_location_id'] ?? null, 0) ?? 0;
+        $response->eticketTemplateId = TypeConverter::toInt($inner['eticket_template_id'] ?? null, 0) ?? 0;
+        $response->eticketDate = TypeConverter::toDateTime($inner['eticket_date'] ?? null);
+        $response->isEticketValidForDifferentEvent = TypeConverter::toBool($inner['is_eticket_valid_for_different_event'] ?? null, false) ?? false;
+        $response->validTicketCount = TypeConverter::toInt($inner['valid_ticket_count'] ?? null, 0) ?? 0;
+        $response->usedTicketCount = TypeConverter::toInt($inner['used_ticket_count'] ?? null, 0) ?? 0;
+        $response->data = $inner;
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;
         }

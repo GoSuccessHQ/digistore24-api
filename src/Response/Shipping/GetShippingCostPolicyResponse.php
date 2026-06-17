@@ -10,19 +10,42 @@ use GoSuccess\Digistore24\Api\Http\Response;
 /**
  * Get Shipping Cost Policy Response
  *
- * Response object for the Shipping API endpoint.
+ * Response containing the details of a single shipping cost policy.
+ *
+ * @link https://digistore24.com/api/docs/paths/getShippingCostPolicy.yaml
  */
 final class GetShippingCostPolicyResponse extends AbstractResponse
 {
     public string $result = '';
 
-    /** @var array<string, mixed> */
+    /**
+     * The shipping cost policy data record.
+     *
+     * The spec returns it under the `policy` key; the legacy
+     * `shipping_cost_policy` key is also accepted for compatibility.
+     *
+     * @var array<string, mixed>
+     */
+    public array $policy = [];
+
+    /**
+     * Alias of {@see $policy} kept for backward compatibility.
+     *
+     * @var array<string, mixed>
+     */
     public array $shippingCostPolicy = [];
+
+    /**
+     * The complete response payload as returned by the API.
+     *
+     * @var array<string, mixed>
+     */
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
         $innerData = self::extractInnerData(data: $data);
-        $policyData = $innerData['shipping_cost_policy'] ?? [];
+        $policyData = $innerData['policy'] ?? $innerData['shipping_cost_policy'] ?? [];
         if (! is_array($policyData)) {
             $policyData = [];
         }
@@ -31,7 +54,9 @@ final class GetShippingCostPolicyResponse extends AbstractResponse
 
         $response = new self();
         $response->result = self::extractResult(data: $data, rawResponse: $rawResponse);
+        $response->policy = $validatedPolicy;
         $response->shippingCostPolicy = $validatedPolicy;
+        $response->data = $innerData;
 
         if ($rawResponse !== null) {
             $response->rawResponse = $rawResponse;

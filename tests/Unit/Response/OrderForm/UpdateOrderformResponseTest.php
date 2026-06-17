@@ -14,11 +14,30 @@ final class UpdateOrderformResponseTest extends TestCase
     {
         $data = [
             'result' => 'success',
+            'data' => [
+                'is_modified' => 'Y',
+            ],
         ];
         $response = UpdateOrderformResponse::fromArray($data);
 
         $this->assertInstanceOf(UpdateOrderformResponse::class, $response);
         $this->assertSame('success', $response->result);
+        $this->assertTrue($response->isModified);
+        $this->assertTrue($response->wasModified());
+    }
+
+    public function test_reports_unmodified(): void
+    {
+        $data = [
+            'result' => 'success',
+            'data' => [
+                'is_modified' => 'N',
+            ],
+        ];
+        $response = UpdateOrderformResponse::fromArray($data);
+
+        $this->assertFalse($response->isModified);
+        $this->assertFalse($response->wasModified());
     }
 
     public function test_can_create_from_response(): void
@@ -27,6 +46,9 @@ final class UpdateOrderformResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'result' => 'success',
+                'data' => [
+                    'is_modified' => 'Y',
+                ],
             ],
             headers: [],
             rawBody: '',
@@ -35,6 +57,7 @@ final class UpdateOrderformResponseTest extends TestCase
         $response = UpdateOrderformResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(UpdateOrderformResponse::class, $response);
+        $this->assertTrue($response->isModified);
     }
 
     public function test_has_raw_response(): void

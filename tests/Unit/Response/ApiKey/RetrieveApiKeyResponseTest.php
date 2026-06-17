@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\ApiKey;
 
+use GoSuccess\Digistore24\Api\Enum\ApiRequestStatus;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\ApiKey\RetrieveApiKeyResponse;
 use PHPUnit\Framework\TestCase;
@@ -15,14 +16,9 @@ final class RetrieveApiKeyResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'api_key_id' => 'KEY123',
-                'description' => 'Production Server',
-                'created_at' => '2025-01-15 10:30:00',
-                'last_used_at' => '2025-10-15 14:25:00',
-                'is_active' => true,
-                'permissions' => ['read', 'write'],
-                'rate_limit' => 1000,
-                'requests_today' => 450,
+                'api_key' => 'live-api-key-12345',
+                'request_status' => 'completed',
+                'note' => 'API key created successfully.',
             ],
         ];
 
@@ -30,15 +26,10 @@ final class RetrieveApiKeyResponseTest extends TestCase
 
         $this->assertInstanceOf(RetrieveApiKeyResponse::class, $response);
         $this->assertSame('success', $response->result);
-        $this->assertSame('KEY123', $response->apiKeyId);
-        $this->assertSame('Production Server', $response->description);
-        $this->assertInstanceOf(\DateTimeInterface::class, $response->createdAt);
-        $this->assertInstanceOf(\DateTimeInterface::class, $response->lastUsedAt);
-        $this->assertTrue($response->isActive);
-        $this->assertContains('read', $response->permissions);
-        $this->assertContains('write', $response->permissions);
-        $this->assertSame(1000, $response->rateLimit);
-        $this->assertSame(450, $response->requestsToday);
+        $this->assertSame('live-api-key-12345', $response->apiKey);
+        $this->assertSame(ApiRequestStatus::COMPLETED, $response->requestStatus);
+        $this->assertSame('API key created successfully.', $response->note);
+        $this->assertSame('live-api-key-12345', $response->data['api_key']);
     }
 
     public function test_can_create_from_response(): void
@@ -48,12 +39,9 @@ final class RetrieveApiKeyResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'api_key_id' => 'KEY456',
-                    'description' => 'Test Server',
-                    'created_at' => '2025-01-15 10:30:00',
-                    'is_active' => false,
-                    'permissions' => ['read'],
-                    'rate_limit' => 500,
+                    'api_key' => '',
+                    'request_status' => 'pending',
+                    'note' => 'The user has not confirmed yet.',
                 ],
             ],
             headers: ['Content-Type' => ['application/json']],
@@ -63,10 +51,28 @@ final class RetrieveApiKeyResponseTest extends TestCase
         $response = RetrieveApiKeyResponse::fromResponse(response: $httpResponse);
 
         $this->assertInstanceOf(RetrieveApiKeyResponse::class, $response);
-        $this->assertSame('KEY456', $response->apiKeyId);
-        $this->assertSame('Test Server', $response->description);
-        $this->assertFalse($response->isActive);
-        $this->assertSame(500, $response->rateLimit);
+        $this->assertSame('', $response->apiKey);
+        $this->assertSame(ApiRequestStatus::PENDING, $response->requestStatus);
+        $this->assertSame('The user has not confirmed yet.', $response->note);
+    }
+
+    public function test_handles_aborted_status(): void
+    {
+        $data = [
+            'result' => 'success',
+            'data' => [
+                'api_key' => '',
+                'request_status' => 'aborted',
+                'note' => 'The user canceled the request.',
+            ],
+        ];
+
+        $response = RetrieveApiKeyResponse::fromArray(data: $data);
+
+        $this->assertInstanceOf(RetrieveApiKeyResponse::class, $response);
+        $this->assertSame('', $response->apiKey);
+        $this->assertSame(ApiRequestStatus::ABORTED, $response->requestStatus);
+        $this->assertSame('The user canceled the request.', $response->note);
     }
 
     public function test_handles_minimal_data(): void
@@ -74,22 +80,16 @@ final class RetrieveApiKeyResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'api_key_id' => 'MINIMAL',
-                'is_active' => true,
+                'api_key' => 'minimal-key',
             ],
         ];
 
         $response = RetrieveApiKeyResponse::fromArray(data: $data);
 
         $this->assertInstanceOf(RetrieveApiKeyResponse::class, $response);
-        $this->assertSame('MINIMAL', $response->apiKeyId);
-        $this->assertTrue($response->isActive);
-        $this->assertNull($response->description);
-        $this->assertNull($response->createdAt);
-        $this->assertNull($response->lastUsedAt);
-        $this->assertEmpty($response->permissions);
-        $this->assertNull($response->rateLimit);
-        $this->assertNull($response->requestsToday);
+        $this->assertSame('minimal-key', $response->apiKey);
+        $this->assertNull($response->requestStatus);
+        $this->assertNull($response->note);
     }
 
     public function test_has_raw_response(): void
@@ -98,7 +98,7 @@ final class RetrieveApiKeyResponseTest extends TestCase
             statusCode: 200,
             data: [
                 'result' => 'success',
-                'data' => ['api_key_id' => 'TEST', 'is_active' => true],
+                'data' => ['api_key' => 'TEST', 'request_status' => 'completed'],
             ],
             headers: ['Content-Type' => ['application/json']],
             rawBody: 'test body',

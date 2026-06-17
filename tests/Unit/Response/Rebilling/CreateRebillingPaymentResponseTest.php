@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Response\Rebilling;
 
+use GoSuccess\Digistore24\Api\Enum\BillingPaymentStatus;
 use GoSuccess\Digistore24\Api\Http\Response;
 use GoSuccess\Digistore24\Api\Response\Rebilling\CreateRebillingPaymentResponse;
 use PHPUnit\Framework\TestCase;
@@ -15,16 +16,21 @@ final class CreateRebillingPaymentResponseTest extends TestCase
         $data = [
             'result' => 'success',
             'data' => [
-                'payment_id' => 'PAY123456',
-                'amount' => 29.99,
-                'currency' => 'EUR',
-                'status' => 'completed',
+                'purchase_id' => 'P123456',
+                'payment_status' => 'completed',
+                'payment_message' => '',
+                'billing_status' => 'paying',
+                'payment_data_update_url' => 'https://www.digistore24.com/update/P123456',
             ],
         ];
         $response = CreateRebillingPaymentResponse::fromArray($data);
 
         $this->assertInstanceOf(CreateRebillingPaymentResponse::class, $response);
         $this->assertSame('success', $response->result);
+        $this->assertSame('P123456', $response->purchaseId);
+        $this->assertSame(BillingPaymentStatus::COMPLETED, $response->paymentStatus);
+        $this->assertSame('paying', $response->billingStatus);
+        $this->assertSame('https://www.digistore24.com/update/P123456', $response->paymentDataUpdateUrl);
     }
 
     public function test_can_create_from_response(): void
@@ -34,7 +40,9 @@ final class CreateRebillingPaymentResponseTest extends TestCase
             data: [
                 'result' => 'success',
                 'data' => [
-                    'payment_id' => 'PAY999',
+                    'purchase_id' => 'P999',
+                    'payment_status' => 'refused',
+                    'payment_message' => 'Card declined',
                 ],
             ],
             headers: [],
@@ -44,6 +52,8 @@ final class CreateRebillingPaymentResponseTest extends TestCase
         $response = CreateRebillingPaymentResponse::fromResponse($httpResponse);
 
         $this->assertInstanceOf(CreateRebillingPaymentResponse::class, $response);
+        $this->assertSame(BillingPaymentStatus::REFUSED, $response->paymentStatus);
+        $this->assertSame('Card declined', $response->paymentMessage);
     }
 
     public function test_has_raw_response(): void
