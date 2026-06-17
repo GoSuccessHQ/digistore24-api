@@ -93,7 +93,6 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
                 continue;
             }
 
-            $property->setAccessible(true);
             $name = $property->getName();
             $value = $property->getValue($this);
 

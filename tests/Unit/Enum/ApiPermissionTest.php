@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Tests\Unit\Enum;
 
 use GoSuccess\Digistore24\Api\Enum\ApiPermission;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \GoSuccess\Digistore24\Api\Enum\ApiPermission
- */
+#[CoversClass(ApiPermission::class)]
 final class ApiPermissionTest extends TestCase
 {
     public function testAllCasesHaveCorrectValues(): void
