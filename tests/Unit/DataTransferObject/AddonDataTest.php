@@ -34,7 +34,10 @@ final class AddonDataTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Quantity must be at least 1');
 
-        AddonData::fromArray(['product_id' => 12345, 'quantity' => 0]);
+        // Validation happens on direct assignment (user input), not when parsing an
+        // API response via fromArray(), which intentionally trusts inbound data.
+        $addon = new AddonData();
+        $addon->quantity = 0;
     }
 
     public function testToArrayWithMinimalData(): void

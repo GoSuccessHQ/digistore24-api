@@ -8,7 +8,6 @@ use DateTimeImmutable;
 use GoSuccess\Digistore24\Api\Base\AbstractDataTransferObject;
 use GoSuccess\Digistore24\Api\Enum\BuyerType;
 use GoSuccess\Digistore24\Api\Enum\Salutation;
-use GoSuccess\Digistore24\Api\Util\TypeConverter;
 use GoSuccess\Digistore24\Api\Util\Validator;
 
 /**
@@ -225,48 +224,5 @@ final class BuyerData extends AbstractDataTransferObject
         $this->buyerType = $buyerType;
         $this->createdAt = $createdAt;
         $this->readonlyKeys = $readonlyKeys;
-    }
-
-    /**
-     * Create from API response array
-     *
-     * @param array<string, mixed> $data
-     */
-    public static function fromArray(array $data): static
-    {
-        $salutation = null;
-        if (isset($data['salutation']) && is_string($data['salutation'])) {
-            $salutation = Salutation::fromString($data['salutation']);
-        }
-
-        /** @var int|null $id */
-        $id = TypeConverter::toInt($data['id'] ?? null);
-        /** @var int|null $addressId */
-        $addressId = TypeConverter::toInt($data['address_id'] ?? null);
-
-        return new self(
-            id: $id,
-            addressId: $addressId,
-            email: TypeConverter::toString($data['email'] ?? null) ?? '',
-            salutation: $salutation,
-            salutationMsg: TypeConverter::toString($data['salutation_msg'] ?? null),
-            title: TypeConverter::toString($data['title'] ?? null),
-            firstName: TypeConverter::toString($data['first_name'] ?? null),
-            lastName: TypeConverter::toString($data['last_name'] ?? null),
-            company: TypeConverter::toString($data['company'] ?? null),
-            street: TypeConverter::toString($data['street'] ?? null),
-            streetName: TypeConverter::toString($data['street_name'] ?? null),
-            streetNumber: TypeConverter::toString($data['street_number'] ?? null),
-            street2: TypeConverter::toString($data['street2'] ?? null),
-            city: TypeConverter::toString($data['city'] ?? null),
-            zipcode: TypeConverter::toString($data['zipcode'] ?? null),
-            state: TypeConverter::toString($data['state'] ?? null),
-            country: TypeConverter::toString($data['country'] ?? null),
-            phoneNo: TypeConverter::toString($data['phone_no'] ?? null),
-            taxId: TypeConverter::toString($data['tax_id'] ?? null),
-            buyerType: BuyerType::fromString(TypeConverter::toString($data['buyer_type'] ?? null)),
-            createdAt: TypeConverter::toDateTime($data['created_at'] ?? null),
-            readonlyKeys: TypeConverter::toString($data['readonly_keys'] ?? null),
-        );
     }
 }

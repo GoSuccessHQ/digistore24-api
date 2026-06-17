@@ -75,7 +75,10 @@ final class Digistore24Test extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid email');
 
-        BuyerData::fromArray(['email' => 'invalid-email']);
+        // Validation runs on direct assignment (user input); fromArray() trusts
+        // inbound API data and intentionally bypasses the validating set hooks.
+        $buyer = new BuyerData();
+        $buyer->email = 'invalid-email';
     }
 
     public function testPropertyHookValidationThrowsExceptionForEmptyProductId(): void

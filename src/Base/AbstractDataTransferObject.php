@@ -41,40 +41,28 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
     public static function fromArray(array $data): static
     {
         $reflection = new ReflectionClass(static::class);
+
+        // Always build without invoking the constructor and assign via setRawValue,
+        // so validating set hooks never fire while parsing trusted API data. The
+        // constructor's default values are seeded first so that properties the
+        // response omits remain initialized.
+        $instance = $reflection->newInstanceWithoutConstructor();
+
         $constructor = $reflection->getConstructor();
-
-        // If no constructor, create empty instance and set properties
-        if ($constructor === null || $constructor->getNumberOfParameters() === 0) {
-            $instance = $reflection->newInstanceWithoutConstructor();
-            $instanceReflection = new ReflectionClass($instance);
-            // @phpstan-ignore argument.type (ReflectionClass<static> cannot be covariant to ReflectionClass<object>)
-            self::setPropertiesFromArray($instance, $data, $instanceReflection);
-
-            /** @var static */
-            return $instance;
-        }
-
-        // Build constructor arguments from data
-        $args = [];
-        foreach ($constructor->getParameters() as $param) {
-            $name = $param->getName();
-            $snakeCaseName = self::camelToSnake($name);
-
-            // Try both camelCase and snake_case
-            $value = $data[$name] ?? $data[$snakeCaseName] ?? null;
-
-            // Get the parameter type
-            $type = $param->getType();
-
-            if ($type instanceof ReflectionNamedType) {
-                $args[$name] = self::convertValue($value, $type, $param->allowsNull());
-            } else {
-                $args[$name] = $value;
+        if ($constructor !== null) {
+            foreach ($constructor->getParameters() as $param) {
+                if ($param->isDefaultValueAvailable() && $reflection->hasProperty($param->getName())) {
+                    $reflection->getProperty($param->getName())->setRawValue($instance, $param->getDefaultValue());
+                }
             }
         }
 
+        $instanceReflection = new ReflectionClass($instance);
+        // @phpstan-ignore argument.type (ReflectionClass<static> cannot be covariant to ReflectionClass<object>)
+        self::setPropertiesFromArray($instance, $data, $instanceReflection);
+
         /** @var static */
-        return $reflection->newInstanceArgs($args);
+        return $instance;
     }
 
     /**
@@ -158,11 +146,14 @@ abstract class AbstractDataTransferObject implements DataTransferObjectInterface
             $value = $data[$name] ?? $data[$snakeCaseName];
             $type = $property->getType();
 
+            // Use setRawValue so validating set hooks are bypassed when parsing an
+            // API response: user input is validated, but inbound API data is trusted
+            // and must not throw if it does not match a strict input format.
             if ($type instanceof ReflectionNamedType) {
                 $convertedValue = self::convertValue($value, $type, $type->allowsNull());
-                $property->setValue($instance, $convertedValue);
+                $property->setRawValue($instance, $convertedValue);
             } else {
-                $property->setValue($instance, $value);
+                $property->setRawValue($instance, $value);
             }
         }
     }
