@@ -32,16 +32,21 @@ final class ShippingCostPolicyData extends AbstractDataTransferObject
     }
 
     /**
-     * Label shown on orderform
-     * Replace XX with language code (e.g., label_en, label_de)
-     * Maximum 63 characters
+     * Labels shown on the order form, keyed by two-letter language code
+     * (e.g. ['en' => 'Shipping', 'de' => 'Versand']). Each entry is sent to the
+     * API as label_<lang>. Every label may be at most 63 characters.
+     *
+     * @var array<string, string>
      */
-    public ?string $labelXX = null {
+    public array $labels = [] {
         set {
-            if ($value !== null && ! Validator::isLength($value, null, 63)) {
-                throw new \InvalidArgumentException('Label must not exceed 63 characters');
+            /** @var array<string, string> $value */
+            foreach ($value as $label) {
+                if (! Validator::isLength($label, null, 63)) {
+                    throw new \InvalidArgumentException('Label must not exceed 63 characters');
+                }
             }
-            $this->labelXX = $value;
+            $this->labels = $value;
         }
     }
 
@@ -216,8 +221,8 @@ final class ShippingCostPolicyData extends AbstractDataTransferObject
     public function toArray(): array
     {
         $data = ['name' => $this->name, 'position' => $this->position, 'is_active' => $this->isActive, 'for_product_ids' => $this->forProductIds, 'for_countries' => $this->forCountries, 'for_currencies' => $this->forCurrencies, 'fee_type' => $this->feeType, 'billing_cycle' => $this->billingCycle, 'scale_level_count' => $this->scaleLevelCount];
-        if ($this->labelXX !== null) {
-            $data['label_XX'] = $this->labelXX;
+        foreach ($this->labels as $lang => $label) {
+            $data['label_' . $lang] = $label;
         }
         if ($this->currency !== null) {
             $data['currency'] = $this->currency;

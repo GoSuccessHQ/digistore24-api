@@ -5,6 +5,7 @@ declare (strict_types=1);
 namespace GoSuccess\Digistore24\Api\DTO;
 
 use GoSuccess\Digistore24\Api\Base\AbstractDataTransferObject;
+use GoSuccess\Digistore24\Api\Util\TypeConverter;
 use GoSuccess\Digistore24\Api\Util\Validator;
 
 /**
@@ -185,5 +186,49 @@ final class VoucherData extends AbstractDataTransferObject
             }
             $this->upgradePolicy = $value;
         }
+    }
+
+    /**
+     * Convert to array for createVoucher/updateVoucher requests.
+     *
+     * Only the fields the spec defines are emitted. The response-only `id` and the
+     * non-spec `validUntil` alias are intentionally excluded so they never leak
+     * into a request payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        $data = [
+            'code' => $this->code,
+            'product_ids' => $this->productIds,
+            'is_count_limited' => TypeConverter::fromBool($this->isCountLimited),
+            'count_left' => $this->countLeft,
+            'upgrade_policy' => $this->upgradePolicy,
+        ];
+
+        if ($this->validFrom !== null) {
+            $data['valid_from'] = $this->validFrom;
+        }
+        if ($this->expiresAt !== null) {
+            $data['expires_at'] = $this->expiresAt;
+        }
+        if ($this->firstRate !== null) {
+            $data['first_rate'] = $this->firstRate;
+        }
+        if ($this->otherRates !== null) {
+            $data['other_rates'] = $this->otherRates;
+        }
+        if ($this->firstAmount !== null) {
+            $data['first_amount'] = $this->firstAmount;
+        }
+        if ($this->otherAmounts !== null) {
+            $data['other_amounts'] = $this->otherAmounts;
+        }
+        if ($this->currency !== null) {
+            $data['currency'] = $this->currency;
+        }
+
+        return $data;
     }
 }
