@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Request\Purchase;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
+use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * Request to list purchases by email address
@@ -34,5 +35,10 @@ final class ListPurchasesOfEmailRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/listPurchasesOfEmail';
+    }
+
+    public function getMethod(): HttpMethod
+    {
+        return HttpMethod::GET;
     }
 }

@@ -28,7 +28,7 @@ final class DeletePaymentplanRequest extends AbstractRequest
 
     public function getMethod(): HttpMethod
     {
-        return HttpMethod::POST;
+        return HttpMethod::DELETE;
     }
 
     public function toArray(): array

@@ -6,7 +6,6 @@ namespace GoSuccess\Digistore24\Api\Request\Transaction;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\DTO\TransactionSearchData;
-use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 use GoSuccess\Digistore24\Api\Enum\SortOrder;
 use GoSuccess\Digistore24\Api\Enum\TransactionSortBy;
 
@@ -40,11 +39,6 @@ final class ListTransactionsRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/listTransactions';
-    }
-
-    public function getMethod(): HttpMethod
-    {
-        return HttpMethod::POST;
     }
 
     public function toArray(): array

@@ -29,7 +29,7 @@ final class UpdateUpsellsRequest extends AbstractRequest
 
     public function getMethod(): HttpMethod
     {
-        return HttpMethod::POST;
+        return HttpMethod::PUT;
     }
 
     /**

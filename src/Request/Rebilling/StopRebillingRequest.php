@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Request\Rebilling;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
-use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * Stop Rebilling Request
@@ -24,11 +23,6 @@ final class StopRebillingRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/stopRebilling';
-    }
-
-    public function getMethod(): HttpMethod
-    {
-        return HttpMethod::POST;
     }
 
     public function toArray(): array

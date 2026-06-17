@@ -30,7 +30,7 @@ final class UpdatePaymentplanRequest extends AbstractRequest
 
     public function getMethod(): HttpMethod
     {
-        return HttpMethod::POST;
+        return HttpMethod::PUT;
     }
 
     public function toArray(): array

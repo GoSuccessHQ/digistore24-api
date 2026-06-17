@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Request\Purchase;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
+use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * Request to get purchase download details
@@ -31,5 +32,10 @@ final class GetPurchaseDownloadsRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/getPurchaseDownloads';
+    }
+
+    public function getMethod(): HttpMethod
+    {
+        return HttpMethod::GET;
     }
 }

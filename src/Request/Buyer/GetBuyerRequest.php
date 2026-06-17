@@ -27,6 +27,11 @@ final class GetBuyerRequest extends AbstractRequest
         return '/getBuyer';
     }
 
+    public function getMethod(): HttpMethod
+    {
+        return HttpMethod::GET;
+    }
+
     public function getHttpMethod(): HttpMethod
     {
         return HttpMethod::GET;

@@ -6,7 +6,6 @@ namespace GoSuccess\Digistore24\Api\Request\ProductGroup;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\DTO\ProductGroupData;
-use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * Create Product Group Request
@@ -25,11 +24,6 @@ final class CreateProductGroupRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/createProductGroup';
-    }
-
-    public function getMethod(): HttpMethod
-    {
-        return HttpMethod::POST;
     }
 
     public function toArray(): array

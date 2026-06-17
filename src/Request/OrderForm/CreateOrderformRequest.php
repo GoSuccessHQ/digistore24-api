@@ -6,7 +6,6 @@ namespace GoSuccess\Digistore24\Api\Request\OrderForm;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\DTO\OrderFormData;
-use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * Create Order Form Request
@@ -25,11 +24,6 @@ final class CreateOrderformRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/createOrderform';
-    }
-
-    public function getMethod(): HttpMethod
-    {
-        return HttpMethod::POST;
     }
 
     public function toArray(): array

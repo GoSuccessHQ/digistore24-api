@@ -28,7 +28,7 @@ final class GetProductGroupRequest extends AbstractRequest
 
     public function getMethod(): HttpMethod
     {
-        return HttpMethod::POST;
+        return HttpMethod::GET;
     }
 
     public function toArray(): array

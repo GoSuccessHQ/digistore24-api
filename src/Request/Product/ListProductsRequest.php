@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Request\Product;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
+use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 use GoSuccess\Digistore24\Api\Enum\ProductSortBy;
 
 /**
@@ -25,6 +26,11 @@ final class ListProductsRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/listProducts';
+    }
+
+    public function getMethod(): HttpMethod
+    {
+        return HttpMethod::GET;
     }
 
     public function toArray(): array

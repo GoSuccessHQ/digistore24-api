@@ -6,7 +6,6 @@ namespace GoSuccess\Digistore24\Api\Request\Shipping;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\DTO\ShippingCostPolicyData;
-use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * Create Shipping Cost Policy Request
@@ -25,11 +24,6 @@ final class CreateShippingCostPolicyRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/createShippingCostPolicy';
-    }
-
-    public function getMethod(): HttpMethod
-    {
-        return HttpMethod::POST;
     }
 
     public function toArray(): array

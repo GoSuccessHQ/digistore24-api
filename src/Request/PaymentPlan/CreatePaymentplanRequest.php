@@ -6,7 +6,6 @@ namespace GoSuccess\Digistore24\Api\Request\PaymentPlan;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\DTO\PaymentPlanFullData;
-use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * Create Payment Plan Request
@@ -25,11 +24,6 @@ final class CreatePaymentplanRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/createPaymentplan';
-    }
-
-    public function getMethod(): HttpMethod
-    {
-        return HttpMethod::POST;
     }
 
     public function toArray(): array

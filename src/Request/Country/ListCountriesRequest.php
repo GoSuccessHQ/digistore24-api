@@ -23,7 +23,7 @@ final class ListCountriesRequest extends AbstractRequest
 
     public function getMethod(): HttpMethod
     {
-        return HttpMethod::POST;
+        return HttpMethod::GET;
     }
 
     public function toArray(): array

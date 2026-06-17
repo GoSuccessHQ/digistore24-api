@@ -6,6 +6,7 @@ namespace GoSuccess\Digistore24\Api\Request\Purchase;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\DTO\PurchaseSearchData;
+use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 use GoSuccess\Digistore24\Api\Enum\PurchaseSortBy;
 use GoSuccess\Digistore24\Api\Enum\SortOrder;
 
@@ -41,6 +42,11 @@ final class ListPurchasesRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/listPurchases';
+    }
+
+    public function getMethod(): HttpMethod
+    {
+        return HttpMethod::GET;
     }
 
     public function toArray(): array

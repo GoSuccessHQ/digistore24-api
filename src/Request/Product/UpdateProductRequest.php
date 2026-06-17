@@ -7,6 +7,7 @@ namespace GoSuccess\Digistore24\Api\Request\Product;
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
 use GoSuccess\Digistore24\Api\Enum\AffiliateApprovalStatus;
 use GoSuccess\Digistore24\Api\Enum\BuyerType;
+use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 use GoSuccess\Digistore24\Api\Util\TypeConverter;
 
 /**
@@ -127,5 +128,10 @@ final class UpdateProductRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/updateProduct';
+    }
+
+    public function getMethod(): HttpMethod
+    {
+        return HttpMethod::PUT;
     }
 }

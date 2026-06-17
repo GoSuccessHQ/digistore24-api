@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Request\Invoice;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
-use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * Resend Invoice Mail Request
@@ -25,11 +24,6 @@ final class ResendInvoiceMailRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/resendInvoiceMail';
-    }
-
-    public function getMethod(): HttpMethod
-    {
-        return HttpMethod::POST;
     }
 
     public function toArray(): array

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace GoSuccess\Digistore24\Api\Request\Image;
 
 use GoSuccess\Digistore24\Api\Base\AbstractRequest;
+use GoSuccess\Digistore24\Api\Enum\HttpMethod;
 
 /**
  * List Images Request
@@ -21,6 +22,11 @@ final class ListImagesRequest extends AbstractRequest
     public function getEndpoint(): string
     {
         return '/listImages';
+    }
+
+    public function getMethod(): HttpMethod
+    {
+        return HttpMethod::GET;
     }
 
     public function toArray(): array

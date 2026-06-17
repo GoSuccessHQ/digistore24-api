@@ -34,7 +34,7 @@ final class UpdateAffiliateCommissionRequest extends AbstractRequest
 
     public function getMethod(): HttpMethod
     {
-        return HttpMethod::POST;
+        return HttpMethod::PUT;
     }
 
     public function toArray(): array
