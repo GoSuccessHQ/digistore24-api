@@ -17,25 +17,19 @@ final class ListInvoicesResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Purchase ID
      */
-    public string $purchaseId {
-        get => $this->purchaseId ?? '';
-    }
+    public string $purchaseId = '';
 
     /**
      * Invoice list
      *
      * @var array<string, mixed>
      */
-    public array $invoiceList {
-        get => $this->invoiceList ?? [];
-    }
+    public array $invoiceList = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

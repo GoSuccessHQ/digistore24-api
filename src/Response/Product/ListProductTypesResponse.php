@@ -20,10 +20,10 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
  */
 final class ListProductTypesResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     /** @var array<int, object{id: int, name: string, category: string}> */
-    public array $productTypes { get => $this->productTypes ?? []; }
+    public array $productTypes = [];
 
     /**
      * Get a specific product type by ID.

@@ -18,23 +18,17 @@ final class UnregisterResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Whether the API key was modified/deleted
      */
-    public bool $modified {
-        get => $this->modified ?? false;
-    }
+    public bool $modified = false;
 
     /**
      * Confirmation message from API
      */
-    public ?string $note {
-        get => $this->note ?? null;
-    }
+    public ?string $note = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

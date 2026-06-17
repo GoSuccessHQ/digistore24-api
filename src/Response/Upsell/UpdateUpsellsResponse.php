@@ -14,7 +14,7 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class UpdateUpsellsResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     public function wasSuccessful(): bool
     {

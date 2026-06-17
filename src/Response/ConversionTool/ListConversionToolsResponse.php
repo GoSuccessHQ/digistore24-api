@@ -17,18 +17,14 @@ final class ListConversionToolsResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Smart upgrades data
      *
      * @var array<string, mixed>
      */
-    public array $smartupgrades {
-        get => $this->smartupgrades ?? [];
-    }
+    public array $smartupgrades = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

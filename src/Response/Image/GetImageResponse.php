@@ -17,51 +17,37 @@ final class GetImageResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Image ID
      */
-    public string $imageId {
-        get => $this->imageId ?? '';
-    }
+    public string $imageId = '';
 
     /**
      * Image URL
      */
-    public string $imageUrl {
-        get => $this->imageUrl ?? '';
-    }
+    public string $imageUrl = '';
 
     /**
      * Image name
      */
-    public string $name {
-        get => $this->name ?? '';
-    }
+    public string $name = '';
 
     /**
      * Usage type
      */
-    public ?string $usageType {
-        get => $this->usageType ?? null;
-    }
+    public ?string $usageType = null;
 
     /**
      * Alt tag
      */
-    public ?string $altTag {
-        get => $this->altTag ?? null;
-    }
+    public ?string $altTag = null;
 
     /**
      * Creation timestamp
      */
-    public ?\DateTimeInterface $createdAt {
-        get => $this->createdAt ?? null;
-    }
+    public ?\DateTimeInterface $createdAt = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

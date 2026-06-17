@@ -14,73 +14,39 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class ValidateLicenseKeyResponse extends AbstractResponse
 {
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
-    public string $isLicenseValid {
-        get => $this->isLicenseValid ?? 'N';
-    }
+    public string $isLicenseValid = 'N';
 
-    public string $isLicenseKeyFound {
-        get => $this->isLicenseKeyFound ?? 'N';
-    }
+    public string $isLicenseKeyFound = 'N';
 
-    public string $purchaseId {
-        get => $this->purchaseId ?? '';
-    }
+    public string $purchaseId = '';
 
-    public string $licenseKey {
-        get => $this->licenseKey ?? '';
-    }
+    public string $licenseKey = '';
 
-    public int $productId {
-        get => $this->productId ?? 0;
-    }
+    public int $productId = 0;
 
-    public string $productName {
-        get => $this->productName ?? '';
-    }
+    public string $productName = '';
 
-    public string $billingStatus {
-        get => $this->billingStatus ?? '';
-    }
+    public string $billingStatus = '';
 
-    public string $billingStatusMsg {
-        get => $this->billingStatusMsg ?? '';
-    }
+    public string $billingStatusMsg = '';
 
-    public ?string $lastPaymentAt {
-        get => $this->lastPaymentAt ?? null;
-    }
+    public ?string $lastPaymentAt = null;
 
-    public ?string $lastPaymentAtMsg {
-        get => $this->lastPaymentAtMsg ?? null;
-    }
+    public ?string $lastPaymentAtMsg = null;
 
-    public ?string $nextPaymentAt {
-        get => $this->nextPaymentAt ?? null;
-    }
+    public ?string $nextPaymentAt = null;
 
-    public ?string $nextPaymentAtMsg {
-        get => $this->nextPaymentAtMsg ?? null;
-    }
+    public ?string $nextPaymentAtMsg = null;
 
-    public ?string $lastTransactionType {
-        get => $this->lastTransactionType ?? null;
-    }
+    public ?string $lastTransactionType = null;
 
-    public ?string $lastTransactionTypeMsg {
-        get => $this->lastTransactionTypeMsg ?? null;
-    }
+    public ?string $lastTransactionTypeMsg = null;
 
-    public ?string $paidUntil {
-        get => $this->paidUntil ?? null;
-    }
+    public ?string $paidUntil = null;
 
-    public ?string $paidUntilMsg {
-        get => $this->paidUntilMsg ?? null;
-    }
+    public ?string $paidUntilMsg = null;
 
     public function isValid(): bool
     {

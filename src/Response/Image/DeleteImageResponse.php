@@ -18,30 +18,22 @@ final class DeleteImageResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Whether deletion was successful
      */
-    public bool $success {
-        get => $this->success ?? true;
-    }
+    public bool $success = true;
 
     /**
      * ID of the deleted image
      */
-    public string $imageId {
-        get => $this->imageId ?? '';
-    }
+    public string $imageId = '';
 
     /**
      * Optional message
      */
-    public ?string $message {
-        get => $this->message ?? null;
-    }
+    public ?string $message = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

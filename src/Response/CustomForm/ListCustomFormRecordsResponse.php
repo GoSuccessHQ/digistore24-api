@@ -17,18 +17,14 @@ final class ListCustomFormRecordsResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Custom form records
      *
      * @var array<int, object{form_id: int, id: int, purchase_id: string, purchase_item_id: int, product_id: int, form_no: int, form_count: int, data: array<string, string>, address: array<string, string>}>
      */
-    public array $records {
-        get => $this->records ?? [];
-    }
+    public array $records = [];
 
     /**
      * Get records for a specific purchase.

@@ -18,37 +18,27 @@ final class SetReferringAffiliateResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Customer email
      */
-    public string $email {
-        get => $this->email ?? '';
-    }
+    public string $email = '';
 
     /**
      * Affiliate ID
      */
-    public ?int $affiliateId {
-        get => $this->affiliateId ?? null;
-    }
+    public ?int $affiliateId = null;
 
     /**
      * Affiliate code
      */
-    public ?string $affiliateCode {
-        get => $this->affiliateCode ?? null;
-    }
+    public ?string $affiliateCode = null;
 
     /**
      * Timestamp when affiliate was set
      */
-    public ?\DateTimeInterface $setAt {
-        get => $this->setAt ?? null;
-    }
+    public ?\DateTimeInterface $setAt = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

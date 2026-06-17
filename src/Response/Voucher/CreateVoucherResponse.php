@@ -19,23 +19,17 @@ final class CreateVoucherResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * ID of the created voucher
      */
-    public int $discountCodeId {
-        get => $this->discountCodeId ?? 0;
-    }
+    public int $discountCodeId = 0;
 
     /**
      * The voucher code
      */
-    public string $code {
-        get => $this->code ?? '';
-    }
+    public string $code = '';
 
     /**
      * Create response from API data

@@ -15,9 +15,9 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
  */
 final class CreateProductResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
-    public int $productId { get => $this->productId ?? 0; }
+    public int $productId = 0;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

@@ -22,30 +22,22 @@ final class CreateBuyUrlResponse extends AbstractResponse
     /**
      * ID of the BuyUrl object
      */
-    public ?string $id = null {
-        get => $this->id;
-    }
+    public ?string $id = null;
 
     /**
      * Order URL for purchase
      */
-    public ?string $url = null {
-        get => $this->url;
-    }
+    public ?string $url = null;
 
     /**
      * Expiration date of the URL
      */
-    public ?DateTimeImmutable $validUntil = null {
-        get => $this->validUntil;
-    }
+    public ?DateTimeImmutable $validUntil = null;
 
     /**
      * Status of upgrade possibility (none, ok, error)
      */
-    public ?string $upgradeStatus = null {
-        get => $this->upgradeStatus;
-    }
+    public ?string $upgradeStatus = null;
 
     /**
      * Create response from array data

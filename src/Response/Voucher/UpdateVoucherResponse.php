@@ -19,30 +19,22 @@ final class UpdateVoucherResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * ID of the updated voucher
      */
-    public int $discountCodeId {
-        get => $this->discountCodeId ?? 0;
-    }
+    public int $discountCodeId = 0;
 
     /**
      * The voucher code
      */
-    public string $code {
-        get => $this->code ?? '';
-    }
+    public string $code = '';
 
     /**
      * Whether the voucher was modified
      */
-    public bool $isModified {
-        get => $this->isModified ?? false;
-    }
+    public bool $isModified = false;
 
     /**
      * Create response from API data

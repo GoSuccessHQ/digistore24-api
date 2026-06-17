@@ -17,25 +17,19 @@ final class ListImagesResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Array of image list items
      *
      * @var array<ImageListItem>
      */
-    public array $images {
-        get => $this->images ?? [];
-    }
+    public array $images = [];
 
     /**
      * Total number of images
      */
-    public int $totalCount {
-        get => $this->totalCount ?? 0;
-    }
+    public int $totalCount = 0;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

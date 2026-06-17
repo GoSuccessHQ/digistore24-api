@@ -14,9 +14,9 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class DeleteProductResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
-    public bool $success { get => $this->success ?? true; }
+    public bool $success = true;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

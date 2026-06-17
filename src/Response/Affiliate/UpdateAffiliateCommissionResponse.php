@@ -18,51 +18,37 @@ final class UpdateAffiliateCommissionResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Product ID
      */
-    public int $productId {
-        get => $this->productId ?? 0;
-    }
+    public int $productId = 0;
 
     /**
      * Commission rate (percentage)
      */
-    public ?float $commissionRate {
-        get => $this->commissionRate ?? null;
-    }
+    public ?float $commissionRate = null;
 
     /**
      * First level commission rate
      */
-    public ?float $firstLevelCommission {
-        get => $this->firstLevelCommission ?? null;
-    }
+    public ?float $firstLevelCommission = null;
 
     /**
      * Second level commission rate
      */
-    public ?float $secondLevelCommission {
-        get => $this->secondLevelCommission ?? null;
-    }
+    public ?float $secondLevelCommission = null;
 
     /**
      * Whether affiliate program is enabled
      */
-    public bool $isAffiliateEnabled {
-        get => $this->isAffiliateEnabled ?? false;
-    }
+    public bool $isAffiliateEnabled = false;
 
     /**
      * Update timestamp
      */
-    public ?\DateTimeInterface $updatedAt {
-        get => $this->updatedAt ?? null;
-    }
+    public ?\DateTimeInterface $updatedAt = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

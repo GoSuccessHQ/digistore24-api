@@ -17,18 +17,14 @@ final class GetUserInfoResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * User info data
      *
      * @var array<string, mixed>
      */
-    public array $userInfo {
-        get => $this->userInfo ?? [];
-    }
+    public array $userInfo = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

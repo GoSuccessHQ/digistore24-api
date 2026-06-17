@@ -18,46 +18,34 @@ final class RequestApiKeyResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * The generated API key
      */
-    public string $apiKey {
-        get => $this->apiKey ?? '';
-    }
+    public string $apiKey = '';
 
     /**
      * Creation timestamp
      */
-    public ?\DateTimeInterface $createdAt {
-        get => $this->createdAt ?? null;
-    }
+    public ?\DateTimeInterface $createdAt = null;
 
     /**
      * API key description
      */
-    public ?string $description {
-        get => $this->description ?? null;
-    }
+    public ?string $description = null;
 
     /**
      * API key permissions
      *
      * @var array<string>
      */
-    public array $permissions {
-        get => $this->permissions ?? [];
-    }
+    public array $permissions = [];
 
     /**
      * Rate limit for this API key
      */
-    public ?int $rateLimit {
-        get => $this->rateLimit ?? null;
-    }
+    public ?int $rateLimit = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

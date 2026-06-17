@@ -17,23 +17,17 @@ final class RenderJsTrackingCodeResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * The complete JavaScript tag to be embedded
      */
-    public string $scriptCode {
-        get => $this->scriptCode ?? '';
-    }
+    public string $scriptCode = '';
 
     /**
      * The script URL
      */
-    public string $scriptUrl {
-        get => $this->scriptUrl ?? '';
-    }
+    public string $scriptUrl = '';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

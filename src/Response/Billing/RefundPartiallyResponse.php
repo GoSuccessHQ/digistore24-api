@@ -20,9 +20,7 @@ final class RefundPartiallyResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

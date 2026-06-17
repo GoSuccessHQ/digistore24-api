@@ -21,9 +21,7 @@ final class ListBuyUrlsResponse extends AbstractResponse
      *
      * @var array<BuyUrlData>
      */
-    public array $items {
-        get => $this->items ?? [];
-    }
+    public array $items = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

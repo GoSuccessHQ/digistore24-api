@@ -19,58 +19,42 @@ final class IpnSetupResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Whether the IPN was created (Y/N)
      */
-    public ?bool $created = null {
-        get => $this->created;
-    }
+    public ?bool $created = null;
 
     /**
      * Whether the IPN was updated (Y/N)
      */
-    public ?bool $updated = null {
-        get => $this->updated;
-    }
+    public ?bool $updated = null;
 
     /**
      * Whether the IPN was deleted (Y/N)
      */
-    public ?bool $deleted = null {
-        get => $this->deleted;
-    }
+    public ?bool $deleted = null;
 
     /**
      * Domain ID used to identify the IPN connection
      */
-    public ?string $domainId = null {
-        get => $this->domainId;
-    }
+    public ?string $domainId = null;
 
     /**
      * SHA passphrase for signing parameters
      */
-    public ?string $shaPassphrase = null {
-        get => $this->shaPassphrase;
-    }
+    public ?string $shaPassphrase = null;
 
     /**
      * IPN configuration ID
      */
-    public ?int $ipnConfigId = null {
-        get => $this->ipnConfigId;
-    }
+    public ?int $ipnConfigId = null;
 
     /**
      * IPN ID
      */
-    public ?int $ipnId = null {
-        get => $this->ipnId;
-    }
+    public ?int $ipnId = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

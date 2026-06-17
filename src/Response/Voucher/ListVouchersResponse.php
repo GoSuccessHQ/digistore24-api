@@ -20,25 +20,19 @@ final class ListVouchersResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * List of vouchers
      *
      * @var array<int, VoucherData>
      */
-    public array $coupons {
-        get => $this->coupons ?? [];
-    }
+    public array $coupons = [];
 
     /**
      * Whether returned data is public
      */
-    public bool $areReturnedDataPublic {
-        get => $this->areReturnedDataPublic ?? false;
-    }
+    public bool $areReturnedDataPublic = false;
 
     /**
      * Create response from API data

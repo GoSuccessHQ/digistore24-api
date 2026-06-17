@@ -17,18 +17,14 @@ final class StatsDailyAmountsResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Daily amounts data
      *
      * @var array<string, mixed>
      */
-    public array $dailyAmounts {
-        get => $this->dailyAmounts ?? [];
-    }
+    public array $dailyAmounts = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

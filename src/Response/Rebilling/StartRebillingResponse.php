@@ -18,16 +18,12 @@ final class StartRebillingResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Rebilling data
      */
-    public ?RebillingData $data {
-        get => $this->data ?? null;
-    }
+    public ?RebillingData $data = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

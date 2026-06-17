@@ -19,30 +19,22 @@ final class GetDeliveryResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Delivery details
      */
-    public ?DeliveryDetailsData $delivery {
-        get => $this->delivery ?? null;
-    }
+    public ?DeliveryDetailsData $delivery = null;
 
     /**
      * Whether delivery was marked as in progress
      */
-    public bool $isSetInProgress {
-        get => $this->isSetInProgress ?? false;
-    }
+    public bool $isSetInProgress = false;
 
     /**
      * Reason why setting in progress failed, if applicable
      */
-    public ?string $setInProgressFailReason {
-        get => $this->setInProgressFailReason ?? null;
-    }
+    public ?string $setInProgressFailReason = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

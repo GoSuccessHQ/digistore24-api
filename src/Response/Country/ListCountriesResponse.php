@@ -19,25 +19,19 @@ final class ListCountriesResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Array of countries
      *
      * @var array<int, CountryData>
      */
-    public array $countries {
-        get => $this->countries ?? [];
-    }
+    public array $countries = [];
 
     /**
      * Total number of countries
      */
-    public int $total {
-        get => $this->total ?? 0;
-    }
+    public int $total = 0;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

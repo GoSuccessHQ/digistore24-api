@@ -18,16 +18,12 @@ final class GetBuyerResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Buyer data
      */
-    public ?BuyerData $buyer {
-        get => $this->buyer ?? null;
-    }
+    public ?BuyerData $buyer = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

@@ -17,23 +17,17 @@ final class CreateImageResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * ID of the created image
      */
-    public string $imageId {
-        get => $this->imageId ?? '';
-    }
+    public string $imageId = '';
 
     /**
      * URL of the created image on Digistore24
      */
-    public string $imageUrl {
-        get => $this->imageUrl ?? '';
-    }
+    public string $imageUrl = '';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

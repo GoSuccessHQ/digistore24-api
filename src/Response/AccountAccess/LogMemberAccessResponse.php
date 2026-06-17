@@ -18,23 +18,17 @@ final class LogMemberAccessResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Whether the access was successfully logged
      */
-    public bool $success {
-        get => $this->success ?? true;
-    }
+    public bool $success = true;
 
     /**
      * Optional message from the API
      */
-    public ?string $message {
-        get => $this->message ?? null;
-    }
+    public ?string $message = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

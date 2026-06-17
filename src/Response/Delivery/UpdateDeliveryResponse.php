@@ -17,9 +17,7 @@ final class UpdateDeliveryResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

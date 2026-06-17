@@ -15,11 +15,11 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
  */
 final class AddBalanceToPurchaseResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
-    public float $oldBalance { get => $this->oldBalance ?? 0.0; }
+    public float $oldBalance = 0.0;
 
-    public float $newBalance { get => $this->newBalance ?? 0.0; }
+    public float $newBalance = 0.0;
 
     public function getBalanceChange(): float
     {

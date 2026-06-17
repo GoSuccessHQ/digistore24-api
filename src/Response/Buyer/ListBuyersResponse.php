@@ -20,39 +20,29 @@ final class ListBuyersResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Array of buyers
      *
      * @var array<int, BuyerData>
      */
-    public array $buyers {
-        get => $this->buyers ?? [];
-    }
+    public array $buyers = [];
 
     /**
      * Total number of buyers
      */
-    public int $total {
-        get => $this->total ?? 0;
-    }
+    public int $total = 0;
 
     /**
      * Result limit
      */
-    public int $limit {
-        get => $this->limit ?? 100;
-    }
+    public int $limit = 100;
 
     /**
      * Result offset
      */
-    public int $offset {
-        get => $this->offset ?? 0;
-    }
+    public int $offset = 0;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

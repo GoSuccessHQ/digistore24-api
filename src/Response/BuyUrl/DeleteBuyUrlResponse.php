@@ -18,9 +18,7 @@ final class DeleteBuyUrlResponse extends AbstractResponse
     /**
      * Result of the delete operation
      */
-    public string $result {
-        get => $this->result;
-    }
+    public string $result = '';
 
     /**
      * Create response from API data

@@ -14,23 +14,23 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class ValidateEticketResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
-    public bool $success { get => $this->success ?? true; }
+    public bool $success = true;
 
-    public string $ticketId { get => $this->ticketId ?? ''; }
+    public string $ticketId = '';
 
-    public string $orderId { get => $this->orderId ?? ''; }
+    public string $orderId = '';
 
-    public string $productName { get => $this->productName ?? ''; }
+    public string $productName = '';
 
-    public string $buyerName { get => $this->buyerName ?? ''; }
+    public string $buyerName = '';
 
-    public \DateTimeInterface $validatedAt { get => $this->validatedAt ?? new \DateTimeImmutable(); }
+    public \DateTimeInterface $validatedAt = new \DateTimeImmutable();
 
-    public bool $wasAlreadyValidated { get => $this->wasAlreadyValidated ?? false; }
+    public bool $wasAlreadyValidated = false;
 
-    public ?string $message { get => $this->message ?? null; }
+    public ?string $message = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

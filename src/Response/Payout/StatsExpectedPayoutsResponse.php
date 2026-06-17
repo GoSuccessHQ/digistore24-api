@@ -17,18 +17,14 @@ final class StatsExpectedPayoutsResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Payout statistics data
      *
      * @var array<string, mixed>
      */
-    public array $data {
-        get => $this->data ?? [];
-    }
+    public array $data = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

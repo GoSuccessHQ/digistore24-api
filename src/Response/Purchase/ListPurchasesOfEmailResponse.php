@@ -14,10 +14,10 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class ListPurchasesOfEmailResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     /** @var array<int, array<string, mixed>> */
-    public array $purchases { get => $this->purchases ?? []; }
+    public array $purchases = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

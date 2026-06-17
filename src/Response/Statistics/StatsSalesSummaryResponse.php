@@ -17,18 +17,14 @@ final class StatsSalesSummaryResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Summary data
      *
      * @var array<string, mixed>
      */
-    public array $summary {
-        get => $this->summary ?? [];
-    }
+    public array $summary = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

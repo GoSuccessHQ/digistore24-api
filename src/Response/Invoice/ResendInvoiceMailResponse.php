@@ -17,23 +17,17 @@ final class ResendInvoiceMailResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Status
      */
-    public string $status {
-        get => $this->status ?? '';
-    }
+    public string $status = '';
 
     /**
      * Note
      */
-    public string $note {
-        get => $this->note ?? '';
-    }
+    public string $note = '';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

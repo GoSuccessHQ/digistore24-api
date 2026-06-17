@@ -17,18 +17,14 @@ final class StatsAffiliateToplistResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Toplist data
      *
      * @var array<string, mixed>
      */
-    public array $toplist {
-        get => $this->toplist ?? [];
-    }
+    public array $toplist = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

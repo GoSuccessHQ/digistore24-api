@@ -14,10 +14,10 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class GetPurchaseTrackingResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     /** @var array<string, mixed> */
-    public array $tracking { get => $this->tracking ?? []; }
+    public array $tracking = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

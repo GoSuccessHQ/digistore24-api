@@ -14,9 +14,9 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class UpdateProductResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
-    public string $modified { get => $this->modified ?? 'N'; }
+    public string $modified = 'N';
 
     public function wasModified(): bool
     {

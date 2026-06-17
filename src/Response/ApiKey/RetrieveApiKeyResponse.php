@@ -18,67 +18,49 @@ final class RetrieveApiKeyResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * The API key ID
      */
-    public string $apiKeyId {
-        get => $this->apiKeyId ?? '';
-    }
+    public string $apiKeyId = '';
 
     /**
      * API key description
      */
-    public ?string $description {
-        get => $this->description ?? null;
-    }
+    public ?string $description = null;
 
     /**
      * Creation timestamp
      */
-    public ?\DateTimeInterface $createdAt {
-        get => $this->createdAt ?? null;
-    }
+    public ?\DateTimeInterface $createdAt = null;
 
     /**
      * Last usage timestamp
      */
-    public ?\DateTimeInterface $lastUsedAt {
-        get => $this->lastUsedAt ?? null;
-    }
+    public ?\DateTimeInterface $lastUsedAt = null;
 
     /**
      * Whether the API key is active
      */
-    public bool $isActive {
-        get => $this->isActive ?? false;
-    }
+    public bool $isActive = false;
 
     /**
      * API key permissions
      *
      * @var array<string>
      */
-    public array $permissions {
-        get => $this->permissions ?? [];
-    }
+    public array $permissions = [];
 
     /**
      * Rate limit for this API key
      */
-    public ?int $rateLimit {
-        get => $this->rateLimit ?? null;
-    }
+    public ?int $rateLimit = null;
 
     /**
      * Number of requests made today
      */
-    public ?int $requestsToday {
-        get => $this->requestsToday ?? null;
-    }
+    public ?int $requestsToday = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

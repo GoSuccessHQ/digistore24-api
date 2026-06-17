@@ -17,18 +17,14 @@ final class ListDeliveriesResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Deliveries data
      *
      * @var array<string, mixed>
      */
-    public array $deliveries {
-        get => $this->deliveries ?? [];
-    }
+    public array $deliveries = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

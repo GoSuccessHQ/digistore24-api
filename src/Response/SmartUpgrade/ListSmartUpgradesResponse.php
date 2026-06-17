@@ -14,16 +14,12 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class ListSmartUpgradesResponse extends AbstractResponse
 {
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * @var array<string, mixed>
      */
-    public array $smartupgrades {
-        get => $this->smartupgrades ?? [];
-    }
+    public array $smartupgrades = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

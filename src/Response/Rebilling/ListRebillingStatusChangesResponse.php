@@ -17,18 +17,14 @@ final class ListRebillingStatusChangesResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Status changes array
      *
      * @var array<string, mixed>
      */
-    public array $statusChanges {
-        get => $this->statusChanges ?? [];
-    }
+    public array $statusChanges = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

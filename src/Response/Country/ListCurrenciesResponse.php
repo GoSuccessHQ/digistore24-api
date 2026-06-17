@@ -16,18 +16,14 @@ final class ListCurrenciesResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Array of currencies
      *
      * @var array<int, CurrencyData>
      */
-    public array $currencies {
-        get => $this->currencies ?? [];
-    }
+    public array $currencies = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

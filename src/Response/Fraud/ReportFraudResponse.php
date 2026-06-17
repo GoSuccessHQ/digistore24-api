@@ -17,51 +17,37 @@ final class ReportFraudResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Status of buyer report (info, success, warning, failure)
      */
-    public string $buyerStatus {
-        get => $this->buyerStatus ?? '';
-    }
+    public string $buyerStatus = '';
 
     /**
      * Message about buyer report
      */
-    public string $buyerMessage {
-        get => $this->buyerMessage ?? '';
-    }
+    public string $buyerMessage = '';
 
     /**
      * Code for buyer report (created_entry, rerequest, not_created)
      */
-    public string $buyerCode {
-        get => $this->buyerCode ?? '';
-    }
+    public string $buyerCode = '';
 
     /**
      * Status of affiliate report (info, success, warning, failure)
      */
-    public string $affiliateStatus {
-        get => $this->affiliateStatus ?? '';
-    }
+    public string $affiliateStatus = '';
 
     /**
      * Message about affiliate report
      */
-    public string $affiliateMessage {
-        get => $this->affiliateMessage ?? '';
-    }
+    public string $affiliateMessage = '';
 
     /**
      * Code for affiliate report (created_entry, rerequest, not_created)
      */
-    public string $affiliateCode {
-        get => $this->affiliateCode ?? '';
-    }
+    public string $affiliateCode = '';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

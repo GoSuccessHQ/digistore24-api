@@ -17,25 +17,19 @@ final class ValidateCouponCodeResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Validation status
      */
-    public string $status {
-        get => $this->status ?? '';
-    }
+    public string $status = '';
 
     /**
      * Coupon data
      *
      * @var array<string, mixed>
      */
-    public array $data {
-        get => $this->data ?? [];
-    }
+    public array $data = [];
 
     /**
      * Check if coupon is valid

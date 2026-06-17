@@ -17,18 +17,14 @@ final class ListPayoutsResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Payout list
      *
      * @var array<string, mixed>
      */
-    public array $payoutList {
-        get => $this->payoutList ?? [];
-    }
+    public array $payoutList = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

@@ -15,63 +15,49 @@ final class GetGlobalSettingsResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Available product types
      *
      * @var array<array{id: int, name: string}>
      */
-    public array $productTypes {
-        get => $this->productTypes ?? [];
-    }
+    public array $productTypes = [];
 
     /**
      * Available countries
      *
      * @var array<array{code: string, name: string}>
      */
-    public array $countries {
-        get => $this->countries ?? [];
-    }
+    public array $countries = [];
 
     /**
      * Available currencies
      *
      * @var array<array{code: string, symbol: string, name: string}>
      */
-    public array $currencies {
-        get => $this->currencies ?? [];
-    }
+    public array $currencies = [];
 
     /**
      * Available languages
      *
      * @var array<array{code: string, name: string}>
      */
-    public array $languages {
-        get => $this->languages ?? [];
-    }
+    public array $languages = [];
 
     /**
      * Available payment methods
      *
      * @var array<string>
      */
-    public array $paymentMethods {
-        get => $this->paymentMethods ?? [];
-    }
+    public array $paymentMethods = [];
 
     /**
      * VAT rates by country code
      *
      * @var array<string, float>
      */
-    public array $vatRates {
-        get => $this->vatRates ?? [];
-    }
+    public array $vatRates = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

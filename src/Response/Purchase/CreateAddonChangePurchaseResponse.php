@@ -14,25 +14,25 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class CreateAddonChangePurchaseResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     /** The ID of the new order */
-    public string $createdPurchaseId { get => $this->createdPurchaseId ?? ''; }
+    public string $createdPurchaseId = '';
 
     /** The payment status */
-    public string $paymentStatus { get => $this->paymentStatus ?? ''; }
+    public string $paymentStatus = '';
 
     /** Payment status in readable form */
-    public string $paymentStatusMsg { get => $this->paymentStatusMsg ?? ''; }
+    public string $paymentStatusMsg = '';
 
     /** Status of the new order */
-    public string $billingStatus { get => $this->billingStatus ?? ''; }
+    public string $billingStatus = '';
 
     /** Order status in readable form */
-    public string $billingStatusMsg { get => $this->billingStatusMsg ?? ''; }
+    public string $billingStatusMsg = '';
 
     /** URL to restart payments if payment failed */
-    public ?string $payUrl { get => $this->payUrl ?? null; }
+    public ?string $payUrl = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

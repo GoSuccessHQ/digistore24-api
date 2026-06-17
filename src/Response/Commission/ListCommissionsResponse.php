@@ -18,46 +18,34 @@ final class ListCommissionsResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Current page number
      */
-    public int $pageNo {
-        get => $this->pageNo ?? 1;
-    }
+    public int $pageNo = 1;
 
     /**
      * Number of items per page
      */
-    public int $pageSize {
-        get => $this->pageSize ?? 0;
-    }
+    public int $pageSize = 0;
 
     /**
      * Total number of items
      */
-    public int $itemCount {
-        get => $this->itemCount ?? 0;
-    }
+    public int $itemCount = 0;
 
     /**
      * Total number of pages
      */
-    public int $pageCount {
-        get => $this->pageCount ?? 0;
-    }
+    public int $pageCount = 0;
 
     /**
      * Commission items
      *
      * @var array<int, object{id: int, created_at: string, amount: float, currency: string, reason: string, schedule_payout_at: string, transaction_id: int, purchase_id: string}>
      */
-    public array $items {
-        get => $this->items ?? [];
-    }
+    public array $items = [];
 
     /**
      * Check if there are more pages.

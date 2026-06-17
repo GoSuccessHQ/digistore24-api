@@ -15,20 +15,20 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
  */
 final class GetEticketSettingsResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
-    public bool $eticketEnabled { get => $this->eticketEnabled ?? false; }
+    public bool $eticketEnabled = false;
 
-    public ?string $defaultLocationId { get => $this->defaultLocationId ?? null; }
+    public ?string $defaultLocationId = null;
 
-    public ?string $defaultTemplateId { get => $this->defaultTemplateId ?? null; }
+    public ?string $defaultTemplateId = null;
 
-    public int $maxTicketsPerOrder { get => $this->maxTicketsPerOrder ?? 10; }
+    public int $maxTicketsPerOrder = 10;
 
-    public bool $requireEmailValidation { get => $this->requireEmailValidation ?? false; }
+    public bool $requireEmailValidation = false;
 
     /** @var array<string, mixed> */
-    public array $settings { get => $this->settings ?? []; }
+    public array $settings = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

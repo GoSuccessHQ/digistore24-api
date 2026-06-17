@@ -14,14 +14,10 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class GetShippingCostPolicyResponse extends AbstractResponse
 {
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /** @var array<string, mixed> */
-    public array $shippingCostPolicy {
-        get => $this->shippingCostPolicy ?? [];
-    }
+    public array $shippingCostPolicy = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

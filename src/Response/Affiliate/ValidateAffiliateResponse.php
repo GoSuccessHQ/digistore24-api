@@ -18,51 +18,37 @@ final class ValidateAffiliateResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Whether the affiliate is valid
      */
-    public bool $valid {
-        get => $this->valid ?? false;
-    }
+    public bool $valid = false;
 
     /**
      * Affiliate ID
      */
-    public ?int $affiliateId {
-        get => $this->affiliateId ?? null;
-    }
+    public ?int $affiliateId = null;
 
     /**
      * Affiliate code
      */
-    public ?string $affiliateCode {
-        get => $this->affiliateCode ?? null;
-    }
+    public ?string $affiliateCode = null;
 
     /**
      * Whether the affiliate is active
      */
-    public bool $isActive {
-        get => $this->isActive ?? false;
-    }
+    public bool $isActive = false;
 
     /**
      * Affiliate email
      */
-    public ?string $email {
-        get => $this->email ?? null;
-    }
+    public ?string $email = null;
 
     /**
      * Affiliate name
      */
-    public ?string $name {
-        get => $this->name ?? null;
-    }
+    public ?string $name = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

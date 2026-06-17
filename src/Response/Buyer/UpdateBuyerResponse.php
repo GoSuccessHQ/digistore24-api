@@ -18,51 +18,37 @@ final class UpdateBuyerResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Buyer ID
      */
-    public ?int $buyerId {
-        get => $this->buyerId ?? null;
-    }
+    public ?int $buyerId = null;
 
     /**
      * Email address
      */
-    public string $email {
-        get => $this->email ?? '';
-    }
+    public string $email = '';
 
     /**
      * First name
      */
-    public ?string $firstName {
-        get => $this->firstName ?? null;
-    }
+    public ?string $firstName = null;
 
     /**
      * Last name
      */
-    public ?string $lastName {
-        get => $this->lastName ?? null;
-    }
+    public ?string $lastName = null;
 
     /**
      * Company name
      */
-    public ?string $company {
-        get => $this->company ?? null;
-    }
+    public ?string $company = null;
 
     /**
      * Updated timestamp
      */
-    public ?\DateTimeInterface $updatedAt {
-        get => $this->updatedAt ?? null;
-    }
+    public ?\DateTimeInterface $updatedAt = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

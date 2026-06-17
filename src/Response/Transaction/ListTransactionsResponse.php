@@ -17,18 +17,14 @@ final class ListTransactionsResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Transaction list
      *
      * @var array<string, mixed>
      */
-    public array $transactionList {
-        get => $this->transactionList ?? [];
-    }
+    public array $transactionList = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

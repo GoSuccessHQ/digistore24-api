@@ -14,10 +14,10 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class CreateEticketResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     /** @var array<EticketItem> List of created e-tickets */
-    public array $etickets { get => $this->etickets ?? []; }
+    public array $etickets = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

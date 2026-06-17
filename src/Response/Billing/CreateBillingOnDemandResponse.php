@@ -20,44 +20,32 @@ final class CreateBillingOnDemandResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * The ID of the newly created order
      */
-    public string $createdPurchaseId {
-        get => $this->createdPurchaseId ?? '';
-    }
+    public string $createdPurchaseId = '';
 
     /**
      * Payment status code
      */
-    public string $paymentStatus {
-        get => $this->paymentStatus ?? '';
-    }
+    public string $paymentStatus = '';
 
     /**
      * Payment status in readable form
      */
-    public string $paymentStatusMsg {
-        get => $this->paymentStatusMsg ?? '';
-    }
+    public string $paymentStatusMsg = '';
 
     /**
      * Billing status code
      */
-    public string $billingStatus {
-        get => $this->billingStatus ?? '';
-    }
+    public string $billingStatus = '';
 
     /**
      * Billing status in readable form
      */
-    public string $billingStatusMsg {
-        get => $this->billingStatusMsg ?? '';
-    }
+    public string $billingStatusMsg = '';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

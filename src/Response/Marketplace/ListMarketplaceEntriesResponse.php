@@ -17,18 +17,14 @@ final class ListMarketplaceEntriesResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Marketplace entries
      *
      * @var array<string, mixed>
      */
-    public array $entries {
-        get => $this->entries ?? [];
-    }
+    public array $entries = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

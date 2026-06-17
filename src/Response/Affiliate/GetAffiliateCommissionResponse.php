@@ -19,32 +19,24 @@ final class GetAffiliateCommissionResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Array of affiliation commission data
      *
      * @var array<AffiliationData>
      */
-    public array $affiliations {
-        get => $this->affiliations ?? [];
-    }
+    public array $affiliations = [];
 
     /**
      * Affiliate ID
      */
-    public string $affiliateId {
-        get => $this->affiliateId ?? '';
-    }
+    public string $affiliateId = '';
 
     /**
      * Affiliate name
      */
-    public string $affiliateName {
-        get => $this->affiliateName ?? '';
-    }
+    public string $affiliateName = '';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

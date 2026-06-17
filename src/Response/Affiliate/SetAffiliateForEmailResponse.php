@@ -18,58 +18,42 @@ final class SetAffiliateForEmailResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Affiliate ID
      */
-    public ?int $affiliateId {
-        get => $this->affiliateId ?? null;
-    }
+    public ?int $affiliateId = null;
 
     /**
      * Email address
      */
-    public string $email {
-        get => $this->email ?? '';
-    }
+    public string $email = '';
 
     /**
      * First name
      */
-    public ?string $firstName {
-        get => $this->firstName ?? null;
-    }
+    public ?string $firstName = null;
 
     /**
      * Last name
      */
-    public ?string $lastName {
-        get => $this->lastName ?? null;
-    }
+    public ?string $lastName = null;
 
     /**
      * Affiliate code
      */
-    public ?string $affiliateCode {
-        get => $this->affiliateCode ?? null;
-    }
+    public ?string $affiliateCode = null;
 
     /**
      * Whether affiliate is active
      */
-    public bool $isActive {
-        get => $this->isActive ?? false;
-    }
+    public bool $isActive = false;
 
     /**
      * Creation timestamp
      */
-    public ?\DateTimeInterface $createdAt {
-        get => $this->createdAt ?? null;
-    }
+    public ?\DateTimeInterface $createdAt = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

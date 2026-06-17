@@ -19,16 +19,12 @@ final class GetVoucherResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * The voucher data
      */
-    public ?VoucherData $voucher {
-        get => $this->voucher ?? null;
-    }
+    public ?VoucherData $voucher = null;
 
     /**
      * Create response from API data

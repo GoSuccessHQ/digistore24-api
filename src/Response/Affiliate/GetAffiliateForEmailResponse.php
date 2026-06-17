@@ -18,72 +18,52 @@ final class GetAffiliateForEmailResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Affiliate ID
      */
-    public ?int $affiliateId {
-        get => $this->affiliateId ?? null;
-    }
+    public ?int $affiliateId = null;
 
     /**
      * Affiliate email
      */
-    public string $email {
-        get => $this->email ?? '';
-    }
+    public string $email = '';
 
     /**
      * First name
      */
-    public ?string $firstName {
-        get => $this->firstName ?? null;
-    }
+    public ?string $firstName = null;
 
     /**
      * Last name
      */
-    public ?string $lastName {
-        get => $this->lastName ?? null;
-    }
+    public ?string $lastName = null;
 
     /**
      * Affiliate code
      */
-    public ?string $affiliateCode {
-        get => $this->affiliateCode ?? null;
-    }
+    public ?string $affiliateCode = null;
 
     /**
      * Whether affiliate is active
      */
-    public bool $isActive {
-        get => $this->isActive ?? false;
-    }
+    public bool $isActive = false;
 
     /**
      * Commission balance
      */
-    public ?float $commissionBalance {
-        get => $this->commissionBalance ?? null;
-    }
+    public ?float $commissionBalance = null;
 
     /**
      * Total sales
      */
-    public ?float $totalSales {
-        get => $this->totalSales ?? null;
-    }
+    public ?float $totalSales = null;
 
     /**
      * Account creation date
      */
-    public ?\DateTimeInterface $createdAt {
-        get => $this->createdAt ?? null;
-    }
+    public ?\DateTimeInterface $createdAt = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

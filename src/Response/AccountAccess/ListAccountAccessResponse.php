@@ -18,27 +18,21 @@ final class ListAccountAccessResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Accounts you have granted access to
      *
      * @var AccountAccessData[]
      */
-    public array $byMe {
-        get => $this->byMe ?? [];
-    }
+    public array $byMe = [];
 
     /**
      * Accounts you have been granted access to
      *
      * @var AccountAccessData[]
      */
-    public array $toMe {
-        get => $this->toMe ?? [];
-    }
+    public array $toMe = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

@@ -17,23 +17,17 @@ final class RefundTransactionResponse extends AbstractResponse
     /**
      * Result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Refund status
      */
-    public string $status {
-        get => $this->status ?? '';
-    }
+    public string $status = '';
 
     /**
      * Whether transaction was modified
      */
-    public string $modified {
-        get => $this->modified ?? 'N';
-    }
+    public string $modified = 'N';
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

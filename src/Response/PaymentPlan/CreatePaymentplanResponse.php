@@ -14,16 +14,12 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class CreatePaymentplanResponse extends AbstractResponse
 {
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * @var array<string, mixed>
      */
-    public array $data {
-        get => $this->data ?? [];
-    }
+    public array $data = [];
 
     public function getPaymentplanId(): ?string
     {

@@ -19,37 +19,27 @@ final class PingResponse extends AbstractResponse
     /**
      * API version
      */
-    public string $apiVersion = '' {
-        get => $this->apiVersion;
-    }
+    public string $apiVersion = '';
 
     /**
      * Current server time
      */
-    public ?DateTimeImmutable $currentTime = null {
-        get => $this->currentTime;
-    }
+    public ?DateTimeImmutable $currentTime = null;
 
     /**
      * Runtime in seconds
      */
-    public float $runtimeSeconds = 0.0 {
-        get => $this->runtimeSeconds;
-    }
+    public float $runtimeSeconds = 0.0;
 
     /**
      * Result status
      */
-    public string $result = '' {
-        get => $this->result;
-    }
+    public string $result = '';
 
     /**
      * Server time from data field
      */
-    public ?DateTimeImmutable $serverTime = null {
-        get => $this->serverTime;
-    }
+    public ?DateTimeImmutable $serverTime = null;
 
     /**
      * Check if ping was successful

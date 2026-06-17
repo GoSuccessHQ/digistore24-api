@@ -14,10 +14,10 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class RefundPurchaseResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     /** @var array<string, mixed> */
-    public array $data { get => $this->data ?? []; }
+    public array $data = [];
 
     public function wasSuccessful(): bool
     {

@@ -18,51 +18,37 @@ final class GetReferringAffiliateResponse extends AbstractResponse
     /**
      * Request result status
      */
-    public string $result {
-        get => $this->result ?? '';
-    }
+    public string $result = '';
 
     /**
      * Affiliate ID
      */
-    public ?int $affiliateId {
-        get => $this->affiliateId ?? null;
-    }
+    public ?int $affiliateId = null;
 
     /**
      * Affiliate code
      */
-    public ?string $affiliateCode {
-        get => $this->affiliateCode ?? null;
-    }
+    public ?string $affiliateCode = null;
 
     /**
      * Affiliate email
      */
-    public ?string $affiliateEmail {
-        get => $this->affiliateEmail ?? null;
-    }
+    public ?string $affiliateEmail = null;
 
     /**
      * Affiliate name
      */
-    public ?string $affiliateName {
-        get => $this->affiliateName ?? null;
-    }
+    public ?string $affiliateName = null;
 
     /**
      * Referral date
      */
-    public ?\DateTimeInterface $referralDate {
-        get => $this->referralDate ?? null;
-    }
+    public ?\DateTimeInterface $referralDate = null;
 
     /**
      * Commission earned
      */
-    public ?float $commissionEarned {
-        get => $this->commissionEarned ?? null;
-    }
+    public ?float $commissionEarned = null;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

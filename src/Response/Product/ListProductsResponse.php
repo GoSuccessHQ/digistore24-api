@@ -14,13 +14,13 @@ use GoSuccess\Digistore24\Api\Http\Response;
  */
 final class ListProductsResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     /** @var array<ProductListItem> Array of product list items */
-    public array $products { get => $this->products ?? []; }
+    public array $products = [];
 
     /** Total number of products */
-    public int $totalCount { get => $this->totalCount ?? 0; }
+    public int $totalCount = 0;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

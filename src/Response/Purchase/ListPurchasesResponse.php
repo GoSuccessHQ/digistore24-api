@@ -15,13 +15,13 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
  */
 final class ListPurchasesResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
     /** @var array<PurchaseListItem> Array of purchase list items */
-    public array $purchases { get => $this->purchases ?? []; }
+    public array $purchases = [];
 
     /** Total number of purchases */
-    public int $totalCount { get => $this->totalCount ?? 0; }
+    public int $totalCount = 0;
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {

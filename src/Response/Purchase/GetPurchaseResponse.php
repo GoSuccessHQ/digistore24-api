@@ -15,28 +15,28 @@ use GoSuccess\Digistore24\Api\Util\TypeConverter;
  */
 final class GetPurchaseResponse extends AbstractResponse
 {
-    public string $result { get => $this->result ?? ''; }
+    public string $result = '';
 
-    public string $purchaseId { get => $this->purchaseId ?? ''; }
+    public string $purchaseId = '';
 
-    public string $productId { get => $this->productId ?? ''; }
+    public string $productId = '';
 
-    public string $productName { get => $this->productName ?? ''; }
+    public string $productName = '';
 
-    public string $buyerEmail { get => $this->buyerEmail ?? ''; }
+    public string $buyerEmail = '';
 
-    public string $paymentStatus { get => $this->paymentStatus ?? ''; }
+    public string $paymentStatus = '';
 
-    public string $billingStatus { get => $this->billingStatus ?? ''; }
+    public string $billingStatus = '';
 
-    public float $amount { get => $this->amount ?? 0.0; }
+    public float $amount = 0.0;
 
-    public string $currency { get => $this->currency ?? 'EUR'; }
+    public string $currency = 'EUR';
 
-    public \DateTimeInterface $createdAt { get => $this->createdAt ?? new \DateTimeImmutable(); }
+    public \DateTimeInterface $createdAt = new \DateTimeImmutable();
 
     /** @var array<string, mixed> */
-    public array $additionalData { get => $this->additionalData ?? []; }
+    public array $additionalData = [];
 
     public static function fromArray(array $data, ?Response $rawResponse = null): static
     {
