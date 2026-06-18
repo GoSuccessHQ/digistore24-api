@@ -73,6 +73,28 @@ final class CreateProductRequestTest extends TestCase
         $this->assertSame('Login at example.com', $data['access_instructions_en']);
     }
 
+    public function test_to_array_emits_additional_language_fields(): void
+    {
+        $request = new CreateProductRequest(
+            nameIntern: 'Test Product',
+            nameFr: 'Produit',
+            nameIt: 'Prodotto',
+            nameNl: 'Product',
+            descriptionFr: 'Description FR',
+            accessInstructionsIt: 'Istruzioni',
+            optinTextPt: 'Aceito',
+        );
+
+        $data = $request->toArray()['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('Produit', $data['name_fr']);
+        $this->assertSame('Prodotto', $data['name_it']);
+        $this->assertSame('Product', $data['name_nl']);
+        $this->assertSame('Description FR', $data['description_fr']);
+        $this->assertSame('Istruzioni', $data['access_instructions_it']);
+        $this->assertSame('Aceito', $data['optin_text_pt']);
+    }
+
     public function test_validate_returns_empty_array(): void
     {
         $request = new CreateProductRequest(nameIntern: 'Test Product');

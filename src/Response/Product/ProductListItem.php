@@ -99,6 +99,24 @@ final class ProductListItem
 
     public string $optinTextSl { get => TypeConverter::toString($this->data['optin_text_sl'], '') ?? ''; }
 
+    public string $accessInstructionsDe { get => TypeConverter::toString($this->data['access_instructions_de'], '') ?? ''; }
+
+    public string $accessInstructionsEn { get => TypeConverter::toString($this->data['access_instructions_en'], '') ?? ''; }
+
+    public string $accessInstructionsEs { get => TypeConverter::toString($this->data['access_instructions_es'], '') ?? ''; }
+
+    public string $accessInstructionsFr { get => TypeConverter::toString($this->data['access_instructions_fr'], '') ?? ''; }
+
+    public string $accessInstructionsPt { get => TypeConverter::toString($this->data['access_instructions_pt'], '') ?? ''; }
+
+    public string $accessInstructionsPl { get => TypeConverter::toString($this->data['access_instructions_pl'], '') ?? ''; }
+
+    public string $accessInstructionsIt { get => TypeConverter::toString($this->data['access_instructions_it'], '') ?? ''; }
+
+    public string $accessInstructionsNl { get => TypeConverter::toString($this->data['access_instructions_nl'], '') ?? ''; }
+
+    public string $accessInstructionsSl { get => TypeConverter::toString($this->data['access_instructions_sl'], '') ?? ''; }
+
     public string $imageUrl { get => TypeConverter::toString($this->data['image_url'], '') ?? ''; }
 
     public string $imageId { get => TypeConverter::toString($this->data['image_id'], '') ?? ''; }

@@ -26,18 +26,48 @@ final class UpdateProductRequest extends AbstractRequest
      * @param string|null $nameDe Product name in German (max 63 chars)
      * @param string|null $nameEn Product name in English (max 63 chars)
      * @param string|null $nameEs Product name in Spanish (max 63 chars)
+     * @param string|null $nameFr Product name in French (max 63 chars)
+     * @param string|null $namePt Product name in Portuguese (max 63 chars)
+     * @param string|null $namePl Product name in Polish (max 63 chars)
+     * @param string|null $nameIt Product name in Italian (max 63 chars)
+     * @param string|null $nameNl Product name in Dutch (max 63 chars)
+     * @param string|null $nameSl Product name in Slovenian (max 63 chars)
      * @param string|null $descriptionDe Product description in German (filtered HTML)
      * @param string|null $descriptionEn Product description in English (filtered HTML)
      * @param string|null $descriptionEs Product description in Spanish (filtered HTML)
+     * @param string|null $descriptionFr Product description in French (filtered HTML)
+     * @param string|null $descriptionPt Product description in Portuguese (filtered HTML)
+     * @param string|null $descriptionPl Product description in Polish (filtered HTML)
+     * @param string|null $descriptionIt Product description in Italian (filtered HTML)
+     * @param string|null $descriptionNl Product description in Dutch (filtered HTML)
+     * @param string|null $descriptionSl Product description in Slovenian (filtered HTML)
      * @param string|null $descriptionThankyouPageDe German thank you page description (filtered HTML)
      * @param string|null $descriptionThankyouPageEn English thank you page description (filtered HTML)
      * @param string|null $descriptionThankyouPageEs Spanish thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPageFr French thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPagePt Portuguese thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPagePl Polish thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPageIt Italian thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPageNl Dutch thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPageSl Slovenian thank you page description (filtered HTML)
      * @param string|null $accessInstructionsDe German access instructions (filtered HTML)
      * @param string|null $accessInstructionsEn English access instructions (filtered HTML)
      * @param string|null $accessInstructionsEs Spanish access instructions (filtered HTML)
+     * @param string|null $accessInstructionsFr French access instructions (filtered HTML)
+     * @param string|null $accessInstructionsPt Portuguese access instructions (filtered HTML)
+     * @param string|null $accessInstructionsPl Polish access instructions (filtered HTML)
+     * @param string|null $accessInstructionsIt Italian access instructions (filtered HTML)
+     * @param string|null $accessInstructionsNl Dutch access instructions (filtered HTML)
+     * @param string|null $accessInstructionsSl Slovenian access instructions (filtered HTML)
      * @param string|null $optinTextDe German opt-in checkbox text
      * @param string|null $optinTextEn English opt-in checkbox text
      * @param string|null $optinTextEs Spanish opt-in checkbox text
+     * @param string|null $optinTextFr French opt-in checkbox text
+     * @param string|null $optinTextPt Portuguese opt-in checkbox text
+     * @param string|null $optinTextPl Polish opt-in checkbox text
+     * @param string|null $optinTextIt Italian opt-in checkbox text
+     * @param string|null $optinTextNl Dutch opt-in checkbox text
+     * @param string|null $optinTextSl Slovenian opt-in checkbox text
      * @param string|null $currency Currency code(s) as comma-separated list (e.g. "USD,EUR")
      * @param string|null $salespageUrl Sales page URL (max 255 chars)
      * @param string|null $upsellSalespageUrl Upsell sales page URL (max 255 chars)
@@ -106,18 +136,48 @@ final class UpdateProductRequest extends AbstractRequest
         public ?string $nameDe = null,
         public ?string $nameEn = null,
         public ?string $nameEs = null,
+        public ?string $nameFr = null,
+        public ?string $namePt = null,
+        public ?string $namePl = null,
+        public ?string $nameIt = null,
+        public ?string $nameNl = null,
+        public ?string $nameSl = null,
         public ?string $descriptionDe = null,
         public ?string $descriptionEn = null,
         public ?string $descriptionEs = null,
+        public ?string $descriptionFr = null,
+        public ?string $descriptionPt = null,
+        public ?string $descriptionPl = null,
+        public ?string $descriptionIt = null,
+        public ?string $descriptionNl = null,
+        public ?string $descriptionSl = null,
         public ?string $descriptionThankyouPageDe = null,
         public ?string $descriptionThankyouPageEn = null,
         public ?string $descriptionThankyouPageEs = null,
+        public ?string $descriptionThankyouPageFr = null,
+        public ?string $descriptionThankyouPagePt = null,
+        public ?string $descriptionThankyouPagePl = null,
+        public ?string $descriptionThankyouPageIt = null,
+        public ?string $descriptionThankyouPageNl = null,
+        public ?string $descriptionThankyouPageSl = null,
         public ?string $accessInstructionsDe = null,
         public ?string $accessInstructionsEn = null,
         public ?string $accessInstructionsEs = null,
+        public ?string $accessInstructionsFr = null,
+        public ?string $accessInstructionsPt = null,
+        public ?string $accessInstructionsPl = null,
+        public ?string $accessInstructionsIt = null,
+        public ?string $accessInstructionsNl = null,
+        public ?string $accessInstructionsSl = null,
         public ?string $optinTextDe = null,
         public ?string $optinTextEn = null,
         public ?string $optinTextEs = null,
+        public ?string $optinTextFr = null,
+        public ?string $optinTextPt = null,
+        public ?string $optinTextPl = null,
+        public ?string $optinTextIt = null,
+        public ?string $optinTextNl = null,
+        public ?string $optinTextSl = null,
         public ?string $currency = null,
         public ?string $salespageUrl = null,
         public ?string $upsellSalespageUrl = null,

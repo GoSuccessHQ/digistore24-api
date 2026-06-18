@@ -21,9 +21,21 @@ final class CreateProductRequest extends AbstractRequest
      * @param string|null $nameDe German product name (max 63 chars)
      * @param string|null $nameEn English product name (max 63 chars)
      * @param string|null $nameEs Spanish product name (max 63 chars)
+     * @param string|null $nameFr French product name (max 63 chars)
+     * @param string|null $namePt Portuguese product name (max 63 chars)
+     * @param string|null $namePl Polish product name (max 63 chars)
+     * @param string|null $nameIt Italian product name (max 63 chars)
+     * @param string|null $nameNl Dutch product name (max 63 chars)
+     * @param string|null $nameSl Slovenian product name (max 63 chars)
      * @param string|null $descriptionDe German description (filtered HTML)
      * @param string|null $descriptionEn English description (filtered HTML)
      * @param string|null $descriptionEs Spanish description (filtered HTML)
+     * @param string|null $descriptionFr French description (filtered HTML)
+     * @param string|null $descriptionPt Portuguese description (filtered HTML)
+     * @param string|null $descriptionPl Polish description (filtered HTML)
+     * @param string|null $descriptionIt Italian description (filtered HTML)
+     * @param string|null $descriptionNl Dutch description (filtered HTML)
+     * @param string|null $descriptionSl Slovenian description (filtered HTML)
      * @param string|null $salespageUrl Sales page URL (max 255 chars)
      * @param string|null $upsellSalespageUrl Upsell sales page URL (max 255 chars)
      * @param string|null $thankyouUrl Thank you page URL (max 255 chars)
@@ -37,12 +49,30 @@ final class CreateProductRequest extends AbstractRequest
      * @param string|null $descriptionThankyouPageDe German thank you page description (filtered HTML)
      * @param string|null $descriptionThankyouPageEn English thank you page description (filtered HTML)
      * @param string|null $descriptionThankyouPageEs Spanish thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPageFr French thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPagePt Portuguese thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPagePl Polish thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPageIt Italian thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPageNl Dutch thank you page description (filtered HTML)
+     * @param string|null $descriptionThankyouPageSl Slovenian thank you page description (filtered HTML)
      * @param string|null $accessInstructionsDe German access instructions (filtered HTML)
      * @param string|null $accessInstructionsEn English access instructions (filtered HTML)
      * @param string|null $accessInstructionsEs Spanish access instructions (filtered HTML)
+     * @param string|null $accessInstructionsFr French access instructions (filtered HTML)
+     * @param string|null $accessInstructionsPt Portuguese access instructions (filtered HTML)
+     * @param string|null $accessInstructionsPl Polish access instructions (filtered HTML)
+     * @param string|null $accessInstructionsIt Italian access instructions (filtered HTML)
+     * @param string|null $accessInstructionsNl Dutch access instructions (filtered HTML)
+     * @param string|null $accessInstructionsSl Slovenian access instructions (filtered HTML)
      * @param string|null $optinTextDe German opt-in checkbox text
      * @param string|null $optinTextEn English opt-in checkbox text
      * @param string|null $optinTextEs Spanish opt-in checkbox text
+     * @param string|null $optinTextFr French opt-in checkbox text
+     * @param string|null $optinTextPt Portuguese opt-in checkbox text
+     * @param string|null $optinTextPl Polish opt-in checkbox text
+     * @param string|null $optinTextIt Italian opt-in checkbox text
+     * @param string|null $optinTextNl Dutch opt-in checkbox text
+     * @param string|null $optinTextSl Slovenian opt-in checkbox text
      * @param string|null $currency Currency code(s) as comma-separated list (e.g. "USD,EUR")
      * @param string|null $upsellThankyouPageUrl Upsell thank you page URL (max 255 chars)
      * @param string|null $upsellFreeflowThankyouUrl Free upsell flow thank you page URL (max 255 chars)
@@ -100,9 +130,21 @@ final class CreateProductRequest extends AbstractRequest
         public ?string $nameDe = null,
         public ?string $nameEn = null,
         public ?string $nameEs = null,
+        public ?string $nameFr = null,
+        public ?string $namePt = null,
+        public ?string $namePl = null,
+        public ?string $nameIt = null,
+        public ?string $nameNl = null,
+        public ?string $nameSl = null,
         public ?string $descriptionDe = null,
         public ?string $descriptionEn = null,
         public ?string $descriptionEs = null,
+        public ?string $descriptionFr = null,
+        public ?string $descriptionPt = null,
+        public ?string $descriptionPl = null,
+        public ?string $descriptionIt = null,
+        public ?string $descriptionNl = null,
+        public ?string $descriptionSl = null,
         public ?string $salespageUrl = null,
         public ?string $upsellSalespageUrl = null,
         public ?string $thankyouUrl = null,
@@ -116,12 +158,30 @@ final class CreateProductRequest extends AbstractRequest
         public ?string $descriptionThankyouPageDe = null,
         public ?string $descriptionThankyouPageEn = null,
         public ?string $descriptionThankyouPageEs = null,
+        public ?string $descriptionThankyouPageFr = null,
+        public ?string $descriptionThankyouPagePt = null,
+        public ?string $descriptionThankyouPagePl = null,
+        public ?string $descriptionThankyouPageIt = null,
+        public ?string $descriptionThankyouPageNl = null,
+        public ?string $descriptionThankyouPageSl = null,
         public ?string $accessInstructionsDe = null,
         public ?string $accessInstructionsEn = null,
         public ?string $accessInstructionsEs = null,
+        public ?string $accessInstructionsFr = null,
+        public ?string $accessInstructionsPt = null,
+        public ?string $accessInstructionsPl = null,
+        public ?string $accessInstructionsIt = null,
+        public ?string $accessInstructionsNl = null,
+        public ?string $accessInstructionsSl = null,
         public ?string $optinTextDe = null,
         public ?string $optinTextEn = null,
         public ?string $optinTextEs = null,
+        public ?string $optinTextFr = null,
+        public ?string $optinTextPt = null,
+        public ?string $optinTextPl = null,
+        public ?string $optinTextIt = null,
+        public ?string $optinTextNl = null,
+        public ?string $optinTextSl = null,
         public ?string $currency = null,
         public ?string $upsellThankyouPageUrl = null,
         public ?string $upsellFreeflowThankyouUrl = null,
@@ -228,18 +288,48 @@ final class CreateProductRequest extends AbstractRequest
             'name_de' => $this->nameDe,
             'name_en' => $this->nameEn,
             'name_es' => $this->nameEs,
+            'name_fr' => $this->nameFr,
+            'name_pt' => $this->namePt,
+            'name_pl' => $this->namePl,
+            'name_it' => $this->nameIt,
+            'name_nl' => $this->nameNl,
+            'name_sl' => $this->nameSl,
             'description_de' => $this->descriptionDe,
             'description_en' => $this->descriptionEn,
             'description_es' => $this->descriptionEs,
+            'description_fr' => $this->descriptionFr,
+            'description_pt' => $this->descriptionPt,
+            'description_pl' => $this->descriptionPl,
+            'description_it' => $this->descriptionIt,
+            'description_nl' => $this->descriptionNl,
+            'description_sl' => $this->descriptionSl,
             'description_thankyou_page_de' => $this->descriptionThankyouPageDe,
             'description_thankyou_page_en' => $this->descriptionThankyouPageEn,
             'description_thankyou_page_es' => $this->descriptionThankyouPageEs,
+            'description_thankyou_page_fr' => $this->descriptionThankyouPageFr,
+            'description_thankyou_page_pt' => $this->descriptionThankyouPagePt,
+            'description_thankyou_page_pl' => $this->descriptionThankyouPagePl,
+            'description_thankyou_page_it' => $this->descriptionThankyouPageIt,
+            'description_thankyou_page_nl' => $this->descriptionThankyouPageNl,
+            'description_thankyou_page_sl' => $this->descriptionThankyouPageSl,
             'access_instructions_de' => $this->accessInstructionsDe,
             'access_instructions_en' => $this->accessInstructionsEn,
             'access_instructions_es' => $this->accessInstructionsEs,
+            'access_instructions_fr' => $this->accessInstructionsFr,
+            'access_instructions_pt' => $this->accessInstructionsPt,
+            'access_instructions_pl' => $this->accessInstructionsPl,
+            'access_instructions_it' => $this->accessInstructionsIt,
+            'access_instructions_nl' => $this->accessInstructionsNl,
+            'access_instructions_sl' => $this->accessInstructionsSl,
             'optin_text_de' => $this->optinTextDe,
             'optin_text_en' => $this->optinTextEn,
             'optin_text_es' => $this->optinTextEs,
+            'optin_text_fr' => $this->optinTextFr,
+            'optin_text_pt' => $this->optinTextPt,
+            'optin_text_pl' => $this->optinTextPl,
+            'optin_text_it' => $this->optinTextIt,
+            'optin_text_nl' => $this->optinTextNl,
+            'optin_text_sl' => $this->optinTextSl,
             'currency' => $this->currency,
             'salespage_url' => $this->salespageUrl,
             'upsell_salespage_url' => $this->upsellSalespageUrl,

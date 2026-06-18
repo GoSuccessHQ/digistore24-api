@@ -72,6 +72,27 @@ final class UpdateProductRequestTest extends TestCase
         $this->assertSame('Zugang unter example.com', $data['access_instructions_de']);
     }
 
+    public function test_to_array_emits_additional_language_fields(): void
+    {
+        $request = new UpdateProductRequest(
+            productId: 12345,
+            nameFr: 'Produit',
+            namePl: 'Produkt',
+            descriptionSl: 'Opis',
+            accessInstructionsNl: 'Instructies',
+            optinTextIt: 'Accetto',
+        );
+
+        $array = $request->toArray();
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('Produit', $data['name_fr']);
+        $this->assertSame('Produkt', $data['name_pl']);
+        $this->assertSame('Opis', $data['description_sl']);
+        $this->assertSame('Instructies', $data['access_instructions_nl']);
+        $this->assertSame('Accetto', $data['optin_text_it']);
+    }
+
     public function test_validate_returns_empty_array(): void
     {
         $request = new UpdateProductRequest(productId: 12345);

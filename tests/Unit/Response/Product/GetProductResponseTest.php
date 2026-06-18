@@ -27,6 +27,12 @@ final class GetProductResponseTest extends TestCase
                 'salespage_url' => 'https://example.com/sales',
                 'approval_status' => 'approved',
                 'buyer_type' => 'consumer',
+                'name_fr' => 'Cours Premium',
+                'name_it' => 'Corso Premium',
+                'name_nl' => 'Premium Cursus',
+                'access_instructions_de' => 'Zugang unter example.com',
+                'access_instructions_fr' => 'Acces sur example.com',
+                'access_instructions_it' => 'Accesso su example.com',
             ],
         ];
         $response = GetProductResponse::fromArray($data);
@@ -42,6 +48,12 @@ final class GetProductResponseTest extends TestCase
         $this->assertSame('consumer', $response->buyerType);
         $this->assertInstanceOf(ProductListItem::class, $response->product);
         $this->assertSame('123', $response->product->id);
+        $this->assertSame('Cours Premium', $response->product->nameFr);
+        $this->assertSame('Corso Premium', $response->product->nameIt);
+        $this->assertSame('Premium Cursus', $response->product->nameNl);
+        $this->assertSame('Zugang unter example.com', $response->product->accessInstructionsDe);
+        $this->assertSame('Acces sur example.com', $response->product->accessInstructionsFr);
+        $this->assertSame('Accesso su example.com', $response->product->accessInstructionsIt);
         $this->assertArrayHasKey('salespage_url', $response->data);
     }
 

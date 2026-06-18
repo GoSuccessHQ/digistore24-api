@@ -24,6 +24,12 @@ final class CopyProductRequest extends AbstractRequest
      * @param string|null $nameDe German product name (max 63 chars)
      * @param string|null $nameEn English product name (max 63 chars)
      * @param string|null $nameEs Spanish product name (max 63 chars)
+     * @param string|null $nameFr French product name (max 63 chars)
+     * @param string|null $namePt Portuguese product name (max 63 chars)
+     * @param string|null $namePl Polish product name (max 63 chars)
+     * @param string|null $nameIt Italian product name (max 63 chars)
+     * @param string|null $nameNl Dutch product name (max 63 chars)
+     * @param string|null $nameSl Slovenian product name (max 63 chars)
      */
     public function __construct(
         public int $productId,
@@ -35,6 +41,12 @@ final class CopyProductRequest extends AbstractRequest
         public ?string $nameDe = null,
         public ?string $nameEn = null,
         public ?string $nameEs = null,
+        public ?string $nameFr = null,
+        public ?string $namePt = null,
+        public ?string $namePl = null,
+        public ?string $nameIt = null,
+        public ?string $nameNl = null,
+        public ?string $nameSl = null,
     ) {
     }
 
@@ -67,6 +79,24 @@ final class CopyProductRequest extends AbstractRequest
         }
         if ($this->nameEs !== null) {
             $data['name_es'] = $this->nameEs;
+        }
+        if ($this->nameFr !== null) {
+            $data['name_fr'] = $this->nameFr;
+        }
+        if ($this->namePt !== null) {
+            $data['name_pt'] = $this->namePt;
+        }
+        if ($this->namePl !== null) {
+            $data['name_pl'] = $this->namePl;
+        }
+        if ($this->nameIt !== null) {
+            $data['name_it'] = $this->nameIt;
+        }
+        if ($this->nameNl !== null) {
+            $data['name_nl'] = $this->nameNl;
+        }
+        if ($this->nameSl !== null) {
+            $data['name_sl'] = $this->nameSl;
         }
 
         return $data;

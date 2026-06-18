@@ -32,6 +32,21 @@ final class CopyProductRequestTest extends TestCase
         $this->assertSame('Copied Product', $array['name_intern']);
     }
 
+    public function test_to_array_emits_additional_language_names(): void
+    {
+        $request = new CopyProductRequest(
+            productId: 12345,
+            nameFr: 'Produit',
+            nameIt: 'Prodotto',
+            nameSl: 'Izdelek',
+        );
+
+        $array = $request->toArray();
+        $this->assertSame('Produit', $array['name_fr']);
+        $this->assertSame('Prodotto', $array['name_it']);
+        $this->assertSame('Izdelek', $array['name_sl']);
+    }
+
     public function test_validate_returns_empty_array(): void
     {
         $request = new CopyProductRequest(productId: 12345);
