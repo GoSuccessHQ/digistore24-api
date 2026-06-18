@@ -7,7 +7,7 @@
   </component>
   <component name="PhpCSFixer">
     <phpcsfixer_settings>
-      <PhpCSFixerConfiguration standards="PSR12" tool_path="$PROJECT_DIR$/vendor/bin/php-cs-fixer" config="$PROJECT_DIR$/.php-cs-fixer.dist.php" />
+      <PhpCSFixerConfiguration standards="PSR12" tool_path="$PROJECT_DIR$/vendor/bin/php-cs-fixer" config="$PROJECT_DIR$/.php-cs-fixer.php" />
     </phpcsfixer_settings>
   </component>
   <component name="PhpStan">

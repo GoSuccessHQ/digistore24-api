@@ -9,7 +9,6 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - 'phpstan.neon'
-      - 'phpstan-baseline.neon'
       - '.github/workflows/static-analysis.yml'
   pull_request:
     branches: [ main, develop ]
@@ -19,7 +18,6 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - 'phpstan.neon'
-      - 'phpstan-baseline.neon'
       - '.github/workflows/static-analysis.yml'
 
 jobs:

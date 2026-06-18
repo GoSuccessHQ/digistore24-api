@@ -179,12 +179,14 @@ src/
 ├── Base/                    # Abstract base classes
 ├── Client/                  # HTTP client implementation
 ├── Contract/                # Interfaces
-├── DataTransferObject/      # DTOs with property hooks
+├── DTO/                     # DTOs with property hooks
+├── Enum/                    # Backed enums
 ├── Exception/               # Exception hierarchy
 ├── Http/                    # HTTP-related classes
 ├── Request/                 # API request classes
-├── Resource/                # Resource classes (12 resources)
+├── Resource/                # Resource classes (37 resources)
 ├── Response/                # API response classes
+├── Trait/                   # Shared traits
 └── Util/                    # Utility classes
 ```
 
@@ -192,7 +194,7 @@ src/
 
 #### New DTO (Data Transfer Object)
 
-1. Create in `src/DataTransferObject/`
+1. Create in `src/DTO/`
 2. Use property hooks for validation
 3. Make class `final`
 4. Add comprehensive PHPDoc
@@ -200,7 +202,7 @@ src/
 ```php
 declare(strict_types=1);
 
-namespace GoSuccess\Digistore24\Api\DataTransferObject;
+namespace GoSuccess\Digistore24\Api\DTO;
 
 /**
  * Buyer information for API requests.
@@ -247,7 +249,7 @@ final class CreateBuyUrlRequest extends AbstractRequest
 
     public function getEndpoint(): string
     {
-        return '/json/createBuyUrl';
+        return '/createBuyUrl';
     }
 }
 ```
@@ -471,7 +473,7 @@ Brief description of what this endpoint does.
 ## Endpoint
 
 \`\`\`
-POST /json/endpointName
+POST /endpointName
 \`\`\`
 
 ## Request Parameters
