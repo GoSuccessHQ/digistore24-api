@@ -71,8 +71,9 @@ $userData = [
 ];
 
 $rules = [
-    'email' => ['rule' => 'email', 'message' => 'Invalid email format'],
-    'name' => ['rule' => 'required', 'message' => 'Name is required'],
+    // Rules per field are either a pipe-delimited string or a list of rule strings.
+    'email' => 'required|email',
+    'name' => ['required', 'min:2'],
 ];
 
 $errors = Validator::validate($userData, $rules);

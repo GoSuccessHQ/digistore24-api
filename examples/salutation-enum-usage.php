@@ -74,8 +74,8 @@ $apiResponse = [
 $buyer = new BuyerData();
 $buyer->email = $apiResponse['email'];
 $buyer->salutation = Salutation::fromString($apiResponse['salutation']);
-$buyer->firstName = $apiResponse['first_name'] ?? null;
-$buyer->lastName = $apiResponse['last_name'] ?? null;
+$buyer->firstName = $apiResponse['first_name'];
+$buyer->lastName = $apiResponse['last_name'];
 
 echo '   Processed: ' . $buyer->salutation?->label() . ' ' .
      $buyer->firstName . ' ' . $buyer->lastName . "\n";
@@ -90,7 +90,7 @@ $buyer4->salutation = Salutation::MRS;
 $greeting = match ($buyer4->salutation) {
     Salutation::MR => 'Dear Sir',
     Salutation::MRS => 'Dear Madam',
-    Salutation::NONE => 'Dear Customer',
+    Salutation::NONE, null => 'Dear Customer',
 };
 
 echo "   Greeting: $greeting\n\n";

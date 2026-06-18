@@ -59,9 +59,9 @@ try {
     $request = new GetProductRequest(productId: '12345');
     $product = $ds24->products->get($request);
 
-    echo "Product: {$product->productName}\n";
-    echo "Price: {$product->price} {$product->currency}\n";
-    echo 'Published: ' . ($product->isPublished ? 'Yes' : 'No') . "\n\n";
+    echo "Product: {$product->name} (ID: {$product->id})\n";
+    echo "Currency: {$product->currency}\n";
+    echo 'Active: ' . ($product->isActive ? 'Yes' : 'No') . "\n\n";
 
 } catch (\GoSuccess\Digistore24\Api\Exception\NotFoundException $e) {
     echo "Product not found!\n\n";

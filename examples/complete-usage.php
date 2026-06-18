@@ -164,7 +164,8 @@ $request->urls = $urls;
 // Settings (optional)
 $settings = new SettingsData();
 $settings->affiliateCommissionRate = 50.0;  // 50% commission
-$settings->voucherRate = 10.0;  // 10% discount
+$settings->voucherCode = 'WELCOME10';  // apply a voucher code
+$settings->voucherOthRates = 10.0;  // 10% discount on follow-up payments
 $request->settings = $settings;
 
 // Placeholders (custom fields)

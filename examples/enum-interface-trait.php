@@ -70,7 +70,7 @@ echo "\n";
 echo "7. Practical API integration example:\n";
 $apiData = ['salutation' => 'F', 'first_name' => 'Jane', 'last_name' => 'Doe'];
 
-if (Salutation::isValid($apiData['salutation'] ?? null)) {
+if (Salutation::isValid($apiData['salutation'])) {
     $salutation = Salutation::fromString($apiData['salutation']);
     echo "   Processing buyer: {$salutation->label()} {$apiData['first_name']} {$apiData['last_name']}\n";
 } else {
