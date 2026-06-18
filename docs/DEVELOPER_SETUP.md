@@ -106,26 +106,6 @@ Ensure PHP 8.4 is in your system PATH and VS Code will use it automatically.
 
    Press `F5` to start debugging.
 
-### PHPStorm / IntelliJ IDEA
-
-1. **Import Code Style**
-
-   PHPStorm will automatically detect `.idea/codeStyles/Project.xml` and use PSR-12 style with project-specific rules.
-
-2. **Configure Tools**
-
-   Settings are pre-configured in `.idea/php.xml`:
-   - PHP CS Fixer: `vendor/bin/php-cs-fixer`
-   - PHPStan: `vendor/bin/phpstan`
-   - PHPUnit: `vendor/bin/phpunit`
-
-3. **Enable Quality Tools**
-
-   Go to: `Settings → PHP → Quality Tools` and enable:
-   - PHP CS Fixer (auto-format on save)
-   - PHPStan (real-time analysis)
-   - PHPUnit (test runner)
-
 ## 🎨 EditorConfig
 
 The `.editorconfig` file ensures consistent formatting across all editors:
@@ -165,11 +145,6 @@ vendor/bin/phpunit tests/Unit/Http/ResponseTest.php
 - Use the **Testing** sidebar (Flask icon)
 - Run/debug individual tests with CodeLens buttons above test methods
 - View test results inline
-
-### PHPStorm
-- Right-click any test class/method → Run
-- Use the test runner panel for visual test management
-- Run with coverage enabled for coverage reports
 
 ## 🔍 Code Quality Checks
 
