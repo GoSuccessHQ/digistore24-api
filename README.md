@@ -47,12 +47,10 @@ use GoSuccess\Digistore24\Api\DTO\BuyerData;
 // Initialize configuration
 $config = new Configuration('YOUR-API-KEY');
 
-// Or with advanced options
-$config = new Configuration(
-    apiKey: 'YOUR-API-KEY',
-    timeout: 60,
-    debug: true
-);
+// Or with advanced options (configure via properties)
+$config = new Configuration('YOUR-API-KEY');
+$config->timeout = 60;
+$config->debug = true;
 
 // Create client
 $ds24 = new Digistore24($config);
@@ -286,19 +284,20 @@ $purchases = $ds24->purchases->list();
 When you need filters or custom parameters, use Request objects:
 
 ```php
+use GoSuccess\Digistore24\Api\Enum\ProductSortBy;
 use GoSuccess\Digistore24\Api\Request\Product\ListProductsRequest;
 use GoSuccess\Digistore24\Api\Request\Purchase\ListPurchasesRequest;
 
 // List products sorted by name
 $products = $ds24->products->list(
-    new ListProductsRequest(sortBy: 'name')
+    new ListProductsRequest(sortBy: ProductSortBy::NAME)
 );
 
 // List purchases from last 7 days
 $purchases = $ds24->purchases->list(
     new ListPurchasesRequest(
-        fromDate: new DateTime('-7 days'),
-        toDate: new DateTime('now')
+        from: '-7 days',
+        to: 'now'
     )
 );
 ```
@@ -385,20 +384,17 @@ The client automatically handles Digistore24 API rate limits with **exponential 
 use GoSuccess\Digistore24\Api\Client\Configuration;
 use GoSuccess\Digistore24\Api\Exception\RateLimitException;
 
-// Configure retry behavior
-$config = new Configuration(
-    apiKey: 'YOUR-API-KEY',
-    timeout: 30,           // Request timeout
-    maxRetries: 3,         // Max retry attempts
-    retryDelay: 1000       // Initial delay in ms (exponential backoff)
-);
+// Configure retry behavior (configure via properties)
+$config = new Configuration('YOUR-API-KEY');
+$config->timeout = 30;      // Request timeout in seconds
+$config->maxRetries = 3;    // Max retry attempts (exponential backoff)
 
 $ds24 = new Digistore24($config);
 
 // Automatic retry on rate limit (429) or server errors (500-599)
 try {
     $response = $ds24->products->list();
-    echo "Retrieved {$response->total} products\n";
+    echo "Retrieved {$response->totalCount} products\n";
 } catch (RateLimitException $e) {
     // Thrown after all retries exhausted
     $retryAfter = $e->getContextValue('retry_after');
