@@ -37,9 +37,8 @@ final class UpdateVoucherRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return array_merge(
-            ['code' => $this->code],
-            $this->voucher->toArray(),
-        );
+        // code stays flat (query param); the fields go under data[] -- sent flat
+        // the update is silently ignored (modified:N). Verified live.
+        return ['code' => $this->code, 'data' => $this->voucher->toArray()];
     }
 }

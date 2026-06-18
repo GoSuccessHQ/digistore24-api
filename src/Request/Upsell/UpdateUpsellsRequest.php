@@ -37,6 +37,6 @@ final class UpdateUpsellsRequest extends AbstractRequest
      */
     public function toArray(): array
     {
-        return array_merge(['product_id' => $this->productId], $this->data);
+        return ['product_id' => $this->productId, 'data' => $this->data];
     }
 }

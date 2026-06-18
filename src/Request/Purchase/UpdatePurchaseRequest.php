@@ -39,4 +39,13 @@ final class UpdatePurchaseRequest extends AbstractRequest
     {
         return HttpMethod::PUT;
     }
+
+    public function toArray(): array
+    {
+        // purchase_id stays flat (query param); the editable fields go under data[].
+        $params = parent::toArray();
+        unset($params['purchase_id']);
+
+        return ['purchase_id' => $this->purchaseId, 'data' => $params];
+    }
 }

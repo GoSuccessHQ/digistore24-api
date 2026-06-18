@@ -38,7 +38,10 @@ final class UpdateBuyerRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame('B12345', $array['buyer_id']);
-        $this->assertCount(1, $array);
+        $this->assertCount(2, $array);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame([], $data);
     }
 
     public function test_to_array_sends_flat_address_fields(): void
@@ -63,20 +66,22 @@ final class UpdateBuyerRequestTest extends TestCase
         $array = $request->toArray();
 
         $this->assertSame('B12345', $array['buyer_id']);
-        $this->assertSame('updated@example.com', $array['email']);
-        $this->assertSame('John', $array['first_name']);
-        $this->assertSame('Doe', $array['last_name']);
-        $this->assertSame('M', $array['salutation']);
-        $this->assertSame('Dr.', $array['title']);
-        $this->assertSame('ACME', $array['company']);
-        $this->assertSame('Main St', $array['street_name']);
-        $this->assertSame('42', $array['street_number']);
-        $this->assertSame('+49123456', $array['phone_number']);
-        $this->assertSame('Berlin', $array['city']);
-        $this->assertSame('10115', $array['zipcode']);
-        $this->assertSame('BE', $array['state']);
-        $this->assertSame('DE', $array['country']);
-        $this->assertArrayNotHasKey('address', $array);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('updated@example.com', $data['email']);
+        $this->assertSame('John', $data['first_name']);
+        $this->assertSame('Doe', $data['last_name']);
+        $this->assertSame('M', $data['salutation']);
+        $this->assertSame('Dr.', $data['title']);
+        $this->assertSame('ACME', $data['company']);
+        $this->assertSame('Main St', $data['street_name']);
+        $this->assertSame('42', $data['street_number']);
+        $this->assertSame('+49123456', $data['phone_number']);
+        $this->assertSame('Berlin', $data['city']);
+        $this->assertSame('10115', $data['zipcode']);
+        $this->assertSame('BE', $data['state']);
+        $this->assertSame('DE', $data['country']);
+        $this->assertArrayNotHasKey('address', $data);
     }
 
     public function test_validate_returns_empty_array(): void

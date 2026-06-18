@@ -39,12 +39,10 @@ final class UpdateAffiliateCommissionRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        return array_merge(
-            [
-                'affiliate_id' => $this->affiliateId,
-                'product_ids' => $this->productIds,
-            ],
-            $this->commission->toArray(),
-        );
+        return [
+            'affiliate_id' => $this->affiliateId,
+            'product_ids' => $this->productIds,
+            'data' => $this->commission->toArray(),
+        ];
     }
 }

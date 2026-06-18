@@ -65,48 +65,50 @@ final class UpdateBuyerRequest extends AbstractRequest
 
     public function toArray(): array
     {
-        $params = ['buyer_id' => $this->buyerId];
+        // buyer_id stays flat (query param); the editable fields go under data[] --
+        // sent flat the update is silently ignored (modified:N). Verified live.
+        $data = [];
 
         if ($this->email !== null) {
-            $params['email'] = $this->email;
+            $data['email'] = $this->email;
         }
         if ($this->firstName !== null) {
-            $params['first_name'] = $this->firstName;
+            $data['first_name'] = $this->firstName;
         }
         if ($this->lastName !== null) {
-            $params['last_name'] = $this->lastName;
+            $data['last_name'] = $this->lastName;
         }
         if ($this->salutation !== null) {
-            $params['salutation'] = $this->salutation->value;
+            $data['salutation'] = $this->salutation->value;
         }
         if ($this->title !== null) {
-            $params['title'] = $this->title;
+            $data['title'] = $this->title;
         }
         if ($this->company !== null) {
-            $params['company'] = $this->company;
+            $data['company'] = $this->company;
         }
         if ($this->streetName !== null) {
-            $params['street_name'] = $this->streetName;
+            $data['street_name'] = $this->streetName;
         }
         if ($this->streetNumber !== null) {
-            $params['street_number'] = $this->streetNumber;
+            $data['street_number'] = $this->streetNumber;
         }
         if ($this->phoneNumber !== null) {
-            $params['phone_number'] = $this->phoneNumber;
+            $data['phone_number'] = $this->phoneNumber;
         }
         if ($this->city !== null) {
-            $params['city'] = $this->city;
+            $data['city'] = $this->city;
         }
         if ($this->zipcode !== null) {
-            $params['zipcode'] = $this->zipcode;
+            $data['zipcode'] = $this->zipcode;
         }
         if ($this->state !== null) {
-            $params['state'] = $this->state;
+            $data['state'] = $this->state;
         }
         if ($this->country !== null) {
-            $params['country'] = $this->country;
+            $data['country'] = $this->country;
         }
 
-        return $params;
+        return ['buyer_id' => $this->buyerId, 'data' => $data];
     }
 }

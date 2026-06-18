@@ -29,7 +29,9 @@ final class UpdateUpsellsRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame(12345, $array['product_id']);
-        $this->assertSame([67890], $array['upsells']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame([67890], $data['upsells']);
     }
 
     public function test_validate_returns_empty_array(): void

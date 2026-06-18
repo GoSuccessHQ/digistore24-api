@@ -191,4 +191,15 @@ final class UpdateProductRequest extends AbstractRequest
     {
         return HttpMethod::PUT;
     }
+
+    public function toArray(): array
+    {
+        // The API expects product_id flat and every other field nested under a
+        // `data` object; sent flat the update is silently ignored (modified:N).
+        // Verified live.
+        $params = parent::toArray();
+        unset($params['product_id']);
+
+        return ['product_id' => $this->productId, 'data' => $params];
+    }
 }

@@ -33,8 +33,10 @@ final class UpdatePurchaseRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame('P12345', $array['purchase_id']);
-        $this->assertSame('ref-123', $array['custom']);
-        $this->assertSame('Y', $array['unlock_invoices']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('ref-123', $data['custom']);
+        $this->assertSame('Y', $data['unlock_invoices']);
     }
 
     public function test_validate_returns_empty_array(): void

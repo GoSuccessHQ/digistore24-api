@@ -37,7 +37,9 @@ final class UpdateProductRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame(12345, $array['product_id']);
-        $this->assertSame('Aktualisiertes Produkt', $array['name_de']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('Aktualisiertes Produkt', $data['name_de']);
     }
 
     public function test_to_array_emits_enum_values(): void
@@ -49,8 +51,10 @@ final class UpdateProductRequestTest extends TestCase
         );
 
         $array = $request->toArray();
-        $this->assertSame('pending', $array['approval_status']);
-        $this->assertSame('business', $array['buyer_type']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('pending', $data['approval_status']);
+        $this->assertSame('business', $data['buyer_type']);
     }
 
     public function test_to_array_includes_currency_and_access_instructions(): void
@@ -62,8 +66,10 @@ final class UpdateProductRequestTest extends TestCase
         );
 
         $array = $request->toArray();
-        $this->assertSame('USD,EUR', $array['currency']);
-        $this->assertSame('Zugang unter example.com', $array['access_instructions_de']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame('USD,EUR', $data['currency']);
+        $this->assertSame('Zugang unter example.com', $data['access_instructions_de']);
     }
 
     public function test_validate_returns_empty_array(): void

@@ -40,7 +40,9 @@ final class UpdateVoucherRequestTest extends TestCase
 
         $array = $request->toArray();
         $this->assertSame('SAVE20', $array['code']);
-        $this->assertSame(25.0, $array['first_rate']);
+        $data = $array['data'];
+        $this->assertIsArray($data);
+        $this->assertSame(25.0, $data['first_rate']);
     }
 
     public function test_validate_returns_empty_array(): void
