@@ -25,10 +25,8 @@ The project uses **PHPUnit 11.x** for testing with a comprehensive test suite co
 
 ### Current Test Statistics
 
-- **Tests**: 1035 tests
-- **Assertions**: 2116 assertions
-- **Code Coverage**: ~98% (lines)
-- **Mutation Score**: 85%+ MSI (Mutation Score Indicator)
+- **Tests**: 1213 tests
+- **Assertions**: 3462 assertions
 - **PHPStan Level**: 9 (maximum)
 
 ## Test Types
@@ -775,14 +773,6 @@ jobs:
       - run: composer install
       - run: composer test:coverage
 ```
-
-### Coverage Badges
-
-Coverage badge in README.md:
-
-![Coverage](https://img.shields.io/badge/Coverage-98%25-brightgreen)
-
-Generated from coverage reports in CI/CD pipeline.
 
 ## Troubleshooting
 

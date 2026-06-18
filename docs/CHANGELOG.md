@@ -126,6 +126,11 @@ parameters that were previously wrong, missing, or entirely broken.
   `GetPurchaseResponse` no longer exposes `productId`/`buyerEmail`; read `$response->buyer->email`
   and `$response->items[0]->productId`, or the full `$response->data` payload.
 
+## [2.0.6] - 2025-11-14
+
+### Fixed
+- `validateAffiliate` request: corrected the parameter names and HTTP method.
+
 ## [2.0.5] - 2025-11-12
 
 ### Fixed

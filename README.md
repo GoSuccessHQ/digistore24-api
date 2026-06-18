@@ -5,8 +5,6 @@ Modern, type-safe PHP API client for Digistore24 with **PHP 8.4 property hooks**
 [![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-blue.svg)](https://php.net)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Tests](https://github.com/GoSuccessHQ/digistore24-api/workflows/Tests/badge.svg)](https://github.com/GoSuccessHQ/digistore24-api/actions)
-[![Coverage](https://img.shields.io/badge/Coverage-98%25-brightgreen.svg)](docs/TESTING.md)
-[![Mutation](https://img.shields.io/badge/Mutation-85%25-brightgreen.svg)](docs/TESTING.md#mutation-testing)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%209-brightgreen.svg)](phpstan.neon)
 [![Code Style](https://img.shields.io/badge/code%20style-PSR--12-blue.svg)](https://www.php-fig.org/psr/psr-12/)
 
@@ -735,9 +733,7 @@ composer test:integration
 ```
 
 **Quality Metrics:**
-- **Tests**: 1035+ tests
-- **Coverage**: Lines ~98%, Functions ~99%, Classes 100%
-- **Mutation Score**: 85%+ MSI (test quality indicator)
+- **Tests**: 1213 tests, 3462 assertions
 - **PHPStan**: Level 9 (maximum strictness)
 
 See [TESTING.md](docs/TESTING.md) for detailed testing guide, coverage setup, mutation testing, and best practices.
@@ -774,5 +770,5 @@ See [DEVELOPER_SETUP.md](docs/DEVELOPER_SETUP.md) for detailed IDE setup instruc
 - **Documentation**: Check the `docs/` directory for endpoint-specific guides
 - **Testing Guide**: See [TESTING.md](docs/TESTING.md) for test setup and coverage
 - **Issues**: Report bugs on [GitHub Issues](https://github.com/GoSuccessHQ/digistore24-api/issues)
-- **Migration Guide**: See [MIGRATION.md](docs/MIGRATION.md) for upgrading from v1.x
+- **Migration Guide**: See [MIGRATION.md](docs/MIGRATION.md) for upgrading from v2.x
 - **Changelog**: See [CHANGELOG.md](docs/CHANGELOG.md) for version history
