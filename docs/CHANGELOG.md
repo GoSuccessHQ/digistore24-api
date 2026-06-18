@@ -73,6 +73,12 @@ parameters that were previously wrong, missing, or entirely broken.
   `id` and flattened the buyer/items; `getImage`, `getProduct`, `statsSales`,
   `statsDailyAmounts`, `statsAffiliateToplist`, and `getGlobalSettings` used keys that
   do not exist. All are now mapped to the real keys and expose the complete field set.
+- Six update endpoints (`updateProduct`, `updateVoucher`, `updateBuyer`, `updateUpsells`,
+  `updateAffiliateCommission`, `updatePurchase`) sent their fields flat where the API
+  requires them nested under a `data` object (the id stays flat). Sent flat the update was
+  silently accepted but had no effect (the API returned `modified:N`). Now wrapped
+  correctly; verified live. The request constructors are unchanged, so calling code keeps
+  working -- updates simply take effect now.
 
 ### Removed
 - `BillingResource::refundPartially()` and the duplicate
