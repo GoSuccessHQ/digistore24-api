@@ -9,10 +9,8 @@ vendor/
 !.vscode/extensions.json
 .vscode/settings.local.json
 
-# IDE - PHPStorm/IntelliJ (keep code style, ignore workspace)
-.idea/*
-!.idea/codeStyles/
-!.idea/php.xml
+# IDE - PHPStorm/IntelliJ (not used; ignore entirely)
+.idea/
 
 # PHPUnit generated files
 junit.xml
