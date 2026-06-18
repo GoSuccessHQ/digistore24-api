@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.0] - 2026-06-17
+## [3.0.0] - 2026-06-18
 
 Major release that turns the SDK into a complete, fully-typed binding to the
 Digistore24 API and removes long-standing inconsistencies. See `MIGRATION.md`
@@ -79,6 +79,12 @@ parameters that were previously wrong, missing, or entirely broken.
   silently accepted but had no effect (the API returned `modified:N`). Now wrapped
   correctly; verified live. The request constructors are unchanged, so calling code keeps
   working -- updates simply take effect now.
+- The product endpoints (`createProduct`, `updateProduct`, `copyProduct`) only modeled
+  three languages (de/en/es) for their multilingual fields, but the API accepts and
+  returns nine (de, en, es, fr, pt, pl, it, nl, sl). The missing six are now settable for
+  `name`, `description`, `description_thankyou_page`, `access_instructions`, and
+  `optin_text`, and `GetProductResponse` exposes the previously-missing
+  `access_instructions_*` in all nine languages. Verified live.
 
 ### Removed
 - `BillingResource::refundPartially()` and the duplicate
