@@ -76,7 +76,6 @@
   "support": {
     "issues": "https://github.com/GoSuccessHQ/digistore24-api/issues",
     "source": "https://github.com/GoSuccessHQ/digistore24-api",
-    "docs": "https://github.com/GoSuccessHQ/digistore24-api#readme",
-    "security": "https://github.com/GoSuccessHQ/digistore24-api/security/policy"
+    "docs": "https://github.com/GoSuccessHQ/digistore24-api#readme"
   }
 }

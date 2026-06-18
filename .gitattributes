@@ -35,6 +35,4 @@ LICENSE text eol=lf
 /phpunit.xml export-ignore
 /phpstan.neon export-ignore
 /CHANGELOG.md export-ignore
-/CONTRIBUTING.md export-ignore
 /MIGRATION.md export-ignore
-/SECURITY.md export-ignore

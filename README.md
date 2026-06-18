@@ -746,14 +746,10 @@ See [TESTING.md](docs/TESTING.md) for detailed testing guide, coverage setup, mu
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contributing
+## Development
 
-Contributions are welcome! Please read our documentation:
-
-- **[Contributing Guidelines](CONTRIBUTING.md)** - Coding standards and pull request process
-- **[Developer Setup](docs/DEVELOPER_SETUP.md)** - Complete IDE setup, PHP 8.4 configuration, and development workflow
-
-### Quick Start for Contributors
+This library is maintained primarily for GoSuccess's own use. You're welcome to
+use it, but it isn't run as a community project. To work on it locally:
 
 ```bash
 # Clone repository
@@ -762,9 +758,6 @@ cd digistore24-api
 
 # Install dependencies (requires PHP 8.4+)
 composer install
-
-# Verify setup
-php -v  # Should show PHP 8.4.x
 
 # Run tests
 composer test
@@ -781,6 +774,5 @@ See [DEVELOPER_SETUP.md](docs/DEVELOPER_SETUP.md) for detailed IDE setup instruc
 - **Documentation**: Check the `docs/` directory for endpoint-specific guides
 - **Testing Guide**: See [TESTING.md](docs/TESTING.md) for test setup and coverage
 - **Issues**: Report bugs on [GitHub Issues](https://github.com/GoSuccessHQ/digistore24-api/issues)
-- **Security**: Report security vulnerabilities via [SECURITY.md](SECURITY.md)
 - **Migration Guide**: See [MIGRATION.md](docs/MIGRATION.md) for upgrading from v1.x
 - **Changelog**: See [CHANGELOG.md](docs/CHANGELOG.md) for version history

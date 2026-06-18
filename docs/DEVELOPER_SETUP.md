@@ -334,8 +334,6 @@ composer cs:check
 
 ## 📚 Additional Resources
 
-- [ARCHITECTURE.md](../ARCHITECTURE.md) - Project architecture
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
 - [README.md](../README.md) - Main documentation
 - [PHP 8.4 Features](https://www.php.net/releases/8.4/en.php)
 - [PSR-12 Coding Style](https://www.php-fig.org/psr/psr-12/)

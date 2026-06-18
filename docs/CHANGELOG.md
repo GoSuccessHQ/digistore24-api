@@ -293,4 +293,3 @@ parameters that were previously wrong, missing, or entirely broken.
 
 - [GitHub Repository](https://github.com/GoSuccessHQ/digistore24-api)
 - [Issue Tracker](https://github.com/GoSuccessHQ/digistore24-api/issues)
-- [Contributing Guidelines](CONTRIBUTING.md)
